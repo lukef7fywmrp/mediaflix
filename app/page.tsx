@@ -33,7 +33,7 @@ export default async function Home(props: HomeProps) {
           <div className="flex items-center justify-center gap-3 mb-4">
             <TrendingUp className="h-8 w-8 text-primary" />
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Top 10 {mediaType === "movies" ? "Movies" : "TV Shows"}
+              Top {mediaType === "movies" ? "Movies" : "TV Shows"} right now
             </h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
