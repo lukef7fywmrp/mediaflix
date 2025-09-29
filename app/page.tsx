@@ -37,14 +37,14 @@ export default async function Home(props: HomeProps) {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover the highest-rated{" "}
+            Discover the most popular{" "}
             {mediaType === "movies" ? "movies" : "TV shows"} according to The
             Movie Database (TMDB)
           </p>
           <div className="flex items-center justify-center gap-2 mt-4">
             <Badge variant="outline" className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              TMDB Rated
+              TMDB Popular
             </Badge>
             <Badge variant="outline" className="group">
               <Radio className="size-4 group-hover:animate-pulse" />

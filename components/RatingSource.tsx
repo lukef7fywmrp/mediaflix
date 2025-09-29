@@ -16,7 +16,7 @@ export default function RatingSource({
       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
       <span className="font-semibold text-sm">{rating.toFixed(1)}</span>
       <span
-        className={`text-xs ml-1 font-medium ${className ? "text-white/70" : "text-muted-foreground/80"}`}
+        className={`text-xs ml-1 font-medium ${className.includes("text-") ? "text-white/70" : "text-muted-foreground/80"}`}
       >
         via {source}
       </span>

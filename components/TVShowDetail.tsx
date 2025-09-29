@@ -499,7 +499,7 @@ export default function TVShowDetail({
                       Next Air Date
                     </span>
                     <span className="text-sm font-medium">
-                      {formatDateShort(nextAirDate.air_date)}
+                      {formatDateShort(nextAirDate)}
                     </span>
                   </div>
                 )}
