@@ -36,7 +36,9 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
                     className="object-cover"
                   />
                   <AvatarFallback className="uppercase">
-                    {actor.name.charAt(0) + actor.name.charAt(1)}
+                    {actor.name.length >= 2
+                      ? actor.name.charAt(0) + actor.name.charAt(1)
+                      : actor.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
               </div>
