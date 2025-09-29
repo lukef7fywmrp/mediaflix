@@ -173,7 +173,7 @@ export default function TVShowDetail({
                     asChild
                   >
                     <a
-                      href={`https://www.themoviedb.org/movie/${tvShow.id}`}
+                      href={`https://www.themoviedb.org/tv/${tvShow.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -499,7 +499,7 @@ export default function TVShowDetail({
                       Next Air Date
                     </span>
                     <span className="text-sm font-medium">
-                      {formatDateShort(nextAirDate)}
+                      {formatDateShort(nextAirDate.air_date)}
                     </span>
                   </div>
                 )}
