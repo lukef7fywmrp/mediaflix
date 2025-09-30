@@ -28,16 +28,22 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
 import {
+  TVGetContentRatingsResponse,
   TVGetCreditsResponse,
-  TVGetDetailsResponse,
+  TVGetDetailsBaseResponse,
   TVGetRecommendationsResult,
+  TVGetReviewsResponse,
   TVGetSimilarTVShowsResult,
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
+import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface TVShowDetailProps {
-  tvShow: TVGetDetailsResponse<[]>;
+  tvShow: TVGetDetailsBaseResponse & {
+    reviews: TVGetReviewsResponse;
+    content_ratings: TVGetContentRatingsResponse;
+  };
   credits: TVGetCreditsResponse;
   similarShows: TVGetSimilarTVShowsResult[];
   recommendations: TVGetRecommendationsResult[];
@@ -326,7 +332,7 @@ export default function TVShowDetail({
               </CardContent>
             </Card>
 
-            {/* Seasons */}
+            {/* Seasons & Episodes */}
             <Card className="gap-3">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -335,46 +341,56 @@ export default function TVShowDetail({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {tvShow.seasons.map((season) => (
-                    <div
-                      key={season.id}
-                      className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="relative w-16 h-20 flex-shrink-0 rounded overflow-hidden">
-                        {season.poster_path ? (
-                          <Image
-                            src={getPosterUrl(season.poster_path)}
-                            alt={season.name}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <Tv className="h-6 w-6 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-lg">{season.name}</h4>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                          <span>
-                            {season.episode_count} Episode
-                            {season.episode_count !== 1 ? "s" : ""}
-                          </span>
-                          {season.air_date && (
-                            <span>{formatDateShort(season.air_date)}</span>
+                {tvShow.number_of_episodes > 0 ? (
+                  <SeasonEpisodesAccordion
+                    seasons={tvShow.seasons}
+                    tvShowId={tvShow.id}
+                    tvShowName={tvShow.name}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {tvShow.seasons.map((season) => (
+                      <div
+                        key={season.id}
+                        className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="relative w-16 h-20 flex-shrink-0 rounded overflow-hidden">
+                          {season.poster_path ? (
+                            <Image
+                              src={getPosterUrl(season.poster_path)}
+                              alt={season.name}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-muted flex items-center justify-center">
+                              <Tv className="h-6 w-6 text-muted-foreground" />
+                            </div>
                           )}
                         </div>
-                        {season.overview && (
-                          <p className="text-sm mt-2 line-clamp-2">
-                            {season.overview}
-                          </p>
-                        )}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg">
+                            {season.name}
+                          </h4>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                            <span>
+                              {season.episode_count} Episode
+                              {season.episode_count !== 1 ? "s" : ""}
+                            </span>
+                            {season.air_date && (
+                              <span>{formatDateShort(season.air_date)}</span>
+                            )}
+                          </div>
+                          {season.overview && (
+                            <p className="text-sm mt-2 line-clamp-2">
+                              {season.overview}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
 

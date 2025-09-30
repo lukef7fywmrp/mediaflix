@@ -53,11 +53,15 @@ export default async function TVShowDetailPage({
 
   try {
     const [tvShow, credits, similarShows, recommendations] = await Promise.all([
-      api.v3.tv.getDetails(tvShowId),
+      api.v3.tv.getDetails(tvShowId, {
+        append_to_response: ["content_ratings", "reviews"],
+      }),
       api.v3.tv.getCredits(tvShowId),
       api.v3.tv.getSimilarTVShows(tvShowId),
       api.v3.tv.getRecommendations(tvShowId),
     ]);
+
+    console.log(tvShow);
 
     return (
       <TVShowDetail
