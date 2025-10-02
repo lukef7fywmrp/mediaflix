@@ -4,7 +4,6 @@ import SeasonEpisodeGroup from "./SeasonEpisodeGroup";
 interface SeasonEpisodesAccordionProps {
   seasons: TVGetDetailsSeason[];
   tvShowId: number;
-  tvShowName: string;
 }
 
 export default function SeasonEpisodesAccordion({

@@ -353,7 +353,6 @@ export default function TVShowDetail({
                   <SeasonEpisodesAccordion
                     seasons={tvShow.seasons}
                     tvShowId={tvShow.id}
-                    tvShowName={tvShow.name}
                   />
                 ) : (
                   <div className="space-y-4">

@@ -138,7 +138,6 @@ export default function EpisodeDetails({
                             size="sm"
                             variant="secondary"
                             className="bg-black/50 hover:bg-black/70 text-white"
-                            onClick={() => {}}
                           >
                             <Play className="h-4 w-4" />
                           </Button>
@@ -368,7 +367,6 @@ export default function EpisodeDetails({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {}}
                         className="text-primary hover:text-primary/80"
                       >
                         View Details
