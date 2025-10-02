@@ -52,25 +52,18 @@ export default async function TVShowDetailPage({
   }
 
   try {
-    const [tvShow, credits, similarShows, recommendations] = await Promise.all([
-      api.v3.tv.getDetails(tvShowId, {
-        append_to_response: ["content_ratings", "reviews"],
-      }),
-      api.v3.tv.getCredits(tvShowId),
-      api.v3.tv.getSimilarTVShows(tvShowId),
-      api.v3.tv.getRecommendations(tvShowId),
-    ]);
+    const tvShow = await api.v3.tv.getDetails(tvShowId, {
+      append_to_response: [
+        "content_ratings",
+        "reviews",
+        "credits",
+        "similar",
+        "recommendations",
+      ],
+    });
+    const watchProviders = await api.v3.tv.getWatchProviders(tvShowId);
 
-    console.log(tvShow);
-
-    return (
-      <TVShowDetail
-        tvShow={tvShow}
-        credits={credits}
-        similarShows={similarShows.results}
-        recommendations={recommendations.results}
-      />
-    );
+    return <TVShowDetail tvShow={tvShow} watchProviders={watchProviders} />;
   } catch {
     notFound();
   }

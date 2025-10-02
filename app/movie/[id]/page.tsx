@@ -52,21 +52,12 @@ export default async function MovieDetailPage({
   }
 
   try {
-    const [movie, credits, similarMovies, recommendations] = await Promise.all([
-      api.v3.movies.getDetails(movieId),
-      api.v3.movies.getCredits(movieId),
-      api.v3.movies.getSimilarMovies(movieId),
-      api.v3.movies.getRecommendations(movieId),
-    ]);
+    const movie = await api.v3.movies.getDetails(movieId, {
+      append_to_response: ["credits", "similar", "recommendations"],
+    });
+    const watchProviders = await api.v3.movies.getWatchProviders(movieId);
 
-    return (
-      <MovieDetail
-        movie={movie}
-        credits={credits}
-        similarMovies={similarMovies.results}
-        recommendations={recommendations.results}
-      />
-    );
+    return <MovieDetail movie={movie} watchProviders={watchProviders} />;
   } catch {
     notFound();
   }

@@ -27,32 +27,35 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
 import {
-  MoviesGetCreditsResponse,
-  MoviesGetDetailsBaseResponse,
-  MoviesGetRecommendationsResult,
-  MoviesGetSimilarMoviesResult,
+  MoviesGetDetailsResponse,
+  MoviesGetWatchProvidersResponse,
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import RatingSource from "./RatingSource";
+import WatchProviders from "./WatchProviders";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface MovieDetailProps {
-  movie: MoviesGetDetailsBaseResponse;
-  credits: MoviesGetCreditsResponse;
-  similarMovies: MoviesGetSimilarMoviesResult[];
-  recommendations: MoviesGetRecommendationsResult[];
+  movie: MoviesGetDetailsResponse<
+    ("credits" | "recommendations" | "similar")[]
+  >;
+  watchProviders: MoviesGetWatchProvidersResponse;
 }
 
 export default function MovieDetail({
   movie,
-  credits,
-  similarMovies,
-  recommendations,
+  watchProviders,
 }: MovieDetailProps) {
-  const director = credits.crew.find((person) => person.job === "Director");
-  const writers = credits.crew.filter((person) => person.job === "Writer");
-  const producers = credits.crew.filter((person) => person.job === "Producer");
+  const director = movie.credits.crew.find(
+    (person) => person.job === "Director",
+  );
+  const writers = movie.credits.crew.filter(
+    (person) => person.job === "Writer",
+  );
+  const producers = movie.credits.crew.filter(
+    (person) => person.job === "Producer",
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -104,11 +107,11 @@ export default function MovieDetail({
                   ))}
                 </div>
 
-                <h1 className="text-4xl lg:text-6xl font-bold mb-4 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-extrabold mb-4 leading-tight">
                   {movie.title}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-6 mb-6 text-lg">
+                <div className="flex flex-wrap items-center gap-6 mb-6 text-sm lg:text-base">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
                     <span>{formatDate(movie.release_date)}</span>
@@ -130,9 +133,14 @@ export default function MovieDetail({
                   </div>
                 </div>
 
-                <p className="text-xl leading-relaxed mb-6 max-w-4xl">
+                <p className="leading-relaxed tracking-wide mb-6 max-w-4xl text-sm lg:text-base">
                   {movie.overview}
                 </p>
+
+                {/* Watch Providers */}
+                <div className="mb-6">
+                  <WatchProviders watchProviders={watchProviders} />
+                </div>
 
                 <div className="flex flex-wrap gap-4">
                   <Button
@@ -187,7 +195,7 @@ export default function MovieDetail({
           {/* Left Column - Main Info */}
           <div className="lg:col-span-2 space-y-8">
             {/* Cast */}
-            <CastSection credits={credits} />
+            <CastSection credits={movie.credits} />
 
             {/* Crew */}
             <Card className="gap-3">
@@ -290,7 +298,7 @@ export default function MovieDetail({
             </Card>
 
             {/* Similar Movies */}
-            {similarMovies.length > 0 && (
+            {movie.similar.results.length > 0 && (
               <Card className="gap-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -300,7 +308,7 @@ export default function MovieDetail({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {similarMovies.slice(0, 8).map((movie) => (
+                    {movie.similar.results.slice(0, 8).map((movie) => (
                       <Link key={movie.id} href={`/movie/${movie.id}`}>
                         <div className="group cursor-pointer">
                           <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
@@ -326,7 +334,7 @@ export default function MovieDetail({
             )}
 
             {/* Recommendations */}
-            {recommendations.length > 0 && (
+            {movie.recommendations.results.length > 0 && (
               <Card className="gap-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -336,7 +344,7 @@ export default function MovieDetail({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {recommendations.slice(0, 8).map((movie) => (
+                    {movie.recommendations.results.slice(0, 8).map((movie) => (
                       <Link key={movie.id} href={`/movie/${movie.id}`}>
                         <div className="group cursor-pointer">
                           <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">

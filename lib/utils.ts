@@ -280,3 +280,8 @@ const LANGUAGE_TO_COUNTRY_MAP: Record<string, string> = {
 export const getCountryCodeForLanguage = (languageCode: string): string => {
   return LANGUAGE_TO_COUNTRY_MAP[languageCode] || "UN";
 };
+
+export const getProviderLogoUrl = (logoPath: string | null) => {
+  if (!logoPath) return null;
+  return `https://image.tmdb.org/t/p/w92${logoPath}`;
+};

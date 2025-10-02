@@ -28,40 +28,44 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
 import {
-  TVGetContentRatingsResponse,
-  TVGetCreditsResponse,
-  TVGetDetailsBaseResponse,
-  TVGetRecommendationsResult,
-  TVGetReviewsResponse,
-  TVGetSimilarTVShowsResult,
+  TVGetDetailsResponse,
+  TVGetWatchProvidersResponse,
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import WatchProviders from "./WatchProviders";
 
 interface TVShowDetailProps {
-  tvShow: TVGetDetailsBaseResponse & {
-    reviews: TVGetReviewsResponse;
-    content_ratings: TVGetContentRatingsResponse;
-  };
-  credits: TVGetCreditsResponse;
-  similarShows: TVGetSimilarTVShowsResult[];
-  recommendations: TVGetRecommendationsResult[];
+  tvShow: TVGetDetailsResponse<
+    (
+      | "content_ratings"
+      | "credits"
+      | "recommendations"
+      | "reviews"
+      | "similar"
+    )[]
+  >;
+  watchProviders: TVGetWatchProvidersResponse;
 }
 
 export default function TVShowDetail({
   tvShow,
-  credits,
-  similarShows,
-  recommendations,
+  watchProviders,
 }: TVShowDetailProps) {
   const totalEpisodes = tvShow.number_of_episodes;
   const totalSeasons = tvShow.number_of_seasons;
   const lastAirDate = tvShow.last_air_date;
   const nextAirDate = tvShow.next_episode_to_air;
-  const director = credits.crew.find((person) => person.job === "Director");
-  const writers = credits.crew.filter((person) => person.job === "Writer");
-  const producers = credits.crew.filter((person) => person.job === "Producer");
+  const director = tvShow.credits.crew.find(
+    (person) => person.job === "Director",
+  );
+  const writers = tvShow.credits.crew.filter(
+    (person) => person.job === "Writer",
+  );
+  const producers = tvShow.credits.crew.filter(
+    (person) => person.job === "Producer",
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -113,11 +117,11 @@ export default function TVShowDetail({
                   ))}
                 </div>
 
-                <h1 className="text-4xl lg:text-6xl font-bold mb-4 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-extrabold mb-4 leading-tight">
                   {tvShow.name}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-6 mb-6 text-lg">
+                <div className="flex flex-wrap items-center gap-6 mb-6 text-sm lg:text-base">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5" />
                     <span>{formatDate(tvShow.first_air_date)}</span>
@@ -143,9 +147,13 @@ export default function TVShowDetail({
                   </div>
                 </div>
 
-                <p className="text-xl leading-relaxed mb-6 max-w-4xl">
+                <p className="leading-relaxed tracking-wide mb-6 max-w-4xl text-sm lg:text-base">
                   {tvShow.overview}
                 </p>
+
+                <div className="mb-6">
+                  <WatchProviders watchProviders={watchProviders} />
+                </div>
 
                 <div className="flex flex-wrap gap-4">
                   <Button
@@ -209,7 +217,7 @@ export default function TVShowDetail({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {credits.cast.map((actor) => (
+                  {tvShow.credits.cast.map((actor) => (
                     <div key={actor.id} className="text-center">
                       <div className="relative w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden">
                         <Avatar className="size-full">
@@ -395,7 +403,7 @@ export default function TVShowDetail({
             </Card>
 
             {/* Similar Shows */}
-            {similarShows.length > 0 && (
+            {tvShow.similar.results.length > 0 && (
               <Card className="gap-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -405,7 +413,7 @@ export default function TVShowDetail({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {similarShows.slice(0, 8).map((show) => (
+                    {tvShow.similar.results.slice(0, 8).map((show) => (
                       <Link key={show.id} href={`/tv/${show.id}`}>
                         <div className="group cursor-pointer">
                           <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
@@ -431,7 +439,7 @@ export default function TVShowDetail({
             )}
 
             {/* Recommendations */}
-            {recommendations.length > 0 && (
+            {tvShow.recommendations.results.length > 0 && (
               <Card className="gap-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -441,7 +449,7 @@ export default function TVShowDetail({
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {recommendations.slice(0, 8).map((show) => (
+                    {tvShow.recommendations.results.slice(0, 8).map((show) => (
                       <Link key={show.id} href={`/tv/${show.id}`}>
                         <div className="group cursor-pointer">
                           <div className="relative aspect-[2/3] rounded-lg overflow-hidden mb-2">
