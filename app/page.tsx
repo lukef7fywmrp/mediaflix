@@ -6,13 +6,11 @@ import TopTVShows from "@/components/TopTVShows";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Radio, Star, TrendingUp } from "lucide-react";
-import { use } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function Home(props: {
-  searchParams: Promise<{ type?: string }>;
-}) {
-  const searchParams = use(props.searchParams);
-  const mediaType = searchParams.type === "tv" ? "tv" : "movies";
+export default function Home() {
+  const searchParams = useSearchParams();
+  const mediaType = searchParams.get("type") === "tv" ? "tv" : "movies";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
