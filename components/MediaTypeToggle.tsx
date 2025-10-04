@@ -5,12 +5,14 @@ import apiClient from "@/lib/tmdbClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { Film, Tv } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function MediaTypeToggle() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const currentType = (searchParams.get("type") as "movies" | "tv") || "movies";
   const router = useRouter();
+  const [value, setValue] = useState<string>(currentType);
 
   const handlePrefetch = (type: "movies" | "tv") => {
     queryClient.prefetchQuery({
@@ -25,7 +27,7 @@ export default function MediaTypeToggle() {
 
   return (
     <div className="flex items-center justify-center mb-8">
-      <Tabs value={currentType}>
+      <Tabs value={value} onValueChange={setValue}>
         <TabsList className="bg-muted/50 border border-border/50 rounded-lg p-1">
           <TabsTrigger
             value="movies"
