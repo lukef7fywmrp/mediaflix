@@ -31,10 +31,10 @@ export default function MediaTypeToggle() {
             value="movies"
             className="flex items-center gap-2"
             aria-label="Show Movies"
-            onClick={() => router.push("/?type=movies")}
+            onClick={() => router.push("/")}
             onMouseOver={() => {
               handlePrefetch("movies");
-              router.prefetch("/?type=movies");
+              router.prefetch("/");
             }}
           >
             <Film className="h-4 w-4" />

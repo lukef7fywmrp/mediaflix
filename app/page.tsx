@@ -9,7 +9,7 @@ import { Radio, Star, TrendingUp } from "lucide-react";
 import { use } from "react";
 
 export default function Home(props: {
-  searchParams: Promise<{ type: string }>;
+  searchParams: Promise<{ type?: string }>;
 }) {
   const searchParams = use(props.searchParams);
   const mediaType = searchParams.type === "tv" ? "tv" : "movies";
