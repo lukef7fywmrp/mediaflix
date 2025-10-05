@@ -78,14 +78,12 @@ export default async function MovieDetailPage({
         })
         .catch(() => null);
 
-      // Properly handle streamingOptions - it's an object with arrays as values
-      if (show?.streamingOptions) {
-        const streamingOptions = Object.values(show.streamingOptions);
-        // Check if any of the values are arrays and flatten them
-        const flattened = streamingOptions.flat();
-        // Only set providers if we got a valid array with items
-        if (Array.isArray(flattened) && flattened.length > 0) {
-          providers = flattened;
+      // Properly handle streamingOptions - get options for the specific country
+      if (show?.streamingOptions && country) {
+        const countryOptions = show.streamingOptions[country];
+        // Validate that countryOptions is an array before using it
+        if (Array.isArray(countryOptions) && countryOptions.length > 0) {
+          providers = countryOptions;
         }
       }
     } catch (error) {
