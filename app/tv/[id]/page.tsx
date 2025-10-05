@@ -70,7 +70,8 @@ export default async function TVShowDetailPage({
       notFound();
     }
 
-    let providers: StreamingOption[] | TVGetWatchProvidersResponse = [];
+    let providers: StreamingOption[] | TVGetWatchProvidersResponse | null =
+      null;
 
     try {
       const res = await fetch(`${getBaseUrl()}/api/geo`);
@@ -83,17 +84,30 @@ export default async function TVShowDetailPage({
         })
         .catch(() => null);
 
-      providers = Object.values(show?.streamingOptions ?? {}).flat();
+      // Properly handle streamingOptions - it's an object with arrays as values
+      if (show?.streamingOptions) {
+        const streamingOptions = Object.values(show.streamingOptions);
+        // Check if any of the values are arrays and flatten them
+        const flattened = streamingOptions.flat();
+        // Only set providers if we got a valid array with items
+        if (Array.isArray(flattened) && flattened.length > 0) {
+          providers = flattened;
+        }
+      }
     } catch (error) {
       console.error("Error fetching streaming data:", error);
     }
 
-    if (providers.length === 0) {
+    // Check if we have valid streaming providers (array with length > 0)
+    const hasStreamingProviders =
+      Array.isArray(providers) && providers.length > 0;
+
+    if (!hasStreamingProviders) {
       try {
         providers = await api.v3.tv.getWatchProviders(tvShowId);
       } catch (error) {
         console.error("Error fetching TMDB watch providers:", error);
-        providers = [];
+        providers = null;
       }
     }
 

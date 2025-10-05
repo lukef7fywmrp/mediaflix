@@ -40,7 +40,7 @@ import WatchProvidersFallback from "./WatchProvidersFallback";
 
 // Type guard function to check if watchProviders is StreamingOption[]
 function isStreamingOptionArray(
-  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse,
+  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse | null,
 ): watchProviders is StreamingOption[] {
   return Array.isArray(watchProviders);
 }
@@ -49,7 +49,7 @@ interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
     ("credits" | "recommendations" | "similar")[]
   >;
-  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse;
+  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse | null;
 }
 
 export default function MovieDetail({
@@ -147,13 +147,15 @@ export default function MovieDetail({
                 </p>
 
                 {/* Watch Providers */}
-                <div className="mb-6">
-                  {isStreamingOptionArray(watchProviders) ? (
-                    <WatchProviders watchProviders={watchProviders} />
-                  ) : (
-                    <WatchProvidersFallback watchProviders={watchProviders} />
-                  )}
-                </div>
+                {watchProviders && (
+                  <div className="mb-6">
+                    {isStreamingOptionArray(watchProviders) ? (
+                      <WatchProviders watchProviders={watchProviders} />
+                    ) : (
+                      <WatchProvidersFallback watchProviders={watchProviders} />
+                    )}
+                  </div>
+                )}
 
                 <div className="flex flex-wrap gap-4">
                   <Button
