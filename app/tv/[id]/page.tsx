@@ -75,7 +75,9 @@ export default async function TVShowDetailPage({
 
     try {
       const res = await fetch(`${getBaseUrl()}/api/geo`);
-      const country = await res.text();
+      const country = (await res.text()).toLowerCase();
+
+      console.log("country", country);
 
       const show = await streamingClient.showsApi
         .getShow({
@@ -84,9 +86,13 @@ export default async function TVShowDetailPage({
         })
         .catch(() => null);
 
+      console.log("show", show);
+
       // Properly handle streamingOptions - get options for the specific country
       if (show?.streamingOptions && country) {
         const countryOptions = show.streamingOptions[country];
+
+        console.log("countryOptions", countryOptions);
         // Validate that countryOptions is an array before using it
         if (Array.isArray(countryOptions) && countryOptions.length > 0) {
           providers = countryOptions;
@@ -108,6 +114,8 @@ export default async function TVShowDetailPage({
         providers = null;
       }
     }
+
+    console.log("providers", providers);
 
     return <TVShowDetail tvShow={tvShow} watchProviders={providers} />;
   } catch (error) {

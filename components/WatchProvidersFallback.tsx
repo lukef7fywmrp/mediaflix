@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import Image from "next/image";
 
 type ProviderWithType = MoviesGetWatchProvidersBuy & {
   type: "flatrate" | "buy" | "rent";
@@ -121,7 +122,7 @@ export default function WatchProvidersFallback({
       className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-md px-2 py-1.5 border border-white/20 hover:bg-white/20 transition-colors cursor-pointer min-w-fit"
     >
       {provider.logo_path ? (
-        <img
+        <Image
           src={getProviderLogoUrl(provider.logo_path)!}
           alt={provider.provider_name}
           width={18}
