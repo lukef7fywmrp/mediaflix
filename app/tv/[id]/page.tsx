@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
 import api from "@/lib/tmdb";
 import TVShowDetail from "@/components/TVShowDetail";
+import getBaseUrl from "@/lib/getBaseUrl";
+import streamingClient from "@/lib/streamingClient";
+import { TVGetWatchProvidersResponse } from "tmdb-js-node";
+import { StreamingOption } from "streaming-availability";
 
 interface TVShowDetailPageProps {
   params: Promise<{ id: string }>;
@@ -47,24 +51,38 @@ export default async function TVShowDetailPage({
   const { id } = await params;
   const tvShowId = parseInt(id);
 
-  if (isNaN(tvShowId)) {
+  const tvShow = await api.v3.tv.getDetails(tvShowId, {
+    append_to_response: [
+      "content_ratings",
+      "reviews",
+      "credits",
+      "similar",
+      "recommendations",
+    ],
+  });
+
+  if (!tvShow?.id) {
     notFound();
   }
+  // const watchProviders = await api.v3.movies.getWatchProviders(movieId);
+  const res = await fetch(`${getBaseUrl()}/api/geo`);
 
-  try {
-    const tvShow = await api.v3.tv.getDetails(tvShowId, {
-      append_to_response: [
-        "content_ratings",
-        "reviews",
-        "credits",
-        "similar",
-        "recommendations",
-      ],
-    });
-    const watchProviders = await api.v3.tv.getWatchProviders(tvShowId);
+  const country = await res.text();
 
-    return <TVShowDetail tvShow={tvShow} watchProviders={watchProviders} />;
-  } catch {
-    notFound();
+  console.log("country", country);
+  const show = await streamingClient.showsApi
+    .getShow({
+      id: `tv/${tvShowId}`,
+      country,
+    })
+    .catch(() => null);
+
+  let providers: StreamingOption[] | TVGetWatchProvidersResponse = [];
+  providers = Object.values(show?.streamingOptions ?? {}).flat();
+
+  if (providers.length === 0) {
+    providers = await api.v3.tv.getWatchProviders(tvShowId);
   }
+
+  return <TVShowDetail tvShow={tvShow} watchProviders={providers} />;
 }

@@ -1,6 +1,10 @@
-import { notFound } from "next/navigation";
-import api from "@/lib/tmdb";
 import MovieDetail from "@/components/MovieDetail";
+import getBaseUrl from "@/lib/getBaseUrl";
+import streamingClient from "@/lib/streamingClient";
+import api from "@/lib/tmdb";
+import { notFound } from "next/navigation";
+import { StreamingOption } from "streaming-availability";
+import { MoviesGetWatchProvidersResponse } from "tmdb-js-node";
 
 interface MovieDetailPageProps {
   params: Promise<{ id: string }>;
@@ -47,18 +51,32 @@ export default async function MovieDetailPage({
   const { id } = await params;
   const movieId = parseInt(id);
 
-  if (isNaN(movieId)) {
+  const movie = await api.v3.movies.getDetails(movieId, {
+    append_to_response: ["credits", "similar", "recommendations"],
+  });
+
+  if (!movie?.id) {
     notFound();
   }
+  // const watchProviders = await api.v3.movies.getWatchProviders(movieId);
+  const res = await fetch(`${getBaseUrl()}/api/geo`);
 
-  try {
-    const movie = await api.v3.movies.getDetails(movieId, {
-      append_to_response: ["credits", "similar", "recommendations"],
-    });
-    const watchProviders = await api.v3.movies.getWatchProviders(movieId);
+  const country = await res.text();
 
-    return <MovieDetail movie={movie} watchProviders={watchProviders} />;
-  } catch {
-    notFound();
+  console.log("country", country);
+  const show = await streamingClient.showsApi
+    .getShow({
+      id: `movie/${movieId}`,
+      country,
+    })
+    .catch(() => null);
+
+  let providers: StreamingOption[] | MoviesGetWatchProvidersResponse = [];
+  providers = Object.values(show?.streamingOptions ?? {}).flat();
+
+  if (providers.length === 0) {
+    providers = await api.v3.movies.getWatchProviders(movieId);
   }
+
+  return <MovieDetail movie={movie} watchProviders={providers} />;
 }

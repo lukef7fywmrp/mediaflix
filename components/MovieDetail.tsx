@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
+import { StreamingOption } from "streaming-availability";
 import {
   MoviesGetDetailsResponse,
   MoviesGetWatchProvidersResponse,
@@ -35,12 +36,20 @@ import CastSection from "./CastSection";
 import RatingSource from "./RatingSource";
 import WatchProviders from "./WatchProviders";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import WatchProvidersFallback from "./WatchProvidersFallback";
+
+// Type guard function to check if watchProviders is StreamingOption[]
+function isStreamingOptionArray(
+  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse,
+): watchProviders is StreamingOption[] {
+  return Array.isArray(watchProviders);
+}
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
     ("credits" | "recommendations" | "similar")[]
   >;
-  watchProviders: MoviesGetWatchProvidersResponse;
+  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse;
 }
 
 export default function MovieDetail({
@@ -139,7 +148,11 @@ export default function MovieDetail({
 
                 {/* Watch Providers */}
                 <div className="mb-6">
-                  <WatchProviders watchProviders={watchProviders} />
+                  {isStreamingOptionArray(watchProviders) ? (
+                    <WatchProviders watchProviders={watchProviders} />
+                  ) : (
+                    <WatchProvidersFallback watchProviders={watchProviders} />
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-4">
