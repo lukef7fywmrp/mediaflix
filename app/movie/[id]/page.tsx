@@ -51,32 +51,49 @@ export default async function MovieDetailPage({
   const { id } = await params;
   const movieId = parseInt(id);
 
-  const movie = await api.v3.movies.getDetails(movieId, {
-    append_to_response: ["credits", "similar", "recommendations"],
-  });
-
-  if (!movie?.id) {
+  if (isNaN(movieId)) {
     notFound();
   }
-  // const watchProviders = await api.v3.movies.getWatchProviders(movieId);
-  const res = await fetch(`${getBaseUrl()}/api/geo`);
 
-  const country = await res.text();
+  try {
+    const movie = await api.v3.movies.getDetails(movieId, {
+      append_to_response: ["credits", "similar", "recommendations"],
+    });
 
-  console.log("country", country);
-  const show = await streamingClient.showsApi
-    .getShow({
-      id: `movie/${movieId}`,
-      country,
-    })
-    .catch(() => null);
+    if (!movie?.id) {
+      notFound();
+    }
 
-  let providers: StreamingOption[] | MoviesGetWatchProvidersResponse = [];
-  providers = Object.values(show?.streamingOptions ?? {}).flat();
+    let providers: StreamingOption[] | MoviesGetWatchProvidersResponse = [];
 
-  if (providers.length === 0) {
-    providers = await api.v3.movies.getWatchProviders(movieId);
+    try {
+      const res = await fetch(`${getBaseUrl()}/api/geo`);
+      const country = await res.text();
+
+      const show = await streamingClient.showsApi
+        .getShow({
+          id: `movie/${movieId}`,
+          country,
+        })
+        .catch(() => null);
+
+      providers = Object.values(show?.streamingOptions ?? {}).flat();
+    } catch (error) {
+      console.error("Error fetching streaming data:", error);
+    }
+
+    if (providers.length === 0) {
+      try {
+        providers = await api.v3.movies.getWatchProviders(movieId);
+      } catch (error) {
+        console.error("Error fetching TMDB watch providers:", error);
+        providers = [];
+      }
+    }
+
+    return <MovieDetail movie={movie} watchProviders={providers} />;
+  } catch (error) {
+    console.error("Error fetching movie details:", error);
+    notFound();
   }
-
-  return <MovieDetail movie={movie} watchProviders={providers} />;
 }
