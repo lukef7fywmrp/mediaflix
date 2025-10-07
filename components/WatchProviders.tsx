@@ -1,7 +1,7 @@
 "use client";
 
-import { getProviderLogoUrl } from "@/lib/utils";
-import { ChevronRight, Monitor } from "lucide-react";
+import { getProviderLogoUrl, getCountryName } from "@/lib/utils";
+import { ChevronRight, Monitor, Film, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { MoviesGetWatchProvidersBuy } from "tmdb-js-node";
@@ -17,16 +17,69 @@ interface WatchProvidersProps {
   watchProviders: {
     flatrate?: MoviesGetWatchProvidersBuy[];
   };
+  country?: string;
   className?: string;
+  isMovie?: boolean;
+  movieTitle?: string;
+  releaseDate?: string;
 }
 
-export default function WatchProvidersFallback({
+export default function WatchProviders({
   watchProviders,
+  country,
   className = "",
+  isMovie = false,
+  movieTitle,
+  releaseDate,
 }: WatchProvidersProps) {
   const [showAllProviders, setShowAllProviders] = useState(false);
 
   const streamingProviders = watchProviders.flatrate || [];
+
+  // Check if movie is recent (within last 6 months)
+  const isRecentMovie = () => {
+    if (!releaseDate) return false;
+    const movieDate = new Date(releaseDate);
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    return movieDate >= sixMonthsAgo && movieDate <= currentDate;
+  };
+
+  // Show cinema UI for movies with no streaming providers AND if it's recent
+  if (streamingProviders.length === 0 && isMovie && isRecentMovie()) {
+    return (
+      <div className={`space-y-3 ${className} w-fit`}>
+        <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-4 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Film className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-white font-medium mb-1">May Be In Cinemas</h4>
+              <p className="text-white/70 text-sm mb-2">
+                This movie may be playing in theaters near you
+              </p>
+              <div className="flex items-center gap-4 text-xs text-white/60">
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent((movieTitle || "movie") + " showtimes near me")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
+                >
+                  <MapPin className="h-3 w-3" />
+                  <span>Check local theaters</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (streamingProviders.length === 0) {
     return null;
@@ -62,7 +115,14 @@ export default function WatchProvidersFallback({
   return (
     <div className={`space-y-3 ${className} w-fit`}>
       <div className="flex items-center justify-between gap-4">
-        <h3 className="text-base font-semibold text-white">Streaming On</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-base font-semibold text-white">Streaming In</h3>
+          {country && (
+            <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded">
+              {getCountryName(country)}
+            </span>
+          )}
+        </div>
         {sortedProviders.length > 6 && (
           <Dialog open={showAllProviders} onOpenChange={setShowAllProviders}>
             <DialogTrigger asChild>
@@ -75,6 +135,11 @@ export default function WatchProvidersFallback({
               <DialogHeader>
                 <DialogTitle className="text-white">
                   All Streaming Providers
+                  {country && (
+                    <span className="text-sm text-white/60 font-normal ml-2">
+                      ({getCountryName(country)})
+                    </span>
+                  )}
                 </DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-4 gap-4 max-h-96 overflow-y-auto">

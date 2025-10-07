@@ -83,7 +83,9 @@ export default async function MovieDetailPage({
       }
     }
 
-    return <MovieDetail movie={movie} watchProviders={providers} />;
+    return (
+      <MovieDetail movie={movie} watchProviders={providers} country={country} />
+    );
   } catch (error) {
     console.error("Error fetching movie details:", error);
     notFound();

@@ -89,7 +89,13 @@ export default async function TVShowDetailPage({
       }
     }
 
-    return <TVShowDetail tvShow={tvShow} watchProviders={providers} />;
+    return (
+      <TVShowDetail
+        tvShow={tvShow}
+        watchProviders={providers}
+        country={country}
+      />
+    );
   } catch (error) {
     console.error("Error fetching TV show details:", error);
     notFound();
