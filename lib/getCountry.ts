@@ -1,32 +1,39 @@
 import { headers } from "next/headers";
 
-export default async function getCountry() {
+/**
+ * Get the user's country code from edge platform geo headers.
+ *
+ * Supported platforms:
+ * - Vercel: x-vercel-ip-country header
+ * - Cloudflare: cf-ipcountry header
+ * - Other platforms: add support as needed
+ *
+ * @returns Two-letter country code (defaults to "US" if unavailable)
+ */
+export default async function getCountry(): Promise<string> {
   try {
     const headersList = await headers();
 
-    const forwardedFor = headersList.get("x-forwarded-for");
-    const realIp = headersList.get("x-real-ip");
-
-    let ip: string | null = null;
-
-    if (forwardedFor) {
-      ip = forwardedFor.split(",")[0].trim();
-    } else if (realIp) {
-      ip = realIp.trim();
+    // Vercel provides geo headers on all plans
+    const vercelCountry = headersList.get("x-vercel-ip-country");
+    console.log("Vercel country:", vercelCountry);
+    if (vercelCountry && vercelCountry !== "ZZ") {
+      console.log("Vercel country:", vercelCountry);
+      return vercelCountry;
     }
 
-    if (ip) {
-      const req = await fetch(`http://ip-api.com/json/${ip}`);
-      const geo = await req.json();
-      if (geo.status === "fail") {
-        return "US";
-      }
-      return geo.countryCode;
+    // Cloudflare provides geo headers
+    const cfCountry = headersList.get("cf-ipcountry");
+    console.log("Cloudflare country:", cfCountry);
+    if (cfCountry && cfCountry !== "XX") {
+      console.log("Cloudflare country:", cfCountry);
+      return cfCountry;
     }
 
+    // Default to US if no geo headers available (e.g., local development)
     return "US";
   } catch (error) {
-    console.error("Error fetching country:", error);
+    console.error("Error fetching country from headers:", error);
     return "US";
   }
 }
