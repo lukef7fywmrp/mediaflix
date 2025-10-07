@@ -68,16 +68,18 @@ export default async function TVShowDetailPage({
       notFound();
     }
 
-    const country = await getCountry();
+    const userCountry = await getCountry();
 
     const providersRes = await api.v3.tv.getWatchProviders(tvShowId);
 
     // Try to get providers for user's country, fallback to US, then first available
     let providers =
-      providersRes.results[country as keyof TVGetWatchProvidersResults];
+      providersRes.results[userCountry as keyof TVGetWatchProvidersResults];
+    let providerCountry: string = userCountry;
 
-    if (!providers && country !== "US") {
+    if (!providers && userCountry !== "US") {
       providers = providersRes.results.US;
+      providerCountry = "US";
     }
 
     if (!providers && providersRes.results) {
@@ -85,7 +87,10 @@ export default async function TVShowDetailPage({
         providersRes.results,
       ) as (keyof TVGetWatchProvidersResults)[];
       if (availableCountries.length > 0) {
-        providers = providersRes.results[availableCountries[0]];
+        const firstCountry =
+          availableCountries[0] as keyof TVGetWatchProvidersResults;
+        providers = providersRes.results[firstCountry];
+        providerCountry = String(firstCountry);
       }
     }
 
@@ -93,7 +98,7 @@ export default async function TVShowDetailPage({
       <TVShowDetail
         tvShow={tvShow}
         watchProviders={providers}
-        country={country}
+        country={providerCountry}
       />
     );
   } catch (error) {

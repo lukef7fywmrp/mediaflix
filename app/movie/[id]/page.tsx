@@ -62,16 +62,18 @@ export default async function MovieDetailPage({
       notFound();
     }
 
-    const country = await getCountry();
+    const userCountry = await getCountry();
 
     const providersRes = await api.v3.movies.getWatchProviders(movieId);
 
     // Try to get providers for user's country, fallback to US, then first available
     let providers =
-      providersRes.results[country as keyof MoviesGetWatchProvidersResults];
+      providersRes.results[userCountry as keyof MoviesGetWatchProvidersResults];
+    let providerCountry: string = userCountry;
 
-    if (!providers && country !== "US") {
+    if (!providers && userCountry !== "US") {
       providers = providersRes.results.US;
+      providerCountry = "US";
     }
 
     if (!providers && providersRes.results) {
@@ -80,11 +82,16 @@ export default async function MovieDetailPage({
       ) as (keyof MoviesGetWatchProvidersResults)[];
       if (availableCountries.length > 0) {
         providers = providersRes.results[availableCountries[0]];
+        providerCountry = String(availableCountries[0]);
       }
     }
 
     return (
-      <MovieDetail movie={movie} watchProviders={providers} country={country} />
+      <MovieDetail
+        movie={movie}
+        watchProviders={providers}
+        country={providerCountry}
+      />
     );
   } catch (error) {
     console.error("Error fetching movie details:", error);
