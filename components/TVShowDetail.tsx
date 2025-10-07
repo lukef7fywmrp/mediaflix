@@ -152,14 +152,12 @@ export default function TVShowDetail({
                   {tvShow.overview}
                 </p>
 
-                {watchProviders && (
-                  <div className="mb-6">
-                    <WatchProviders
-                      watchProviders={watchProviders}
-                      country={country}
-                    />
-                  </div>
-                )}
+                <div className="mb-6">
+                  <WatchProviders
+                    watchProviders={watchProviders || { flatrate: [] }}
+                    country={country}
+                  />
+                </div>
 
                 <div className="flex flex-wrap gap-4">
                   <Button
