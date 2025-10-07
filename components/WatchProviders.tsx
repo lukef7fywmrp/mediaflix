@@ -41,10 +41,14 @@ export default function WatchProviders({
     if (!releaseDate) return false;
     const movieDate = new Date(releaseDate);
     const currentDate = new Date();
+
+    // Don't show for future releases
+    if (movieDate > currentDate) return false;
+
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
-    return movieDate >= sixMonthsAgo && movieDate <= currentDate;
+    return movieDate >= sixMonthsAgo;
   };
 
   // Show cinema UI for movies with no streaming providers AND if it's recent
