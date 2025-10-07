@@ -31,7 +31,7 @@ import { TVGetDetailsResponse, MoviesGetWatchProvidersBuy } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import WatchProvidersFallback from "./WatchProvidersFallback";
+import WatchProviders from "./WatchProviders";
 
 interface TVShowDetailProps {
   tvShow: TVGetDetailsResponse<
@@ -46,11 +46,13 @@ interface TVShowDetailProps {
   watchProviders?: {
     flatrate?: MoviesGetWatchProvidersBuy[];
   };
+  country?: string;
 }
 
 export default function TVShowDetail({
   tvShow,
   watchProviders,
+  country,
 }: TVShowDetailProps) {
   const totalEpisodes = tvShow.number_of_episodes;
   const totalSeasons = tvShow.number_of_seasons;
@@ -150,11 +152,12 @@ export default function TVShowDetail({
                   {tvShow.overview}
                 </p>
 
-                {watchProviders && (
-                  <div className="mb-6">
-                    <WatchProvidersFallback watchProviders={watchProviders} />
-                  </div>
-                )}
+                <div className="mb-6">
+                  <WatchProviders
+                    watchProviders={watchProviders || { flatrate: [] }}
+                    country={country}
+                  />
+                </div>
 
                 <div className="flex flex-wrap gap-4">
                   <Button

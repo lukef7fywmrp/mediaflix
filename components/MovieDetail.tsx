@@ -34,7 +34,7 @@ import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import RatingSource from "./RatingSource";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import WatchProvidersFallback from "./WatchProvidersFallback";
+import WatchProviders from "./WatchProviders";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
@@ -43,11 +43,13 @@ interface MovieDetailProps {
   watchProviders?: {
     flatrate?: MoviesGetWatchProvidersBuy[];
   };
+  country?: string;
 }
 
 export default function MovieDetail({
   movie,
   watchProviders,
+  country,
 }: MovieDetailProps) {
   const director = movie.credits.crew.find(
     (person) => person.job === "Director",
@@ -140,11 +142,15 @@ export default function MovieDetail({
                 </p>
 
                 {/* Watch Providers */}
-                {watchProviders && (
-                  <div className="mb-6">
-                    <WatchProvidersFallback watchProviders={watchProviders} />
-                  </div>
-                )}
+                <div className="mb-6">
+                  <WatchProviders
+                    watchProviders={watchProviders || { flatrate: [] }}
+                    country={country}
+                    isMovie={true}
+                    movieTitle={movie.title}
+                    releaseDate={movie.release_date}
+                  />
+                </div>
 
                 <div className="flex flex-wrap gap-4">
                   <Button
