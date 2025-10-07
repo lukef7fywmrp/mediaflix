@@ -26,30 +26,23 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
-import { StreamingOption } from "streaming-availability";
 import {
   MoviesGetDetailsResponse,
-  MoviesGetWatchProvidersResponse,
+  MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import RatingSource from "./RatingSource";
-import WatchProviders from "./WatchProviders";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProvidersFallback from "./WatchProvidersFallback";
-
-// Type guard function to check if watchProviders is StreamingOption[]
-function isStreamingOptionArray(
-  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse | null,
-): watchProviders is StreamingOption[] {
-  return Array.isArray(watchProviders);
-}
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
     ("credits" | "recommendations" | "similar")[]
   >;
-  watchProviders: StreamingOption[] | MoviesGetWatchProvidersResponse | null;
+  watchProviders?: {
+    flatrate?: MoviesGetWatchProvidersBuy[];
+  };
 }
 
 export default function MovieDetail({
@@ -149,11 +142,7 @@ export default function MovieDetail({
                 {/* Watch Providers */}
                 {watchProviders && (
                   <div className="mb-6">
-                    {isStreamingOptionArray(watchProviders) ? (
-                      <WatchProviders watchProviders={watchProviders} />
-                    ) : (
-                      <WatchProvidersFallback watchProviders={watchProviders} />
-                    )}
+                    <WatchProvidersFallback watchProviders={watchProviders} />
                   </div>
                 )}
 

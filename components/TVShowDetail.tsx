@@ -27,23 +27,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
-import {
-  TVGetDetailsResponse,
-  TVGetWatchProvidersResponse,
-} from "tmdb-js-node";
+import { TVGetDetailsResponse, MoviesGetWatchProvidersBuy } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import WatchProviders from "./WatchProviders";
-import { StreamingOption } from "streaming-availability";
 import WatchProvidersFallback from "./WatchProvidersFallback";
-
-// Type guard function to check if watchProviders is StreamingOption[]
-function isStreamingOptionArray(
-  watchProviders: StreamingOption[] | TVGetWatchProvidersResponse | null,
-): watchProviders is StreamingOption[] {
-  return Array.isArray(watchProviders);
-}
 
 interface TVShowDetailProps {
   tvShow: TVGetDetailsResponse<
@@ -55,7 +43,9 @@ interface TVShowDetailProps {
       | "similar"
     )[]
   >;
-  watchProviders: StreamingOption[] | TVGetWatchProvidersResponse | null;
+  watchProviders?: {
+    flatrate?: MoviesGetWatchProvidersBuy[];
+  };
 }
 
 export default function TVShowDetail({
@@ -162,11 +152,7 @@ export default function TVShowDetail({
 
                 {watchProviders && (
                   <div className="mb-6">
-                    {isStreamingOptionArray(watchProviders) ? (
-                      <WatchProviders watchProviders={watchProviders} />
-                    ) : (
-                      <WatchProvidersFallback watchProviders={watchProviders} />
-                    )}
+                    <WatchProvidersFallback watchProviders={watchProviders} />
                   </div>
                 )}
 

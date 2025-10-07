@@ -1,10 +1,8 @@
-import { notFound } from "next/navigation";
-import api from "@/lib/tmdb";
 import TVShowDetail from "@/components/TVShowDetail";
-import getBaseUrl from "@/lib/getBaseUrl";
-import streamingClient from "@/lib/streamingClient";
-import { TVGetWatchProvidersResponse } from "tmdb-js-node";
-import { StreamingOption } from "streaming-availability";
+import getCountry from "@/lib/getCountry";
+import api from "@/lib/tmdb";
+import { notFound } from "next/navigation";
+import { TVGetWatchProvidersResults } from "tmdb-js-node";
 
 interface TVShowDetailPageProps {
   params: Promise<{ id: string }>;
@@ -70,45 +68,11 @@ export default async function TVShowDetailPage({
       notFound();
     }
 
-    let providers: StreamingOption[] | TVGetWatchProvidersResponse | null =
-      null;
+    const country: keyof TVGetWatchProvidersResults = await getCountry();
 
-    try {
-      const res = await fetch(`${getBaseUrl()}/api/geo`);
-      const country = (await res.text()).toLowerCase();
+    const providersRes = await api.v3.tv.getWatchProviders(tvShowId);
 
-      const show = await streamingClient.showsApi
-        .getShow({
-          id: `tv/${tvShowId}`,
-          country,
-        })
-        .catch(() => null);
-
-      // Properly handle streamingOptions - get options for the specific country
-      if (show?.streamingOptions && country) {
-        const countryOptions = show.streamingOptions[country];
-
-        // Validate that countryOptions is an array before using it
-        if (Array.isArray(countryOptions) && countryOptions.length > 0) {
-          providers = countryOptions;
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching streaming data:", error);
-    }
-
-    // Check if we have valid streaming providers (array with length > 0)
-    const hasStreamingProviders =
-      Array.isArray(providers) && providers.length > 0;
-
-    if (!hasStreamingProviders) {
-      try {
-        providers = await api.v3.tv.getWatchProviders(tvShowId);
-      } catch (error) {
-        console.error("Error fetching TMDB watch providers:", error);
-        providers = null;
-      }
-    }
+    const providers = providersRes.results[country];
 
     return <TVShowDetail tvShow={tvShow} watchProviders={providers} />;
   } catch (error) {
