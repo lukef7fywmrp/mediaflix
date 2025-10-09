@@ -32,6 +32,7 @@ import BackButton from "./BackButton";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
+import ExpandableOverview from "./ExpandableOverview";
 
 interface TVShowDetailProps {
   tvShow: TVGetDetailsResponse<
@@ -148,9 +149,12 @@ export default function TVShowDetail({
                   </div>
                 </div>
 
-                <p className="leading-relaxed tracking-wide mb-6 max-w-4xl text-sm lg:text-base">
-                  {tvShow.overview}
-                </p>
+                <ExpandableOverview
+                  overview={tvShow.overview}
+                  className="mb-6 max-w-4xl"
+                  textClassName="leading-relaxed tracking-wide text-sm lg:text-base mb-1"
+                  maxLines={3}
+                />
 
                 <div className="mb-6">
                   <WatchProviders

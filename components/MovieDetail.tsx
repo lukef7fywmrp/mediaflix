@@ -32,6 +32,7 @@ import {
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
 import CastSection from "./CastSection";
+import ExpandableOverview from "./ExpandableOverview";
 import RatingSource from "./RatingSource";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
@@ -137,9 +138,12 @@ export default function MovieDetail({
                   </div>
                 </div>
 
-                <p className="leading-relaxed tracking-wide mb-6 max-w-4xl text-sm lg:text-base">
-                  {movie.overview}
-                </p>
+                <ExpandableOverview
+                  overview={movie.overview}
+                  className="mb-6 max-w-4xl"
+                  textClassName="leading-relaxed tracking-wide text-sm lg:text-base mb-1"
+                  maxLines={3}
+                />
 
                 {/* Watch Providers */}
                 <div className="mb-6">
@@ -208,104 +212,110 @@ export default function MovieDetail({
             <CastSection credits={movie.credits} />
 
             {/* Crew */}
-            <Card className="gap-3">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5" />
-                  Crew
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {director && (
-                  <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                      Director
-                    </h4>
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                        <Avatar className="size-full">
-                          <AvatarImage
-                            src={getProfileUrl(director.profile_path)}
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="uppercase">
-                            {director.name.charAt(0) + director.name.charAt(1)}
-                          </AvatarFallback>
-                        </Avatar>
+            {(director || writers.length > 0 || producers.length > 0) && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5" />
+                    Crew
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {director && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        Director
+                      </h4>
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-20 h-20 rounded-full overflow-hidden">
+                          <Avatar className="size-full">
+                            <AvatarImage
+                              src={getProfileUrl(director.profile_path)}
+                              className="object-cover"
+                            />
+                            <AvatarFallback className="uppercase">
+                              {director.name.charAt(0) +
+                                director.name.charAt(1)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <p className="text-sm font-medium">{director.name}</p>
                       </div>
-                      <p className="text-sm font-medium">{director.name}</p>
                     </div>
-                  </div>
-                )}
-                {writers.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                      Writers
-                    </h4>
-                    <div className="space-y-3">
-                      {writers.slice(0, 4).map((writer) => (
-                        <div
-                          key={writer.id}
-                          className="flex items-center gap-3"
-                        >
-                          <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                            <Avatar className="size-full">
-                              <AvatarImage
-                                src={getProfileUrl(writer.profile_path)}
-                                className="object-cover"
-                              />
-                              <AvatarFallback className="uppercase">
-                                {writer.name.charAt(0) + writer.name.charAt(1)}
-                              </AvatarFallback>
-                            </Avatar>
+                  )}
+                  {writers.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        Writers
+                      </h4>
+                      <div className="space-y-3">
+                        {writers.slice(0, 4).map((writer) => (
+                          <div
+                            key={writer.id}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative w-20 h-20 rounded-full overflow-hidden">
+                              <Avatar className="size-full">
+                                <AvatarImage
+                                  src={getProfileUrl(writer.profile_path)}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="uppercase">
+                                  {writer.name.charAt(0) +
+                                    writer.name.charAt(1)}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            <p className="text-sm font-medium">{writer.name}</p>
                           </div>
-                          <p className="text-sm font-medium">{writer.name}</p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                      {writers.length > 4 && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          +{writers.length - 4} more writers
+                        </p>
+                      )}
                     </div>
-                    {writers.length > 4 && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        +{writers.length - 4} more writers
-                      </p>
-                    )}
-                  </div>
-                )}
-                {producers.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                      Producers
-                    </h4>
-                    <div className="space-y-3">
-                      {producers.slice(0, 4).map((producer) => (
-                        <div
-                          key={producer.id}
-                          className="flex items-center gap-3"
-                        >
-                          <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                            <Avatar className="size-full">
-                              <AvatarImage
-                                src={getProfileUrl(producer.profile_path)}
-                                className="object-cover"
-                              />
-                              <AvatarFallback className="uppercase">
-                                {producer.name.charAt(0) +
-                                  producer.name.charAt(1)}
-                              </AvatarFallback>
-                            </Avatar>
+                  )}
+                  {producers.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        Producers
+                      </h4>
+                      <div className="space-y-3">
+                        {producers.slice(0, 4).map((producer) => (
+                          <div
+                            key={producer.id}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="relative w-20 h-20 rounded-full overflow-hidden">
+                              <Avatar className="size-full">
+                                <AvatarImage
+                                  src={getProfileUrl(producer.profile_path)}
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="uppercase">
+                                  {producer.name.charAt(0) +
+                                    producer.name.charAt(1)}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            <p className="text-sm font-medium">
+                              {producer.name}
+                            </p>
                           </div>
-                          <p className="text-sm font-medium">{producer.name}</p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                      {producers.length > 4 && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          +{producers.length - 4} more producers
+                        </p>
+                      )}
                     </div>
-                    {producers.length > 4 && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        +{producers.length - 4} more producers
-                      </p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Similar Movies */}
             {movie.similar.results.length > 0 && (
@@ -430,115 +440,121 @@ export default function MovieDetail({
             </Card>
 
             {/* Production Companies */}
-            <Card className="gap-3">
-              <CardHeader>
-                <CardTitle>Produced by</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {movie.production_companies.map((company) => (
-                    <div key={company.id} className="flex items-center gap-3">
-                      {company.logo_path ? (
-                        <div className="flex-shrink-0 bg-muted/20 rounded border border-border p-2">
-                          <Image
-                            src={getPosterUrl(company.logo_path)}
-                            alt={company.name}
-                            width={48}
-                            height={48}
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-12 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
-                          <div className="text-center">
-                            <Film className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-                            <div className="text-[8px] text-muted-foreground font-medium leading-none">
-                              {company.name
-                                .split(" ")
-                                .map((word) => word[0])
-                                .join("")
-                                .slice(0, 3)}
+            {movie.production_companies.length > 0 && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle>Produced by</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {movie.production_companies.map((company) => (
+                      <div key={company.id} className="flex items-center gap-3">
+                        {company.logo_path ? (
+                          <div className="flex-shrink-0 bg-muted/20 rounded border border-border p-2">
+                            <Image
+                              src={getPosterUrl(company.logo_path)}
+                              alt={company.name}
+                              width={48}
+                              height={48}
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
+                            <div className="text-center">
+                              <Film className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
+                              <div className="text-[8px] text-muted-foreground font-medium leading-none">
+                                {company.name
+                                  .split(" ")
+                                  .map((word) => word[0])
+                                  .join("")
+                                  .slice(0, 3)}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{company.name}</p>
-                        {company.origin_country && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {company.origin_country}
-                          </p>
                         )}
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{company.name}</p>
+                          {company.origin_country && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {company.origin_country}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Production Countries */}
-            <Card className="gap-3">
-              <CardHeader>
-                <CardTitle>Released in</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {movie.production_countries.map((country) => (
-                    <div
-                      key={country.iso_3166_1}
-                      className="flex items-center gap-3"
-                    >
-                      <ReactCountryFlag
-                        countryCode={country.iso_3166_1}
-                        svg
-                        style={{
-                          width: "28px",
-                          height: "18px",
-                          borderRadius: "3px",
-                        }}
-                        title={country.name}
-                      />
-                      <p className="text-sm">{country.name}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Spoken Languages */}
-            <Card className="gap-3">
-              <CardHeader>
-                <CardTitle>Spoken Languages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {movie.spoken_languages.map((language) => {
-                    const countryCode = getCountryCodeForLanguage(
-                      language.iso_639_1,
-                    );
-
-                    return (
+            {movie.production_countries.length > 0 && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle>Released in</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {movie.production_countries.map((country) => (
                       <div
-                        key={language.iso_639_1}
+                        key={country.iso_3166_1}
                         className="flex items-center gap-3"
                       >
                         <ReactCountryFlag
-                          countryCode={countryCode}
+                          countryCode={country.iso_3166_1}
                           svg
                           style={{
                             width: "28px",
                             height: "18px",
                             borderRadius: "3px",
                           }}
-                          title={language.name}
+                          title={country.name}
                         />
-                        <p className="text-sm">{language.name}</p>
+                        <p className="text-sm">{country.name}</p>
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Spoken Languages */}
+            {movie.spoken_languages.length > 0 && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle>Spoken Languages</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {movie.spoken_languages.map((language) => {
+                      const countryCode = getCountryCodeForLanguage(
+                        language.iso_639_1,
+                      );
+
+                      return (
+                        <div
+                          key={language.iso_639_1}
+                          className="flex items-center gap-3"
+                        >
+                          <ReactCountryFlag
+                            countryCode={countryCode}
+                            svg
+                            style={{
+                              width: "28px",
+                              height: "18px",
+                              borderRadius: "3px",
+                            }}
+                            title={language.name}
+                          />
+                          <p className="text-sm">{language.name}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
