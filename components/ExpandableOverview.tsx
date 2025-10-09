@@ -100,7 +100,16 @@ export default function ExpandableOverview({
 
   return (
     <div className={className}>
-      <p ref={textRef} className={cn(textClassName, "line-clamp-3")}>
+      <p
+        ref={textRef}
+        className={textClassName}
+        style={{
+          display: "-webkit-box",
+          WebkitLineClamp: maxLines,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
         {overview}
       </p>
 
