@@ -33,6 +33,7 @@ import {
   TVSeasonsGetDetailsBaseResponse,
   TVSeasonsGetVideosResponse,
 } from "tmdb-js-node";
+import ExpandableOverview from "./ExpandableOverview";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -95,7 +96,7 @@ export default function SeasonDetail({
 
         {/* Season Hero Section */}
         <div className="mb-8">
-          <div className="relative h-[70vh] min-h-[500px] rounded-2xl overflow-hidden group">
+          <div className="relative h-[60vh] min-h-[450px] max-h-[600px] rounded-2xl overflow-hidden group">
             {/* Background Image with Fade Overlay */}
             <div className="absolute inset-0">
               {season.poster_path ? (
@@ -116,10 +117,10 @@ export default function SeasonDetail({
             </div>
 
             {/* Content Overlay */}
-            <div className="relative z-10 h-full flex flex-col justify-end p-8 lg:p-12">
-              <div className="max-w-4xl">
+            <div className="relative z-10 h-full flex flex-col justify-end p-6 lg:p-8">
+              <div className="max-w-4xl space-y-4">
                 {/* Season Badge */}
-                <div className="mb-4">
+                <div>
                   <Badge
                     variant="secondary"
                     className="bg-white/10 backdrop-blur-sm border-white/20 text-white text-sm px-4 py-2"
@@ -129,12 +130,12 @@ export default function SeasonDetail({
                 </div>
 
                 {/* Main Title */}
-                <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
                   {season.name}
                 </h1>
 
                 {/* Meta Information */}
-                <div className="flex flex-wrap items-center gap-6 text-white/90 mb-6">
+                <div className="flex flex-wrap items-center gap-6 text-white/90">
                   {season.air_date && (
                     <span className="flex items-center gap-2 text-lg">
                       <Calendar className="h-5 w-5" />
@@ -154,11 +155,12 @@ export default function SeasonDetail({
                 </div>
 
                 {/* Overview */}
-                {season.overview && (
-                  <p className="text-lg lg:text-xl text-white/90 leading-relaxed mb-8 max-w-3xl">
-                    {season.overview}
-                  </p>
-                )}
+                <ExpandableOverview
+                  overview={season.overview || ""}
+                  className="max-w-3xl"
+                  textClassName="text-sm lg:text-base text-white/90 leading-relaxed mb-1"
+                  maxLines={3}
+                />
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-2xl">
@@ -334,7 +336,7 @@ export default function SeasonDetail({
                               </div>
                             </SheetHeader>
 
-                            <div className="space-y-6 h-full flex flex-col">
+                            <div className="space-y-6 h-full flex flex-col max-h-[90vh] overflow-y-auto">
                               {/* Episode Image */}
                               <div className="relative h-48 rounded-lg overflow-hidden">
                                 <Image
@@ -518,7 +520,7 @@ export default function SeasonDetail({
                               </div>
 
                               {/* External Link */}
-                              <div className="pt-4 mt-auto">
+                              <div className="pt-6 mt-auto">
                                 <Button className="w-full" asChild>
                                   <a
                                     href={`https://www.themoviedb.org/tv/${tvShowId}/season/${episode.season_number}/episode/${episode.episode_number}`}
