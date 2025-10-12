@@ -2,6 +2,7 @@ import {
   formatDate,
   formatDateShort,
   formatRuntime,
+  getBackdropUrl,
   getPosterUrl,
 } from "@/lib/utils";
 import {
@@ -9,7 +10,6 @@ import {
   Calendar,
   ChevronRight,
   Clock,
-  ExternalLink,
   Play,
   Star,
   ThumbsUp,
@@ -37,13 +37,6 @@ import ExpandableOverview from "./ExpandableOverview";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
 import { Separator } from "./ui/separator";
 
 interface SeasonDetailProps {
@@ -101,7 +94,7 @@ export default function SeasonDetail({
             <div className="absolute inset-0">
               {season.poster_path ? (
                 <Image
-                  src={getPosterUrl(season.poster_path)}
+                  src={getBackdropUrl(season.poster_path)}
                   alt={season.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -309,232 +302,18 @@ export default function SeasonDetail({
 
                       {/* Action Button - Moved to left */}
                       <div className="flex justify-start mt-3">
-                        <Sheet>
-                          <SheetTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-9 text-sm group-hover:bg-primary group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                            >
-                              Details
-                              <ChevronRight className="h-4 w-4 ml-1" />
-                            </Button>
-                          </SheetTrigger>
-                          <SheetContent className="w-full sm:max-w-2xl p-6">
-                            <SheetHeader className="mb-3 p-0">
-                              <SheetTitle className="text-2xl">
-                                {episode.name}
-                              </SheetTitle>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span>Episode {episode.episode_number}</span>
-                                {episode.air_date && (
-                                  <span>{formatDate(episode.air_date)}</span>
-                                )}
-                                {episode.runtime && (
-                                  <span>{formatRuntime(episode.runtime)}</span>
-                                )}
-                              </div>
-                            </SheetHeader>
-
-                            <div className="space-y-6 h-full flex flex-col max-h-[90vh] overflow-y-auto">
-                              {/* Episode Image */}
-                              <div className="relative h-48 rounded-lg overflow-hidden">
-                                <Image
-                                  src={getPosterUrl(episode.still_path)}
-                                  alt={episode.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                <div className="absolute bottom-4 left-4 text-white">
-                                  <div className="flex items-center gap-2">
-                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                    <span className="font-semibold">
-                                      {episode.vote_average.toFixed(1)}/10
-                                    </span>
-                                    <span className="flex items-center gap-1 text-white/70">
-                                      <ThumbsUp className="h-3 w-3" />(
-                                      {episode.vote_count.toLocaleString()}{" "}
-                                      votes)
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Episode Stats Grid */}
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="bg-muted/50 rounded-lg p-3 text-center">
-                                  <div className="text-lg font-bold text-primary">
-                                    {episode.episode_number}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Episode
-                                  </div>
-                                </div>
-                                <div className="bg-muted/50 rounded-lg p-3 text-center">
-                                  <div className="text-lg font-bold">
-                                    {episode.runtime
-                                      ? formatRuntime(episode.runtime)
-                                      : "N/A"}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Runtime
-                                  </div>
-                                </div>
-                                <div className="bg-muted/50 rounded-lg p-3 text-center">
-                                  <div className="text-lg font-bold text-primary">
-                                    {episode.vote_average.toFixed(1)}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Rating
-                                  </div>
-                                </div>
-                                <div className="bg-muted/50 rounded-lg p-3 text-center">
-                                  <div className="text-lg font-bold">
-                                    {episode.air_date
-                                      ? new Date(episode.air_date).getFullYear()
-                                      : "TBA"}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Year
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Overview */}
-                              {episode.overview && (
-                                <div>
-                                  <h4 className="font-semibold mb-2">
-                                    Overview
-                                  </h4>
-                                  <p className="text-muted-foreground leading-relaxed">
-                                    {episode.overview}
-                                  </p>
-                                </div>
-                              )}
-
-                              {/* Crew & Cast */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Crew */}
-                                <div className="space-y-4">
-                                  {episode.crew.find(
-                                    (person) => person.job === "Director",
-                                  ) && (
-                                    <div>
-                                      <h4 className="font-semibold text-sm text-muted-foreground mb-1">
-                                        Director
-                                      </h4>
-                                      <p className="text-sm">
-                                        {
-                                          episode.crew.find(
-                                            (person) =>
-                                              person.job === "Director",
-                                          )?.name
-                                        }
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {episode.crew.filter(
-                                    (person) => person.job === "Writer",
-                                  ).length > 0 && (
-                                    <div>
-                                      <h4 className="font-semibold text-sm text-muted-foreground mb-1">
-                                        Writers
-                                      </h4>
-                                      <p className="text-sm">
-                                        {episode.crew
-                                          .filter(
-                                            (person) => person.job === "Writer",
-                                          )
-                                          .map((writer) => writer.name)
-                                          .join(", ")}
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {/* Additional crew roles */}
-                                  {episode.crew
-                                    .filter(
-                                      (person) =>
-                                        !["Director", "Writer"].includes(
-                                          person.job || "",
-                                        ),
-                                    )
-                                    .slice(0, 3)
-                                    .map((person) => (
-                                      <div key={person.id}>
-                                        <h4 className="font-semibold text-sm text-muted-foreground mb-1">
-                                          {person.job}
-                                        </h4>
-                                        <p className="text-sm">{person.name}</p>
-                                      </div>
-                                    ))}
-                                </div>
-
-                                {/* Guest Stars & Additional Info */}
-                                <div className="space-y-4">
-                                  {episode.guest_stars.length > 0 && (
-                                    <div>
-                                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                                        Guest Stars (
-                                        {episode.guest_stars.length})
-                                      </h4>
-                                      <div className="flex flex-wrap gap-2">
-                                        {episode.guest_stars
-                                          .slice(0, 6)
-                                          .map((star) => (
-                                            <Badge
-                                              key={star.name}
-                                              variant="outline"
-                                              className="text-xs"
-                                            >
-                                              {star.name}
-                                            </Badge>
-                                          ))}
-                                        {episode.guest_stars.length > 6 && (
-                                          <Badge
-                                            variant="outline"
-                                            className="text-xs"
-                                          >
-                                            +{episode.guest_stars.length - 6}{" "}
-                                            more
-                                          </Badge>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {/* Air Date */}
-                                  <div>
-                                    <h4 className="font-semibold text-sm text-muted-foreground mb-1">
-                                      Air Date
-                                    </h4>
-                                    <p className="text-sm">
-                                      {episode.air_date
-                                        ? formatDate(episode.air_date)
-                                        : "TBA"}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* External Link */}
-                              <div className="pt-6 mt-auto">
-                                <Button className="w-full" asChild>
-                                  <a
-                                    href={`https://www.themoviedb.org/tv/${tvShowId}/season/${episode.season_number}/episode/${episode.episode_number}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <ExternalLink className="h-4 w-4" />
-                                    View on TMDB
-                                  </a>
-                                </Button>
-                              </div>
-                            </div>
-                          </SheetContent>
-                        </Sheet>
+                        <Link
+                          href={`/tv/${tvShowId}/season/${episode.season_number}/episode/${episode.episode_number}`}
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 text-sm group-hover:bg-primary group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                          >
+                            View Details
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>

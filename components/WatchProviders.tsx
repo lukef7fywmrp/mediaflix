@@ -22,6 +22,8 @@ interface WatchProvidersProps {
   isMovie?: boolean;
   movieTitle?: string;
   releaseDate?: string;
+  textColor?: string;
+  countryBadgeColor?: string;
 }
 
 export default function WatchProviders({
@@ -31,6 +33,8 @@ export default function WatchProviders({
   isMovie = false,
   movieTitle,
   releaseDate,
+  textColor = "text-white",
+  countryBadgeColor = "text-white/60 bg-white/10",
 }: WatchProvidersProps) {
   const [showAllProviders, setShowAllProviders] = useState(false);
 
@@ -120,9 +124,11 @@ export default function WatchProviders({
     <div className={`space-y-3 ${className} w-fit`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-semibold text-white">Streaming In</h3>
+          <h3 className={`text-base font-semibold ${textColor}`}>
+            Streaming In
+          </h3>
           {country && (
-            <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded">
+            <span className={`text-xs px-2 py-1 rounded ${countryBadgeColor}`}>
               {getCountryName(country)}
             </span>
           )}
@@ -164,7 +170,7 @@ export default function WatchProviders({
         )}
       </div>
 
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+      <div className="flex overflow-x-auto scrollbar-hide">
         {sortedProviders.slice(0, 6).map((provider) => (
           <ProviderLogo key={provider.provider_id} provider={provider} />
         ))}
