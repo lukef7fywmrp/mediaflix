@@ -1,6 +1,8 @@
 import SeasonDetail from "@/components/SeasonDetail";
 import api from "@/lib/tmdb";
+import getCountry from "@/lib/getCountry";
 import { notFound } from "next/navigation";
+import { TVGetWatchProvidersResults } from "tmdb-js-node";
 
 interface SeasonDetailPageProps {
   params: Promise<{ id: string; seasonNumber: string }>;
@@ -21,7 +23,7 @@ export async function generateMetadata({ params }: SeasonDetailPageProps) {
     const [tvShow, season] = await Promise.all([
       api.v3.tv.getDetails(tvShowId),
       api.v3.tvSeasons.getDetails(tvShowId, seasonNum, {
-        append_to_response: ["watch_providers", "videos", "credits"],
+        append_to_response: ["videos", "credits"],
       }),
     ]);
 
@@ -62,14 +64,47 @@ export default async function SeasonDetailPage({
   }
 
   try {
-    const [tvShow, season] = await Promise.all([
+    const [tvShow, season, providersRes] = await Promise.all([
       api.v3.tv.getDetails(tvShowId),
       api.v3.tvSeasons.getDetails(tvShowId, seasonNum, {
-        append_to_response: ["watch_providers", "videos", "credits"],
+        append_to_response: ["videos", "credits", "images"],
       }),
+      api.v3.tv.getWatchProviders(tvShowId),
     ]);
 
-    return <SeasonDetail tvShow={tvShow} season={season} tvShowId={tvShowId} />;
+    const userCountry = await getCountry();
+
+    // Try to get providers for user's country, fallback to US, then first available
+    let providers =
+      providersRes.results[userCountry as keyof TVGetWatchProvidersResults];
+    let providerCountry: string = userCountry;
+
+    if (!providers && userCountry !== "US") {
+      providers = providersRes.results.US;
+      providerCountry = "US";
+    }
+
+    if (!providers && providersRes.results) {
+      const availableCountries = Object.keys(
+        providersRes.results,
+      ) as (keyof TVGetWatchProvidersResults)[];
+      if (availableCountries.length > 0) {
+        const firstCountry =
+          availableCountries[0] as keyof TVGetWatchProvidersResults;
+        providers = providersRes.results[firstCountry];
+        providerCountry = String(firstCountry);
+      }
+    }
+
+    return (
+      <SeasonDetail
+        tvShow={tvShow}
+        season={season}
+        tvShowId={tvShowId}
+        watchProviders={providers}
+        country={providerCountry}
+      />
+    );
   } catch {
     notFound();
   }
