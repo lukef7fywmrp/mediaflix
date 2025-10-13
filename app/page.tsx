@@ -3,6 +3,7 @@
 import MediaTypeToggle from "@/components/MediaTypeToggle";
 import TopMovies from "@/components/TopMovies";
 import TopTVShows from "@/components/TopTVShows";
+import HeroSearch from "@/components/HeroSearch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Radio, Star, TrendingUp } from "lucide-react";
@@ -14,7 +15,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 md:py-20">
         {/* Header Section */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -28,6 +29,12 @@ export default function Home() {
             {mediaType === "movies" ? "movies" : "TV shows"} according to The
             Movie Database (TMDB)
           </p>
+
+          {/* Hero Search */}
+          <div className="mt-6 mb-4">
+            <HeroSearch />
+          </div>
+
           <div className="flex items-center justify-center gap-2 mt-4">
             <Badge variant="outline" className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />

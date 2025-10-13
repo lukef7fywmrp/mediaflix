@@ -1,0 +1,354 @@
+"use client";
+
+import { useState, useEffect, useRef, useMemo } from "react";
+import {
+  Search,
+  Film,
+  Tv,
+  Loader2,
+  X,
+  ChevronRight,
+  TrendingUp,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useSearchMulti } from "@/hooks/useSearchMulti";
+import Image from "next/image";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { formatPopularity } from "@/lib/utils";
+
+export default function HeroSearch() {
+  const [query, setQuery] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const [isHoveringResults, setIsHoveringResults] = useState(false);
+  const debouncedQuery = useDebounce(query, 300);
+  const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  // Use React Query infinite query for search with caching
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useSearchMulti(debouncedQuery);
+
+  // Flatten all pages into a single array
+  const results = useMemo(
+    () => data?.pages.flatMap((page) => page.results) ?? [],
+    [data],
+  );
+
+  // Click outside to close
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsFocused(false);
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Show results when we have them
+  useEffect(() => {
+    if (results.length > 0 && query.trim()) {
+      setShowResults(true);
+    } else if (!query.trim()) {
+      setShowResults(false);
+    }
+  }, [results, query]);
+
+  // Lock body scroll when hovering over search results
+  useEffect(() => {
+    if (showResults && isFocused && isHoveringResults) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+
+      return () => {
+        // Restore scroll position
+        const scrollY = document.body.style.top;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+      };
+    }
+  }, [showResults, isFocused, isHoveringResults]);
+
+  // Track scroll state and reset when query changes
+  useEffect(() => {
+    setHasScrolled(false);
+  }, [query]);
+
+  // Reset hover state when results close
+  useEffect(() => {
+    if (!showResults) {
+      setIsHoveringResults(false);
+    }
+  }, [showResults]);
+
+  // Check if content overflows and listen for scroll events
+  useEffect(() => {
+    const scrollableDiv = scrollableRef.current;
+    if (!scrollableDiv) return;
+
+    // Check if there's overflow content
+    const checkOverflow = () => {
+      const hasOverflowContent =
+        scrollableDiv.scrollHeight > scrollableDiv.clientHeight;
+      setHasOverflow(hasOverflowContent);
+    };
+
+    // Check overflow initially and after results change
+    checkOverflow();
+
+    const handleScroll = () => {
+      if (scrollableDiv.scrollTop > 0) {
+        setHasScrolled(true);
+      }
+    };
+
+    scrollableDiv.addEventListener("scroll", handleScroll);
+
+    // Use ResizeObserver to detect content changes
+    const resizeObserver = new ResizeObserver(checkOverflow);
+    resizeObserver.observe(scrollableDiv);
+
+    return () => {
+      scrollableDiv.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [showResults, results]);
+
+  const handleResultClick = (path: string) => {
+    setIsFocused(false);
+    setShowResults(false);
+    setQuery("");
+    router.push(path);
+  };
+
+  const handleInputFocus = () => {
+    setIsFocused(true);
+    if (results.length > 0 && query.trim()) {
+      setShowResults(true);
+    }
+  };
+
+  const hasResults = results.length > 0;
+
+  return (
+    <div ref={containerRef} className="relative max-w-2xl mx-auto">
+      {/* Search Input */}
+      <div className="relative group">
+        <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
+          <Search className="h-5 w-5 text-foreground/70 transition-colors group-focus-within:text-foreground" />
+        </div>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={handleInputFocus}
+          placeholder="Search for movies and TV shows..."
+          className="w-full pl-12 pr-12 py-3 text-sm rounded-2xl border border-border/40 bg-background/50 backdrop-blur-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background/80 transition-all duration-300 hover:border-border/60 hover:bg-background/60 shadow-sm"
+        />
+        {isLoading && (
+          <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+            <Loader2 className="h-4 w-4 text-foreground/60 animate-spin" />
+          </div>
+        )}
+        {!isLoading && query && (
+          <button
+            onClick={() => {
+              setQuery("");
+              setShowResults(false);
+            }}
+            className="absolute inset-y-0 right-0 flex items-center pr-4 text-muted-foreground/60 hover:text-foreground transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Results Dropdown */}
+      {showResults && isFocused && (
+        <div
+          className="absolute top-full left-0 right-0 mt-2 z-40 animate-in fade-in slide-in-from-top-2 duration-300"
+          onMouseEnter={() => setIsHoveringResults(true)}
+          onMouseLeave={() => setIsHoveringResults(false)}
+        >
+          <div className="rounded-2xl border border-border/40 bg-background/95 backdrop-blur-2xl shadow-2xl overflow-hidden relative">
+            <div
+              ref={scrollableRef}
+              id="searchScrollableDiv"
+              className="max-h-[500px] overflow-y-auto"
+            >
+              {isLoading && !isFetchingNextPage && (
+                <div className="flex flex-col items-center justify-center py-10">
+                  <Loader2 className="h-6 w-6 animate-spin text-foreground/40 mb-2" />
+                  <p className="text-xs text-muted-foreground">Searching...</p>
+                </div>
+              )}
+
+              {!isLoading && query && !hasResults && (
+                <div className="py-10 text-center px-6">
+                  <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-muted/30 flex items-center justify-center">
+                    <Search className="h-7 w-7 text-muted-foreground/40" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">
+                    No results found for &quot;{query}&quot;
+                  </p>
+                </div>
+              )}
+
+              {hasResults && (
+                <InfiniteScroll
+                  dataLength={results.length}
+                  next={fetchNextPage}
+                  hasMore={!!hasNextPage}
+                  loader={
+                    <div className="py-4 flex justify-center">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/60" />
+                        <p className="text-xs text-muted-foreground">
+                          Loading more...
+                        </p>
+                      </div>
+                    </div>
+                  }
+                  scrollableTarget="searchScrollableDiv"
+                >
+                  <div className="p-2 space-y-0.5">
+                    {results.map((result, index) => {
+                      const isMovie = result.media_type === "movie";
+                      const title = isMovie ? result.title : result.name;
+                      const releaseDate = isMovie
+                        ? result.release_date
+                        : result.first_air_date;
+                      const popularity = formatPopularity(result.popularity);
+                      const path = isMovie
+                        ? `/movie/${result.id}`
+                        : `/tv/${result.id}`;
+
+                      return (
+                        <button
+                          key={result.id}
+                          onClick={() => handleResultClick(path)}
+                          onMouseEnter={() => router.prefetch(path)}
+                          className="w-full group relative"
+                          style={
+                            index < 10
+                              ? {
+                                  animation: `slideIn 0.15s ease-out ${index * 0.03}s both`,
+                                }
+                              : undefined
+                          }
+                        >
+                          <div className="flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 hover:bg-muted/70">
+                            {/* Poster */}
+                            <div className="relative flex-shrink-0 w-20 h-[120px] rounded-xl overflow-hidden shadow-lg ring-1 ring-border/20 group-hover:ring-foreground/20 transition-all duration-200">
+                              {result.poster_path ? (
+                                <Image
+                                  src={`https://image.tmdb.org/t/p/w185${result.poster_path}`}
+                                  alt={title || "Poster"}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/50 to-muted/20">
+                                  {isMovie ? (
+                                    <Film className="h-7 w-7 text-muted-foreground/30" />
+                                  ) : (
+                                    <Tv className="h-7 w-7 text-muted-foreground/30" />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0 text-left">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-sm truncate text-foreground group-hover:text-foreground transition-colors">
+                                  {title}
+                                </h4>
+                                <span
+                                  className={`flex-shrink-0 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider rounded ${
+                                    isMovie
+                                      ? "bg-amber-500/10 text-amber-700 dark:bg-amber-400/10 dark:text-amber-400"
+                                      : "bg-purple-500/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400"
+                                  }`}
+                                >
+                                  {isMovie ? "Movie" : "TV"}
+                                </span>
+                                {result.adult && (
+                                  <span className="flex-shrink-0 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded bg-red-500/15 text-red-600 dark:bg-red-400/15 dark:text-red-400">
+                                    18+
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2.5 text-xs mb-1.5">
+                                {releaseDate && (
+                                  <span className="text-muted-foreground font-medium">
+                                    {releaseDate.substring(0, 4)}
+                                  </span>
+                                )}
+                                {!!result.vote_average &&
+                                  result.vote_average > 0 && (
+                                    <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
+                                      <span className="text-[10px]">★</span>
+                                      <span className="font-semibold text-[10px]">
+                                        {result.vote_average.toFixed(1)}
+                                      </span>
+                                    </div>
+                                  )}
+                                {popularity.trim() !== "0%" && (
+                                  <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                                    <TrendingUp className="w-2.5 h-2.5" />
+                                    <span className="text-[10px] font-semibold">
+                                      {popularity}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                              {result.overview && (
+                                <p className="text-xs text-muted-foreground/70 line-clamp-2 leading-relaxed">
+                                  {result.overview}
+                                </p>
+                              )}
+                            </div>
+
+                            {/* Arrow Icon */}
+                            <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-x-0 group-hover:translate-x-1">
+                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </InfiniteScroll>
+              )}
+            </div>
+
+            {/* Bottom Fade - shows when there's scrollable content and user hasn't scrolled */}
+            <div
+              className={`absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/60 via-background/30 to-transparent pointer-events-none transition-opacity duration-300 ${
+                hasOverflow && !hasScrolled && hasResults
+                  ? "opacity-100"
+                  : "opacity-0"
+              }`}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
