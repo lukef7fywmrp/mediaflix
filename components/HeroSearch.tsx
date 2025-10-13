@@ -150,7 +150,7 @@ export default function HeroSearch() {
       {/* Search Input */}
       <div className="relative group">
         <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none z-10">
-          <Search className="h-5 w-5 text-foreground/70 transition-colors group-focus-within:text-foreground" />
+          <Search className="h-5 w-5 text-muted-foreground/70 transition-colors group-focus-within:text-foreground/70" />
         </div>
         <input
           type="text"
