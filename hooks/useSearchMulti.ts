@@ -24,14 +24,34 @@ export function useSearchMulti(query: string) {
       };
     },
     enabled: !!query.trim(),
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
+    staleTime: 0, // No caching - always fetch fresh
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.page < lastPage.totalPages) {
-        return lastPage.page + 1;
+    maxPages: 3, // Limit to 3 pages maximum
+    getNextPageParam: (lastPage, allPages) => {
+      // Stop if we've reached the last page
+      if (lastPage.page >= lastPage.totalPages) {
+        return undefined;
       }
-      return undefined;
+
+      // Immediate stop: if last page had no results, don't fetch more
+      if (lastPage.results.length === 0) {
+        return undefined;
+      }
+
+      // After first page, check if we have enough results
+      if (allPages.length >= 1) {
+        const totalResults = allPages.reduce(
+          (sum, page) => sum + page.results.length,
+          0,
+        );
+        // If we only have 1-2 results after a page, stop
+        if (totalResults <= 2) {
+          return undefined;
+        }
+      }
+
+      return lastPage.page + 1;
     },
   });
 }
