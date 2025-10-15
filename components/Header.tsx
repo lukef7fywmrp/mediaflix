@@ -20,25 +20,25 @@ function Header() {
         </Link>
 
         {/* Navigation placeholder */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <a
-            href="#"
+        <nav className="hidden md:flex items-center space-x-6 md:absolute md:left-1/2 md:-translate-x-1/2">
+          <Link
+            href="/"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Movies
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/?type=tv"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             TV Shows
-          </a>
-          <a
-            href="#"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
+          </Link>
+          {/* <Link
+              href="/my-list"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
             My List
-          </a>
+          </Link> */}
         </nav>
 
         {/* User actions placeholder */}

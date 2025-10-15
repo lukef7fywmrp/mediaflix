@@ -13,9 +13,11 @@ import {
 import { useRouter } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSearchMulti } from "@/hooks/useSearchMulti";
+import useGetTrending from "@/hooks/useGetTrending";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { formatPopularity } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export default function HeroSearch() {
   const [query, setQuery] = useState("");
@@ -28,10 +30,14 @@ export default function HeroSearch() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Use React Query infinite query for search with caching
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useSearchMulti(debouncedQuery);
+
+  // Fetch trending data for suggested search terms
+  const { data: trendingData, isLoading: isTrendingLoading } = useGetTrending();
 
   // Flatten all pages into a single array
   const results = useMemo(
@@ -136,6 +142,21 @@ export default function HeroSearch() {
     router.push(path);
   };
 
+  const handleSuggestedTermClick = (term: string) => {
+    setQuery(term);
+    setIsFocused(true);
+
+    // Focus the input and position cursor at the end
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        // Position cursor at the end of the text
+        const length = inputRef.current.value.length;
+        inputRef.current.setSelectionRange(length, length);
+      }
+    }, 0);
+  };
+
   const handleInputFocus = () => {
     setIsFocused(true);
     if (results.length > 0 && query.trim()) {
@@ -145,6 +166,23 @@ export default function HeroSearch() {
 
   const hasResults = results.length > 0;
 
+  // Get suggested terms from trending data
+  const suggestedTerms = useMemo(() => {
+    if (!trendingData?.results) return [];
+
+    return trendingData.results
+      .slice(0, 6) // Show top 6 trending items
+      .map((item) => {
+        // Determine if it's a movie or TV show based on available properties
+        const isMovie = !!item.title;
+        const title = isMovie ? item.title : item.name;
+        return {
+          title: title || "Unknown",
+          mediaType: isMovie ? "movie" : "tv",
+        };
+      });
+  }, [trendingData]);
+
   return (
     <div ref={containerRef} className="relative max-w-2xl mx-auto">
       {/* Search Input */}
@@ -153,6 +191,7 @@ export default function HeroSearch() {
           <Search className="h-5 w-5 text-muted-foreground/70 transition-colors group-focus-within:text-foreground/70" />
         </div>
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -178,10 +217,58 @@ export default function HeroSearch() {
         )}
       </div>
 
+      {/* Suggested Search Terms - Only show when no search results */}
+      <div className="mt-4 h-[50px]">
+        {isTrendingLoading ? (
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {[70, 85, 75, 90, 80, 65].map((width, index) => (
+              <div
+                key={index}
+                className="h-6 bg-muted/60 rounded-full animate-pulse"
+                style={{
+                  width: `${width}px`,
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          suggestedTerms.length > 0 && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {suggestedTerms.map((term, index) => (
+                  <Badge
+                    key={`${term.title}-${index}`}
+                    variant="secondary"
+                    asChild
+                    className="cursor-pointer transition-colors duration-150"
+                    style={{
+                      animation: `slideIn 0.15s ease-out ${index * 0.03}s both`,
+                    }}
+                  >
+                    <button
+                      onClick={() => handleSuggestedTermClick(term.title)}
+                      className="flex items-center gap-1"
+                    >
+                      {term.mediaType === "movie" ? (
+                        <Film className="h-3 w-3" />
+                      ) : (
+                        <Tv className="h-3 w-3" />
+                      )}
+                      <span className="">{term.title}</span>
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )
+        )}
+      </div>
+
       {/* Results Dropdown */}
       {showResults && isFocused && (
         <div
-          className="absolute top-full left-0 right-0 mt-2 z-40 animate-in fade-in slide-in-from-top-2 duration-300"
+          className="absolute top-full left-0 right-0 z-40 animate-in fade-in slide-in-from-top-2 duration-300 -mt-[58px]"
           onMouseEnter={() => setIsHoveringResults(true)}
           onMouseLeave={() => setIsHoveringResults(false)}
         >
@@ -206,6 +293,40 @@ export default function HeroSearch() {
                   <p className="text-sm font-medium text-muted-foreground mb-1">
                     No results found for &quot;{query}&quot;
                   </p>
+                </div>
+              )}
+
+              {/* Trending Suggestions in Results */}
+              {hasResults && suggestedTerms.length > 0 && (
+                <div className="px-4 py-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      Trending
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {suggestedTerms.map((term, index) => (
+                      <Badge
+                        key={`trending-${term.title}-${index}`}
+                        variant="secondary"
+                        asChild
+                        className="cursor-pointer transition-colors duration-150 text-xs"
+                      >
+                        <button
+                          onClick={() => handleSuggestedTermClick(term.title)}
+                          className="flex items-center gap-1"
+                        >
+                          {term.mediaType === "movie" ? (
+                            <Film className="h-2.5 w-2.5" />
+                          ) : (
+                            <Tv className="h-2.5 w-2.5" />
+                          )}
+                          <span className="">{term.title}</span>
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
 

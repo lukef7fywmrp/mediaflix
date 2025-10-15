@@ -4,9 +4,8 @@ import MediaTypeToggle from "@/components/MediaTypeToggle";
 import TopMovies from "@/components/TopMovies";
 import TopTVShows from "@/components/TopTVShows";
 import HeroSearch from "@/components/HeroSearch";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Radio, Star, TrendingUp } from "lucide-react";
+import { TrendingUp, Radio, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 export default function Home() {
@@ -30,20 +29,25 @@ export default function Home() {
             Movie Database (TMDB)
           </p>
 
+          {/* Status Indicators */}
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+              <Radio className="h-3 w-3 text-green-500 animate-pulse" />
+              <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                Live Data
+              </span>
+            </span>
+            <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-purple-500/10 border border-purple-500/20">
+              <Star className="h-3 w-3 text-purple-500 fill-purple-500" />
+              <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                Powered by TMDB
+              </span>
+            </span>
+          </div>
+
           {/* Hero Search */}
           <div className="mt-6 mb-4">
             <HeroSearch />
-          </div>
-
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              TMDB Popular
-            </Badge>
-            <Badge variant="outline" className="group">
-              <Radio className="size-4 group-hover:animate-pulse" />
-              Live Data
-            </Badge>
           </div>
         </div>
 
