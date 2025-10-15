@@ -150,9 +150,8 @@ export default function HeroSearch() {
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
-        // Position cursor at the end of the text
-        const length = inputRef.current.value.length;
-        inputRef.current.setSelectionRange(length, length);
+        // Position cursor at the end of the text using the term length
+        inputRef.current.setSelectionRange(term.length, term.length);
       }
     }, 0);
   };
@@ -171,11 +170,19 @@ export default function HeroSearch() {
     if (!trendingData?.results) return [];
 
     return trendingData.results
+      .filter((item) => {
+        // Only include movies and TV shows, exclude people
+        // Movies have 'title' and 'release_date', TV shows have 'name' and 'first_air_date'
+        const isMovie = !!item.title && !!item.release_date;
+        const isTV = !!item.name && !!item.first_air_date;
+        return isMovie || isTV;
+      })
       .slice(0, 6) // Show top 6 trending items
       .map((item) => {
-        // Determine if it's a movie or TV show based on available properties
-        const isMovie = !!item.title;
+        // Determine media type based on available fields
+        const isMovie = !!item.title && !!item.release_date;
         const title = isMovie ? item.title : item.name;
+
         return {
           title: title || "Unknown",
           mediaType: isMovie ? "movie" : "tv",
