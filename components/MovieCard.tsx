@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -28,15 +27,18 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
 
   return (
     <Link href={`/movie/${movie.id}`}>
-      <Card className="group relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer">
+      <Card className="group pt-0 relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
         {/* Rank Badge */}
         <div className="absolute top-3 left-3 z-10">
-          <Badge
-            variant="secondary"
-            className="bg-primary/90 text-primary-foreground font-bold text-sm px-2 py-1 shadow-lg"
+          <div
+            className="text-muted font-black text-7xl drop-shadow-2xl"
+            style={{
+              textShadow:
+                "0 0 15px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3), 0 0 45px rgba(0,0,0,0.2)",
+            }}
           >
-            #{rank}
-          </Badge>
+            {rank}
+          </div>
         </div>
 
         {/* Poster Image */}
@@ -61,9 +63,9 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className="pt-0 flex-1">
           <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-            {movie.overview}
+            {movie.overview || "No overview available"}
           </p>
         </CardContent>
 

@@ -564,20 +564,20 @@ export default function TVShowDetail({
                     {tvShow.networks.map((network) => (
                       <div key={network.id} className="flex items-center gap-3">
                         {network.logo_path ? (
-                          <div className="flex-shrink-0 bg-muted/20 rounded border border-border p-2">
+                          <div className="flex-shrink-0 w-20 h-12 bg-muted/20 rounded border border-border p-2 flex items-center justify-center">
                             <Image
-                              src={getPosterUrl(network.logo_path)}
+                              src={getBackdropUrl(network.logo_path)}
                               alt={network.name}
-                              width={48}
-                              height={48}
-                              className="object-cover"
+                              width={64}
+                              height={32}
+                              className="object-contain max-w-full max-h-full"
                             />
                           </div>
                         ) : (
-                          <div className="w-12 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
+                          <div className="w-20 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
                             <div className="text-center">
                               <Film className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-                              <div className="text-[8px] text-muted-foreground font-medium leading-none">
+                              <div className="text-[10px] text-muted-foreground font-medium leading-none">
                                 {network.name
                                   .split(" ")
                                   .map((word) => word[0])
@@ -606,20 +606,20 @@ export default function TVShowDetail({
                     {tvShow.production_companies.map((company) => (
                       <div key={company.id} className="flex items-center gap-3">
                         {company.logo_path ? (
-                          <div className="flex-shrink-0 bg-muted/20 rounded border border-border p-2">
+                          <div className="flex-shrink-0 w-20 h-12 bg-muted/20 rounded border border-border p-2 flex items-center justify-center">
                             <Image
-                              src={getPosterUrl(company.logo_path)}
+                              src={getBackdropUrl(company.logo_path)}
                               alt={company.name}
-                              width={48}
-                              height={48}
-                              className="object-cover"
+                              width={64}
+                              height={32}
+                              className="object-contain max-w-full max-h-full"
                             />
                           </div>
                         ) : (
-                          <div className="w-12 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
+                          <div className="w-20 h-12 bg-muted/30 rounded flex items-center justify-center flex-shrink-0 border border-muted">
                             <div className="text-center">
                               <Film className="h-4 w-4 text-muted-foreground mx-auto mb-1" />
-                              <div className="text-[8px] text-muted-foreground font-medium leading-none">
+                              <div className="text-[10px] text-muted-foreground font-medium leading-none">
                                 {company.name
                                   .split(" ")
                                   .map((word) => word[0])
