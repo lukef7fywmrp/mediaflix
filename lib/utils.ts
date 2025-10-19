@@ -6,7 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getPosterUrl = (posterPath: string | null) => {
-  if (!posterPath) return "/placeholder-tv.jpg";
+  if (!posterPath)
+    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9Ijc1MCIgdmlld0JveD0iMCAwIDUwMCA3NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iNzUwIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjI1MCIgeT0iMzc1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzIiPk5vIFBvc3RlciBBdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPg==";
   return `https://image.tmdb.org/t/p/w500${posterPath}`;
 };
 
