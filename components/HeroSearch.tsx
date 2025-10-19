@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useTransition,
+} from "react";
 import {
   Search,
   Film,
@@ -26,6 +33,7 @@ export default function HeroSearch() {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [hasOverflow, setHasOverflow] = useState(false);
   const [isHoveringResults, setIsHoveringResults] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const debouncedQuery = useDebounce(query, 300);
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,11 +47,26 @@ export default function HeroSearch() {
   // Fetch trending data for suggested search terms
   const { data: trendingData, isLoading: isTrendingLoading } = useGetTrending();
 
-  // Flatten all pages into a single array
-  const results = useMemo(
-    () => data?.pages.flatMap((page) => page.results) ?? [],
-    [data],
-  );
+  // Flatten all pages into a single array and deduplicate by unique key
+  const results = useMemo(() => {
+    if (!data?.pages) return [];
+
+    const seen = new Set<string>();
+    const deduplicatedResults = [];
+
+    // Process pages in order to maintain pagination order
+    for (const page of data.pages) {
+      for (const result of page.results) {
+        const uniqueKey = `${result.id}-${result.media_type}`;
+        if (!seen.has(uniqueKey)) {
+          seen.add(uniqueKey);
+          deduplicatedResults.push(result);
+        }
+      }
+    }
+
+    return deduplicatedResults;
+  }, [data]);
 
   // Click outside to close
   useEffect(() => {
@@ -61,14 +84,17 @@ export default function HeroSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Show results when we have them
+  // Show results when we have them and clear stale results
   useEffect(() => {
-    if (results.length > 0 && query.trim()) {
+    if (results.length > 0 && query.trim() && debouncedQuery === query.trim()) {
       setShowResults(true);
     } else if (!query.trim()) {
       setShowResults(false);
+    } else if (query.trim() !== debouncedQuery.trim()) {
+      // Hide results while user is still typing (debounced query hasn't caught up)
+      setShowResults(false);
     }
-  }, [results, query]);
+  }, [results, query, debouncedQuery]);
 
   // Lock body scroll when hovering over search results
   useEffect(() => {
@@ -135,14 +161,17 @@ export default function HeroSearch() {
     };
   }, [showResults, results]);
 
-  const handleResultClick = (path: string) => {
-    setIsFocused(false);
-    setShowResults(false);
-    setQuery("");
-    router.push(path);
-  };
+  const handleResultClick = useCallback(
+    (path: string) => {
+      setIsFocused(false);
+      setShowResults(false);
+      setQuery("");
+      router.push(path);
+    },
+    [router],
+  );
 
-  const handleSuggestedTermClick = (term: string) => {
+  const handleSuggestedTermClick = useCallback((term: string) => {
     setQuery(term);
     setIsFocused(true);
 
@@ -154,18 +183,16 @@ export default function HeroSearch() {
         inputRef.current.setSelectionRange(term.length, term.length);
       }
     }, 0);
-  };
+  }, []);
 
-  const handleInputFocus = () => {
+  const handleInputFocus = useCallback(() => {
     setIsFocused(true);
-    if (results.length > 0 && query.trim()) {
-      setShowResults(true);
-    }
-  };
+  }, []);
 
   const hasResults = results.length > 0;
+  const isTyping = query.trim() !== debouncedQuery.trim();
 
-  // Get suggested terms from trending data
+  // Get suggested terms from trending data - memoized to prevent unnecessary re-renders
   const suggestedTerms = useMemo(() => {
     if (!trendingData?.results) return [];
 
@@ -178,17 +205,18 @@ export default function HeroSearch() {
         return isMovie || isTV;
       })
       .slice(0, 6) // Show top 6 trending items
-      .map((item) => {
+      .map((item, index) => {
         // Determine media type based on available fields
         const isMovie = !!item.title && !!item.release_date;
         const title = isMovie ? item.title : item.name;
 
         return {
+          id: `${item.id}-${index}`, // Add unique ID for React keys
           title: title || "Unknown",
           mediaType: isMovie ? "movie" : "tv",
         };
       });
-  }, [trendingData]);
+  }, [trendingData?.results]);
 
   return (
     <div ref={containerRef} className="relative max-w-2xl mx-auto">
@@ -201,17 +229,24 @@ export default function HeroSearch() {
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            setQuery(value);
+            // Use transition for non-urgent updates
+            startTransition(() => {
+              // Any additional state updates can go here
+            });
+          }}
           onFocus={handleInputFocus}
           placeholder="Search for movies and TV shows..."
           className="w-full pl-12 pr-12 py-3 text-sm rounded-2xl border border-border/40 bg-background/50 backdrop-blur-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background/80 transition-all duration-300 hover:border-border/60 hover:bg-background/60 shadow-sm"
         />
-        {isLoading && (
+        {(isLoading || isPending) && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-4">
             <Loader2 className="h-4 w-4 text-foreground/60 animate-spin" />
           </div>
         )}
-        {!isLoading && query && (
+        {!isLoading && !isPending && query && (
           <button
             onClick={() => {
               setQuery("");
@@ -245,7 +280,7 @@ export default function HeroSearch() {
               <div className="flex flex-wrap items-center justify-center gap-1.5">
                 {suggestedTerms.map((term, index) => (
                   <Badge
-                    key={`${term.title}-${index}`}
+                    key={term.id}
                     variant="secondary"
                     asChild
                     className="cursor-pointer transition-colors duration-150"
@@ -273,7 +308,7 @@ export default function HeroSearch() {
       </div>
 
       {/* Results Dropdown */}
-      {showResults && isFocused && (
+      {showResults && isFocused && results.length > 0 && (
         <div
           className="absolute top-full left-0 right-0 z-40 animate-in fade-in slide-in-from-top-2 duration-300 -mt-[58px]"
           onMouseEnter={() => setIsHoveringResults(true)}
@@ -292,7 +327,7 @@ export default function HeroSearch() {
                 </div>
               )}
 
-              {!isLoading && query && !hasResults && (
+              {!isLoading && !isTyping && query && !hasResults && (
                 <div className="py-10 text-center px-6">
                   <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-muted/30 flex items-center justify-center">
                     <Search className="h-7 w-7 text-muted-foreground/40" />
@@ -304,7 +339,7 @@ export default function HeroSearch() {
               )}
 
               {/* Trending Suggestions in Results */}
-              {hasResults && suggestedTerms.length > 0 && (
+              {hasResults && !isTyping && suggestedTerms.length > 0 && (
                 <div className="px-4 py-3">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="h-3 w-3 text-muted-foreground" />
@@ -313,9 +348,9 @@ export default function HeroSearch() {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
-                    {suggestedTerms.map((term, index) => (
+                    {suggestedTerms.map((term) => (
                       <Badge
-                        key={`trending-${term.title}-${index}`}
+                        key={`trending-${term.id}`}
                         variant="secondary"
                         asChild
                         className="cursor-pointer transition-colors duration-150 text-xs"
@@ -337,7 +372,7 @@ export default function HeroSearch() {
                 </div>
               )}
 
-              {hasResults && (
+              {hasResults && !isTyping && (
                 <InfiniteScroll
                   dataLength={results.length}
                   next={fetchNextPage}
@@ -366,9 +401,12 @@ export default function HeroSearch() {
                         ? `/movie/${result.id}`
                         : `/tv/${result.id}`;
 
+                      // Create truly unique key combining id, media_type, and index
+                      const uniqueKey = `${result.id}-${result.media_type}-${index}`;
+
                       return (
                         <button
-                          key={result.id}
+                          key={uniqueKey}
                           onClick={() => handleResultClick(path)}
                           onMouseEnter={() => router.prefetch(path)}
                           className="w-full group relative"

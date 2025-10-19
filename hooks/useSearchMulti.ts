@@ -3,10 +3,10 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 
 export function useSearchMulti(query: string) {
   return useInfiniteQuery({
-    queryKey: ["search", "multi", query],
+    queryKey: ["search", "multi", query.trim()],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await tmdbClient.v3.search.searchMulti({
-        query,
+        query: query.trim(),
         page: pageParam,
         include_adult: true,
       });
@@ -21,36 +21,25 @@ export function useSearchMulti(query: string) {
         results: filtered,
         page: pageParam,
         totalPages: response.total_pages,
+        totalResults: response.total_results,
       };
     },
     enabled: !!query.trim(),
-    staleTime: 0, // No caching - always fetch fresh
-    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
+    staleTime: Infinity, // Never consider data stale - prevents all automatic refetching
+    gcTime: 1000 * 60 * 60, // Keep in cache for 1 hour
     initialPageParam: 1,
-    // No maxPages limit - keep all loaded pages in memory
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage) => {
       // Stop if we've reached the last page
       if (lastPage.page >= lastPage.totalPages) {
         return undefined;
       }
 
-      // Immediate stop: if last page had no results, don't fetch more
+      // Stop if last page had no results
       if (lastPage.results.length === 0) {
         return undefined;
       }
 
-      // After first page, check if we have enough results
-      if (allPages.length >= 1) {
-        const totalResults = allPages.reduce(
-          (sum, page) => sum + page.results.length,
-          0,
-        );
-        // If we only have 1-2 results after a page, stop
-        if (totalResults <= 2) {
-          return undefined;
-        }
-      }
-
+      // Continue to next page if there are more results available
       return lastPage.page + 1;
     },
   });
