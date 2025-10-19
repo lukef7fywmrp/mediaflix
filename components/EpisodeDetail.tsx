@@ -246,7 +246,7 @@ export default function EpisodeDetail({
                             key={director.id}
                             className="flex items-center gap-3 mb-3"
                           >
-                            <Avatar className="h-12 w-12">
+                            <Avatar className="h-10 w-10">
                               <AvatarImage
                                 src={getProfileUrl(director.profile_path)}
                                 alt={director.name}

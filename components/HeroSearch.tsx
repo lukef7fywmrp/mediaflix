@@ -86,11 +86,9 @@ export default function HeroSearch() {
 
   // Show results when we have them and clear stale results
   useEffect(() => {
-    if (
-      results.length > 0 &&
-      query.trim() &&
-      debouncedQuery.trim() === query.trim()
-    ) {
+    if (query.trim() && debouncedQuery.trim() === query.trim()) {
+      // Show dropdown when search is complete (debounced query caught up)
+      // This includes both cases: with results and without results (for "No results found")
       setShowResults(true);
     } else if (!query.trim()) {
       setShowResults(false);
@@ -313,7 +311,7 @@ export default function HeroSearch() {
       </div>
 
       {/* Results Dropdown */}
-      {showResults && isFocused && results.length > 0 && (
+      {showResults && isFocused && (
         <div
           className="absolute top-full left-0 right-0 z-40 animate-in fade-in slide-in-from-top-2 duration-300 -mt-[58px]"
           onMouseEnter={() => setIsHoveringResults(true)}

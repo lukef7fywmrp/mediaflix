@@ -229,18 +229,15 @@ export default function MovieDetail({
                         Director
                       </h4>
                       <div className="flex items-center gap-3">
-                        <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                          <Avatar className="size-full">
-                            <AvatarImage
-                              src={getProfileUrl(director.profile_path)}
-                              className="object-cover"
-                            />
-                            <AvatarFallback className="uppercase">
-                              {director.name.charAt(0) +
-                                director.name.charAt(1)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage
+                            src={getProfileUrl(director.profile_path)}
+                            className="object-cover"
+                          />
+                          <AvatarFallback className="uppercase">
+                            {director.name.charAt(0) + director.name.charAt(1)}
+                          </AvatarFallback>
+                        </Avatar>
                         <p className="text-sm font-medium">{director.name}</p>
                       </div>
                     </div>
@@ -256,18 +253,15 @@ export default function MovieDetail({
                             key={writer.id}
                             className="flex items-center gap-3"
                           >
-                            <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                              <Avatar className="size-full">
-                                <AvatarImage
-                                  src={getProfileUrl(writer.profile_path)}
-                                  className="object-cover"
-                                />
-                                <AvatarFallback className="uppercase">
-                                  {writer.name.charAt(0) +
-                                    writer.name.charAt(1)}
-                                </AvatarFallback>
-                              </Avatar>
-                            </div>
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage
+                                src={getProfileUrl(writer.profile_path)}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="uppercase">
+                                {writer.name.charAt(0) + writer.name.charAt(1)}
+                              </AvatarFallback>
+                            </Avatar>
                             <p className="text-sm font-medium">{writer.name}</p>
                           </div>
                         ))}
@@ -290,18 +284,16 @@ export default function MovieDetail({
                             key={producer.id}
                             className="flex items-center gap-3"
                           >
-                            <div className="relative w-20 h-20 rounded-full overflow-hidden">
-                              <Avatar className="size-full">
-                                <AvatarImage
-                                  src={getProfileUrl(producer.profile_path)}
-                                  className="object-cover"
-                                />
-                                <AvatarFallback className="uppercase">
-                                  {producer.name.charAt(0) +
-                                    producer.name.charAt(1)}
-                                </AvatarFallback>
-                              </Avatar>
-                            </div>
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage
+                                src={getProfileUrl(producer.profile_path)}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="uppercase">
+                                {producer.name.charAt(0) +
+                                  producer.name.charAt(1)}
+                              </AvatarFallback>
+                            </Avatar>
                             <p className="text-sm font-medium">
                               {producer.name}
                             </p>

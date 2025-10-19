@@ -17,6 +17,11 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
     : credits.cast.slice(0, initialDisplayCount);
   const hasMoreCast = credits.cast.length > initialDisplayCount;
 
+  // Don't render anything if cast is empty
+  if (!credits.cast || credits.cast.length === 0) {
+    return null;
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -29,19 +34,17 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {displayedCast.map((actor) => (
             <div key={actor.id} className="text-center">
-              <div className="relative w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden">
-                <Avatar className="size-full">
-                  <AvatarImage
-                    src={getProfileUrl(actor.profile_path)}
-                    className="object-cover"
-                  />
-                  <AvatarFallback className="uppercase">
-                    {actor.name.length >= 2
-                      ? actor.name.charAt(0) + actor.name.charAt(1)
-                      : actor.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
+              <Avatar className="h-10 w-10 mx-auto mb-2">
+                <AvatarImage
+                  src={getProfileUrl(actor.profile_path)}
+                  className="object-cover"
+                />
+                <AvatarFallback className="uppercase">
+                  {actor.name.length >= 2
+                    ? actor.name.charAt(0) + actor.name.charAt(1)
+                    : actor.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
               <p className="font-medium text-sm">{actor.name}</p>
               <p className="text-xs text-muted-foreground">{actor.character}</p>
             </div>
