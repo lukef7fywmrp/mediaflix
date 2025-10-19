@@ -86,7 +86,11 @@ export default function HeroSearch() {
 
   // Show results when we have them and clear stale results
   useEffect(() => {
-    if (results.length > 0 && query.trim() && debouncedQuery === query.trim()) {
+    if (
+      results.length > 0 &&
+      query.trim() &&
+      debouncedQuery.trim() === query.trim()
+    ) {
       setShowResults(true);
     } else if (!query.trim()) {
       setShowResults(false);
@@ -187,7 +191,10 @@ export default function HeroSearch() {
 
   const handleInputFocus = useCallback(() => {
     setIsFocused(true);
-  }, []);
+    if (results.length > 0 && query.trim()) {
+      setShowResults(true);
+    }
+  }, [results.length, query]);
 
   const hasResults = results.length > 0;
   const isTyping = query.trim() !== debouncedQuery.trim();
@@ -231,10 +238,8 @@ export default function HeroSearch() {
           value={query}
           onChange={(e) => {
             const value = e.target.value;
-            setQuery(value);
-            // Use transition for non-urgent updates
             startTransition(() => {
-              // Any additional state updates can go here
+              setQuery(value);
             });
           }}
           onFocus={handleInputFocus}
