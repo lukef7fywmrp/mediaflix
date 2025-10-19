@@ -12,7 +12,7 @@ export const getPosterUrl = (posterPath: string | null) => {
 
 export const getBackdropUrl = (backdropPath: string | null) => {
   if (!backdropPath)
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjY0MCIgeT0iMzYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiPk5vIEJhY2tkcm9wIEF2YWlsYWJsZTwvdGV4dD4KPC9zdmc+";
+    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjY0MCIgeT0iMzYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNDgiPk5vIEJhY2tkcm9wIEF2YWlsYWJsZTwvdGV4dD4KPC9zdmc+";
   return `https://image.tmdb.org/t/p/w1280${backdropPath}`;
 };
 
@@ -294,6 +294,64 @@ const LANGUAGE_TO_COUNTRY_MAP: Record<string, string> = {
 
 export const getCountryCodeForLanguage = (languageCode: string): string => {
   return LANGUAGE_TO_COUNTRY_MAP[languageCode] || "UN";
+};
+
+// Historical and invalid country codes mapping
+// Based on actual TMDB API response - these codes appear in production_countries
+// fallbackCode is the ISO code that ReactCountryFlag supports for flag display
+const HISTORICAL_COUNTRY_MAP: Record<
+  string,
+  { name: string; fallbackCode: string }
+> = {
+  SU: { name: "Soviet Union", fallbackCode: "RU" },
+  YU: { name: "Yugoslavia", fallbackCode: "RS" },
+  CS: { name: "Serbia and Montenegro", fallbackCode: "RS" },
+  XC: { name: "Czechoslovakia", fallbackCode: "CZ" },
+  XG: { name: "East Germany", fallbackCode: "DE" },
+  AN: { name: "Netherlands Antilles", fallbackCode: "NL" },
+  BU: { name: "Burma", fallbackCode: "MM" },
+  ZR: { name: "Zaire", fallbackCode: "CD" },
+  TP: { name: "East Timor", fallbackCode: "TL" },
+  XI: { name: "Northern Ireland", fallbackCode: "GB" },
+  XK: { name: "Kosovo", fallbackCode: "XK" }, // Kosovo has its own flag
+};
+
+// Helper function to get valid country code for flags
+export const getValidCountryCodeForFlag = (countryCode: string): string => {
+  const historical = HISTORICAL_COUNTRY_MAP[countryCode];
+  if (historical) {
+    return historical.fallbackCode;
+  }
+
+  // Special case: Kosovo (XK) has its own flag
+  if (countryCode === "XK") {
+    return "XK";
+  }
+
+  // If it's a valid country code, return as-is
+  if (COUNTRY_CODE_TO_NAME_MAP[countryCode]) {
+    return countryCode;
+  }
+
+  // Fallback to UN (United Nations) for unknown codes
+  return "UN";
+};
+
+// Helper function to get country name (including historical)
+export const getCountryNameWithHistory = (countryCode: string): string => {
+  const historical = HISTORICAL_COUNTRY_MAP[countryCode];
+  if (historical) {
+    return historical.name;
+  }
+
+  // Try to get from the main country map
+  const countryName = getCountryName(countryCode);
+  if (countryName !== countryCode) {
+    return countryName;
+  }
+
+  // Fallback to the original code if unknown
+  return countryCode;
 };
 
 // Country code to country name mapping

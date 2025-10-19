@@ -2,6 +2,7 @@ import {
   formatDate,
   formatDateShort,
   formatRuntime,
+  getBackdropUrl,
   getCountryName,
   getPosterUrl,
 } from "@/lib/utils";
@@ -31,6 +32,7 @@ import {
   TVGetWatchProvidersResponse,
   TVSeasonsGetCreditsResponse,
   TVSeasonsGetDetailsBaseResponse,
+  TVSeasonsGetImagesResponse,
   TVSeasonsGetVideosResponse,
 } from "tmdb-js-node";
 import ConditionalTooltip from "./ConditionalTooltip";
@@ -63,6 +65,7 @@ interface SeasonDetailProps {
   };
   season: TVSeasonsGetDetailsBaseResponse & {
     credits: TVSeasonsGetCreditsResponse;
+    images: TVSeasonsGetImagesResponse;
     videos: TVSeasonsGetVideosResponse;
   };
   tvShowId: number;
@@ -401,22 +404,27 @@ export default function SeasonDetail({
                     {/* Episode Image - Touches card corners */}
                     <div className="relative w-56 lg:w-72 xl:w-96 flex-shrink-0">
                       <Image
-                        src={getPosterUrl(episode.still_path)}
+                        src={getBackdropUrl(episode.still_path)}
                         alt={episode.name}
                         fill
                         className="object-cover transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <Play className="h-8 w-8 text-white" />
-                      </div>
-                      {/* Rating overlay */}
-                      <div className="absolute top-2 right-2">
-                        <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          {episode.vote_average.toFixed(1)}
+                      {/* Only show play icon on hover if there's a backdrop */}
+                      {episode.still_path && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <Play className="h-8 w-8 text-white" />
                         </div>
-                      </div>
+                      )}
+                      {/* Rating overlay - only show if rating > 0 */}
+                      {episode.vote_average > 0 && (
+                        <div className="absolute top-2 right-2">
+                          <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            {episode.vote_average.toFixed(1)}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Episode Content - Better Layout */}

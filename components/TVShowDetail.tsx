@@ -8,8 +8,10 @@ import {
   formatPopularity,
   getBackdropUrl,
   getCountryCodeForLanguage,
+  getCountryNameWithHistory,
   getPosterUrl,
   getProfileUrl,
+  getValidCountryCodeForFlag,
 } from "@/lib/utils";
 import {
   Award,
@@ -652,24 +654,33 @@ export default function TVShowDetail({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {tvShow.production_countries.map((country) => (
-                      <div
-                        key={country.iso_3166_1}
-                        className="flex items-center gap-3"
-                      >
-                        <ReactCountryFlag
-                          countryCode={country.iso_3166_1}
-                          svg
-                          style={{
-                            width: "28px",
-                            height: "18px",
-                            borderRadius: "3px",
-                          }}
-                          title={country.name}
-                        />
-                        <p className="text-sm">{country.name}</p>
-                      </div>
-                    ))}
+                    {tvShow.production_countries.map((country) => {
+                      const validCountryCode = getValidCountryCodeForFlag(
+                        country.iso_3166_1,
+                      );
+                      const countryName = getCountryNameWithHistory(
+                        country.iso_3166_1,
+                      );
+
+                      return (
+                        <div
+                          key={country.iso_3166_1}
+                          className="flex items-center gap-3"
+                        >
+                          <ReactCountryFlag
+                            countryCode={validCountryCode}
+                            svg
+                            style={{
+                              width: "28px",
+                              height: "18px",
+                              borderRadius: "3px",
+                            }}
+                            title={countryName}
+                          />
+                          <p className="text-sm">{countryName}</p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
