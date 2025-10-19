@@ -27,7 +27,7 @@ export function useSearchMulti(query: string) {
     staleTime: 0, // No caching - always fetch fresh
     gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
     initialPageParam: 1,
-    maxPages: 3, // Limit to 3 pages maximum
+    // No maxPages limit - keep all loaded pages in memory
     getNextPageParam: (lastPage, allPages) => {
       // Stop if we've reached the last page
       if (lastPage.page >= lastPage.totalPages) {
