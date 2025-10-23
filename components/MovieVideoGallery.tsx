@@ -1,32 +1,49 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   formatDateShort,
   getVideoUrl,
   getThumbnailUrl,
   getFallbackThumbnailUrl,
 } from "@/lib/utils";
-import { Play, Youtube } from "lucide-react";
+import { Play, Youtube, ChevronDown, ChevronUp } from "lucide-react";
 import Image from "next/image";
-import { TVEpisodesGetVideosResult } from "tmdb-js-node";
+import { MoviesGetVideosResponse } from "tmdb-js-node";
+import { useState } from "react";
 
-interface EpisodeVideoGalleryProps {
-  videos: TVEpisodesGetVideosResult[];
-}
-
-export default function EpisodeVideoGallery({
+export default function MovieVideoGallery({
   videos,
-}: EpisodeVideoGalleryProps) {
-  if (videos.length === 0) {
+}: {
+  videos: MoviesGetVideosResponse;
+}) {
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_LIMIT = 6; // Show 6 videos initially
+
+  // Filter for trailers and teasers first, then other videos
+  const trailers = videos.results.filter(
+    (video) => video.type === "Trailer" || video.type === "Teaser",
+  );
+  const otherVideos = videos.results.filter(
+    (video) => video.type !== "Trailer" && video.type !== "Teaser",
+  );
+  const sortedVideos = [...trailers, ...otherVideos];
+
+  if (videos.results.length === 0) {
     return null;
   }
 
+  // Determine which videos to display
+  const videosToShow = showAll
+    ? sortedVideos
+    : sortedVideos.slice(0, INITIAL_LIMIT);
+  const hasMoreVideos = sortedVideos.length > INITIAL_LIMIT;
+
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Videos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {videos.map((video) => (
+        {videosToShow.map((video) => (
           <div
             key={video.id}
             className="group relative bg-muted/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
@@ -101,6 +118,29 @@ export default function EpisodeVideoGallery({
           </div>
         ))}
       </div>
+
+      {/* Show More/Show Less Button */}
+      {hasMoreVideos && (
+        <div className="flex justify-center pt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowAll(!showAll)}
+            className="flex items-center gap-2"
+          >
+            {showAll ? (
+              <>
+                <ChevronUp className="h-4 w-4" />
+                Show Less
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4" />
+                Show More ({sortedVideos.length - INITIAL_LIMIT} more)
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

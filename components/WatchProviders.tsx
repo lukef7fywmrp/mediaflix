@@ -1,7 +1,7 @@
 "use client";
 
 import { getProviderLogoUrl, getCountryName } from "@/lib/utils";
-import { ChevronRight, Monitor, Film, MapPin } from "lucide-react";
+import { ChevronRight, Monitor, MapPin, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { MoviesGetWatchProvidersBuy } from "tmdb-js-node";
@@ -58,33 +58,19 @@ export default function WatchProviders({
   // Show cinema UI for movies with no streaming providers AND if it's recent
   if (streamingProviders.length === 0 && isMovie && isRecentMovie()) {
     return (
-      <div className={`space-y-3 ${className} w-fit`}>
-        <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-4 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <div className="flex-shrink-0">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Film className="h-6 w-6 text-white" />
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-white font-medium mb-1">May Be In Cinemas</h4>
-              <p className="text-white/70 text-sm mb-2">
-                This movie may be playing in theaters near you
-              </p>
-              <div className="flex items-center gap-4 text-xs text-white/60">
-                <a
-                  href={`https://www.google.com/search?q=${encodeURIComponent((movieTitle || "movie") + " showtimes near me")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
-                >
-                  <MapPin className="h-3 w-3" />
-                  <span>Check local theaters</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className={`${className} w-fit`}>
+        <a
+          href={`https://www.google.com/search?q=${encodeURIComponent((movieTitle || "movie") + " showtimes near me")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2 text-background/80 hover:text-background transition-colors duration-200"
+        >
+          <MapPin className="h-5 w-5" />
+          <span className="text-sm font-medium group-hover:underline">
+            Check nearby theaters
+          </span>
+          <ExternalLink className="h-3 w-3 opacity-70 group-hover:opacity-100 transition-opacity" />
+        </a>
       </div>
     );
   }

@@ -9,24 +9,32 @@ import {
 } from "@/lib/utils";
 import { Play, Youtube } from "lucide-react";
 import Image from "next/image";
-import { TVEpisodesGetVideosResult } from "tmdb-js-node";
+import { TVGetVideosResult } from "tmdb-js-node";
 
-interface EpisodeVideoGalleryProps {
-  videos: TVEpisodesGetVideosResult[];
+interface TVShowVideoGalleryProps {
+  videos: TVGetVideosResult[];
 }
 
-export default function EpisodeVideoGallery({
+export default function TVShowVideoGallery({
   videos,
-}: EpisodeVideoGalleryProps) {
+}: TVShowVideoGalleryProps) {
   if (videos.length === 0) {
     return null;
   }
 
+  // Filter for trailers and teasers first, then other videos
+  const trailers = videos.filter(
+    (video) => video.type === "Trailer" || video.type === "Teaser",
+  );
+  const otherVideos = videos.filter(
+    (video) => video.type !== "Trailer" && video.type !== "Teaser",
+  );
+  const sortedVideos = [...trailers, ...otherVideos];
+
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Videos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {videos.map((video) => (
+        {sortedVideos.map((video) => (
           <div
             key={video.id}
             className="group relative bg-muted/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"

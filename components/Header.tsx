@@ -1,5 +1,6 @@
+import logo from "@/images/logo.png";
 import { SignInButton } from "@clerk/nextjs";
-import { Play } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 function Header() {
@@ -9,14 +10,11 @@ function Header() {
         {/* MediaFlix Logo */}
         <Link href="/" className="flex items-center space-x-2">
           {/* Play Icon */}
-          <div className="flex items-center justify-center size-7 rounded-lg bg-primary/10 border border-primary/20">
-            <Play className="size-3.5 text-primary fill-current" />
-          </div>
-
-          <div className="">
-            <span className="text-xl font-bold text-primary">Media</span>
-            <span className="text-xl font-bold text-foreground">Flix</span>
-          </div>
+          <Image
+            src={logo}
+            alt="MediaFlix Logo"
+            className="w-38 object-contain"
+          />
         </Link>
 
         {/* Navigation placeholder */}

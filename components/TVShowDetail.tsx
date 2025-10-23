@@ -2,6 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   formatDate,
   formatDateShort,
   formatLanguage,
@@ -25,16 +32,34 @@ import {
   TrendingUp,
   Tv,
   Users,
+  Youtube,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
-import { TVGetDetailsResponse, MoviesGetWatchProvidersBuy } from "tmdb-js-node";
+import {
+  TVGetDetailsResponse,
+  TVGetVideosResult,
+  MoviesGetWatchProvidersBuy,
+} from "tmdb-js-node";
 import BackButton from "./BackButton";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
+import TVShowVideoGallery from "./TVShowVideoGallery";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
 import ExpandableOverview from "./ExpandableOverview";
+
+// Helper function to get embedded video URL for modal
+const getEmbedUrl = (site: string, key: string) => {
+  switch (site) {
+    case "YouTube":
+      return `https://www.youtube.com/embed/${key}?autoplay=1&rel=0&modestbranding=1`;
+    case "Vimeo":
+      return `https://player.vimeo.com/video/${key}?autoplay=1&title=0&byline=0&portrait=0`;
+    default:
+      return "#";
+  }
+};
 
 interface TVShowDetailProps {
   tvShow: TVGetDetailsResponse<
@@ -50,12 +75,14 @@ interface TVShowDetailProps {
     flatrate?: MoviesGetWatchProvidersBuy[];
   };
   country?: string;
+  videos?: TVGetVideosResult[];
 }
 
 export default function TVShowDetail({
   tvShow,
   watchProviders,
   country,
+  videos,
 }: TVShowDetailProps) {
   const totalEpisodes = tvShow.number_of_episodes;
   const totalSeasons = tvShow.number_of_seasons;
@@ -166,18 +193,34 @@ export default function TVShowDetail({
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <Button
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    <Play className="h-5 w-5" />
-                    Watch Trailer
-                  </Button>
+                  {videos && videos.length > 0 && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="lg" variant="secondary">
+                          <Play className="h-5 w-5" />
+                          Watch Trailer
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-primary bg-primary">
+                        <DialogTitle className="sr-only">
+                          {videos[0].name}
+                        </DialogTitle>
+                        <div className="relative aspect-video">
+                          <iframe
+                            src={getEmbedUrl(videos[0].site, videos[0].key)}
+                            className="w-full h-full rounded-b-lg"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                   {tvShow.homepage && (
                     <Button
                       variant="outline"
                       size="lg"
-                      className="bg-white/20 border-white/30 text-white hover:border-white/50 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
+                      className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                       asChild
                     >
                       <a
@@ -193,7 +236,7 @@ export default function TVShowDetail({
                   <Button
                     variant="outline"
                     size="lg"
-                    className="bg-white/20 border-white/30 text-white hover:border-white/50 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
+                    className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                     asChild
                   >
                     <a
@@ -408,6 +451,21 @@ export default function TVShowDetail({
                 )}
               </CardContent>
             </Card>
+
+            {/* Videos */}
+            {videos && videos.length > 0 && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Youtube className="h-5 w-5" />
+                    Videos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TVShowVideoGallery videos={videos} />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Similar Shows */}
             {tvShow.similar.results.length > 0 && (

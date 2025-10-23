@@ -55,7 +55,7 @@ export default async function MovieDetailPage({
 
   try {
     const movie = await api.v3.movies.getDetails(movieId, {
-      append_to_response: ["credits", "similar", "recommendations"],
+      append_to_response: ["credits", "similar", "recommendations", "videos"],
     });
 
     if (!movie?.id) {

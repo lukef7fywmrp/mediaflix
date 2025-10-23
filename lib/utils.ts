@@ -1,19 +1,18 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { PLACEHOLDER_BACKDROP_URL, PLACEHOLDER_POSTER_URL } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const getPosterUrl = (posterPath: string | null) => {
-  if (!posterPath)
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9Ijc1MCIgdmlld0JveD0iMCAwIDUwMCA3NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MDAiIGhlaWdodD0iNzUwIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjI1MCIgeT0iMzc1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzIiPk5vIFBvc3RlciBBdmFpbGFibGU8L3RleHQ+Cjwvc3ZnPg==";
+  if (!posterPath) return PLACEHOLDER_POSTER_URL;
   return `https://image.tmdb.org/t/p/w500${posterPath}`;
 };
 
 export const getBackdropUrl = (backdropPath: string | null) => {
-  if (!backdropPath)
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyODAiIGhlaWdodD0iNzIwIiBmaWxsPSIjMzMzMzMzIi8+Cjx0ZXh0IHg9IjY0MCIgeT0iMzYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNDgiPk5vIEJhY2tkcm9wIEF2YWlsYWJsZTwvdGV4dD4KPC9zdmc+";
+  if (!backdropPath) return PLACEHOLDER_BACKDROP_URL;
   return `https://image.tmdb.org/t/p/w1280${backdropPath}`;
 };
 
@@ -615,4 +614,49 @@ export const getCountryName = (countryCode: string): string => {
 export const getProviderLogoUrl = (logoPath: string | null) => {
   if (!logoPath) return null;
   return `https://image.tmdb.org/t/p/w92${logoPath}`;
+};
+
+export const getEmbedUrl = (site: string, key: string) => {
+  switch (site) {
+    case "YouTube":
+      return `https://www.youtube.com/embed/${key}?autoplay=1&rel=0&modestbranding=1`;
+    case "Vimeo":
+      return `https://player.vimeo.com/video/${key}?autoplay=1&title=0&byline=0&portrait=0`;
+    default:
+      return "#";
+  }
+};
+
+// Helper function to get video URL based on site
+export const getVideoUrl = (site: string, key: string) => {
+  switch (site) {
+    case "YouTube":
+      return `https://www.youtube.com/watch?v=${key}`;
+    case "Vimeo":
+      return `https://vimeo.com/${key}`;
+    default:
+      return "#";
+  }
+};
+
+// Helper function to get thumbnail URL based on site
+export const getThumbnailUrl = (site: string, key: string) => {
+  switch (site) {
+    case "YouTube":
+      return `https://img.youtube.com/vi/${key}/maxresdefault.jpg`;
+    case "Vimeo":
+      return `https://vumbnail.com/${key}.jpg`;
+    default:
+      return PLACEHOLDER_BACKDROP_URL;
+  }
+};
+
+// Helper function to get fallback thumbnail URL
+export const getFallbackThumbnailUrl = (site: string, key: string) => {
+  switch (site) {
+    case "YouTube":
+      return `https://img.youtube.com/vi/${key}/hqdefault.jpg`;
+    default:
+      return PLACEHOLDER_BACKDROP_URL;
+  }
 };

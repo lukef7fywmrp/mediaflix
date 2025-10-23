@@ -2,7 +2,7 @@ import TVShowDetail from "@/components/TVShowDetail";
 import getCountry from "@/lib/getCountry";
 import api from "@/lib/tmdb";
 import { notFound } from "next/navigation";
-import { TVGetWatchProvidersResults } from "tmdb-js-node";
+import { TVGetVideosResult, TVGetWatchProvidersResults } from "tmdb-js-node";
 
 interface TVShowDetailPageProps {
   params: Promise<{ id: string }>;
@@ -70,7 +70,11 @@ export default async function TVShowDetailPage({
 
     const userCountry = await getCountry();
 
-    const providersRes = await api.v3.tv.getWatchProviders(tvShowId);
+    // Fetch videos and watch providers in parallel
+    const [videosRes, providersRes] = await Promise.all([
+      api.v3.tv.getVideos(tvShowId),
+      api.v3.tv.getWatchProviders(tvShowId),
+    ]);
 
     // Try to get providers for user's country, fallback to US, then first available
     let providers =
@@ -99,6 +103,7 @@ export default async function TVShowDetailPage({
         tvShow={tvShow}
         watchProviders={providers}
         country={providerCountry}
+        videos={videosRes.results}
       />
     );
   } catch (error) {

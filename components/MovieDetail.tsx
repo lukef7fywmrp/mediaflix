@@ -2,6 +2,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   formatDate,
   formatDateShort,
   formatLanguage,
@@ -11,6 +18,7 @@ import {
   getBackdropUrl,
   getCountryCodeForLanguage,
   getCountryNameWithHistory,
+  getEmbedUrl,
   getPosterUrl,
   getProfileUrl,
   getValidCountryCodeForFlag,
@@ -24,6 +32,7 @@ import {
   Globe,
   Play,
   TrendingUp,
+  Youtube,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,13 +44,14 @@ import {
 import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import ExpandableOverview from "./ExpandableOverview";
+import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
-    ("credits" | "recommendations" | "similar")[]
+    ("credits" | "recommendations" | "similar" | "videos")[]
   >;
   watchProviders?: {
     flatrate?: MoviesGetWatchProvidersBuy[];
@@ -159,18 +169,37 @@ export default function MovieDetail({
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <Button
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
-                  >
-                    <Play className="h-5 w-5" />
-                    Watch Trailer
-                  </Button>
+                  {movie.videos?.results.length > 0 && (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button size="lg" variant="secondary">
+                          <Play className="h-5 w-5" />
+                          Watch Trailer
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-primary bg-primary">
+                        <DialogTitle className="sr-only">
+                          {movie.videos?.results[0].name}
+                        </DialogTitle>
+                        <div className="relative aspect-video">
+                          <iframe
+                            src={getEmbedUrl(
+                              movie.videos?.results[0].site,
+                              movie.videos?.results[0].key,
+                            )}
+                            className="w-full h-full rounded-b-lg"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                   {movie.homepage && (
                     <Button
                       variant="outline"
                       size="lg"
-                      className="bg-white/20 border-white/30 text-white hover:border-white/50 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
+                      className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                       asChild
                     >
                       <a
@@ -186,7 +215,7 @@ export default function MovieDetail({
                   <Button
                     variant="outline"
                     size="lg"
-                    className="bg-white/20 border-white/30 text-white hover:border-white/50 hover:scale-102 transition-all duration-200 shadow-lg hover:shadow-xl"
+                    className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                     asChild
                   >
                     <a
@@ -307,6 +336,21 @@ export default function MovieDetail({
                       )}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Videos */}
+            {movie.videos?.results.length > 0 && (
+              <Card className="gap-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Youtube className="h-5 w-5" />
+                    Videos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MovieVideoGallery videos={movie.videos} />
                 </CardContent>
               </Card>
             )}
