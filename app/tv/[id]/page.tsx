@@ -2,7 +2,7 @@ import TVShowDetail from "@/components/TVShowDetail";
 import getCountry from "@/lib/getCountry";
 import api from "@/lib/tmdb";
 import { notFound } from "next/navigation";
-import { TVGetVideosResult, TVGetWatchProvidersResults } from "tmdb-js-node";
+import { TVGetWatchProvidersResults } from "tmdb-js-node";
 
 interface TVShowDetailPageProps {
   params: Promise<{ id: string }>;

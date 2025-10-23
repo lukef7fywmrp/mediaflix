@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -38,16 +37,16 @@ import Image from "next/image";
 import Link from "next/link";
 import ReactCountryFlag from "react-country-flag";
 import {
+  MoviesGetWatchProvidersBuy,
   TVGetDetailsResponse,
   TVGetVideosResult,
-  MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
 import BackButton from "./BackButton";
+import ExpandableOverview from "./ExpandableOverview";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import TVShowVideoGallery from "./TVShowVideoGallery";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
-import ExpandableOverview from "./ExpandableOverview";
 
 // Helper function to get embedded video URL for modal
 const getEmbedUrl = (site: string, key: string) => {
