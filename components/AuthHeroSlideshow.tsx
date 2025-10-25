@@ -66,10 +66,7 @@ function AuthHeroSlideshow() {
   if (isLoading) {
     return (
       <div className="bg-muted relative h-full w-full">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 to-slate-800/40" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white border-t-transparent" />
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 to-slate-800/95" />
       </div>
     );
   }
@@ -77,13 +74,76 @@ function AuthHeroSlideshow() {
   if (allSlides.length === 0) {
     return (
       <div className="bg-muted relative h-full w-full">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/20 to-slate-800/40" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center text-white">
-            <h3 className="text-2xl font-bold mb-2">Welcome to MediaFlix</h3>
-            <p className="text-lg opacity-90">
-              Discover amazing movies and shows
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 to-slate-800/95" />
+        <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-center">
+          <div className="max-w-xl">
+            <h2 className="text-3xl font-bold text-white mb-1 leading-tight text-shadow-lg">
+              Welcome to MediaFlix
+            </h2>
+            <p className="text-base text-white/80 mb-6 text-shadow-lg">
+              Your Ultimate Entertainment Discovery Platform
             </p>
+
+            {/* Features Grid */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <Search className="h-5 w-5 text-background flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  Advanced Search
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <TrendingUp className="h-5 w-5 text-background flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  Top Rated Content
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <Star className="h-5 w-5 text-background flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  Real-time Data
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <Film className="h-5 w-5 text-background flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  Movie Details
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <Tv className="h-5 w-5 text-background flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  TV Show Details
+                </span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300">
+                <User className="h-5 w-5 text-white flex-shrink-0" />
+                <span className="text-white/90 text-sm font-medium">
+                  Personalization
+                </span>
+              </div>
+            </div>
+
+            {/* Status Indicators */}
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/20">
+                <Radio className="h-3.5 w-3.5 text-green-400 animate-pulse" />
+                <span className="text-xs text-white font-medium drop-shadow-lg">
+                  Live Data
+                </span>
+              </div>
+              <a
+                href="https://www.themoviedb.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-black/60 transition-all duration-300 relative z-10 cursor-pointer"
+              >
+                <Star className="h-3.5 w-3.5 text-purple-400 fill-purple-400" />
+                <span className="text-xs text-white font-medium drop-shadow-lg">
+                  Powered by TMDB
+                </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
