@@ -45,6 +45,13 @@ function AuthHeroSlideshow() {
     vote_average: item.vote_average,
   }));
 
+  // Reset currentIndex when allSlides length changes to prevent out-of-bounds access
+  useEffect(() => {
+    if (currentIndex >= allSlides.length) {
+      setCurrentIndex(0);
+    }
+  }, [allSlides.length, currentIndex]);
+
   // Auto-advance slideshow
   useEffect(() => {
     if (allSlides.length <= 1) return;
@@ -83,7 +90,7 @@ function AuthHeroSlideshow() {
     );
   }
 
-  const currentSlide = allSlides[currentIndex];
+  const currentSlide = allSlides[currentIndex] || allSlides[0];
 
   return (
     <div className="relative h-full w-full overflow-hidden group">
