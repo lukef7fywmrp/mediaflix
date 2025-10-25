@@ -1,11 +1,10 @@
+import ConvexClientProvider from "@/components/ConvexClientProvider";
+import QueryClientProvider from "@/components/QueryClientProvider";
+import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-import QueryClientProvider from "@/components/QueryClientProvider";
-import { ClerkProvider } from "@clerk/nextjs";
-import Header from "@/components/Header";
-import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +34,22 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProvider dynamic>
+        <ClerkProvider
+          dynamic
+          localization={{
+            signIn: {
+              start: {
+                titleCombined: "Login to your account",
+                subtitleCombined:
+                  "Enter your email below to login to your account",
+              },
+            },
+            dividerText: "Or continue with",
+            socialButtonsBlockButton: `Login with {{provider|titleize}}`,
+          }}
+        >
           <ConvexClientProvider>
             <QueryClientProvider>
-              <Header />
               {children}
               <Toaster />
             </QueryClientProvider>

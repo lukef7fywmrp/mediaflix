@@ -6,9 +6,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getPosterUrl = (posterPath: string | null) => {
+export const getPosterUrl = (
+  posterPath: string | null,
+  highQuality: boolean = false,
+) => {
   if (!posterPath) return PLACEHOLDER_POSTER_URL;
-  return `https://image.tmdb.org/t/p/w500${posterPath}`;
+  return `https://image.tmdb.org/t/p/${highQuality ? "w1920" : "w500"}${posterPath}`;
 };
 
 export const getBackdropUrl = (backdropPath: string | null) => {

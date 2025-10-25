@@ -1,5 +1,5 @@
 import logo from "@/images/logo.png";
-import { SignInButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,11 +41,16 @@ function Header() {
 
         {/* User actions placeholder */}
         <div className="flex items-center space-x-4">
-          <SignInButton>
-            <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Sign In
-            </button>
-          </SignInButton>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton>
+              <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </header>
