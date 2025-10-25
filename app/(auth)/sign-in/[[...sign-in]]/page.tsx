@@ -43,7 +43,7 @@ export default function Page() {
       <ClerkLoaded>
         <div className="mt-1 text-center w-full">
           <p className="text-[13px] text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Button
               asChild
               variant="link"
