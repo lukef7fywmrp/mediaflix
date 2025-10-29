@@ -55,7 +55,7 @@ import {
   User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function ProfileSetupPage() {
@@ -225,12 +225,15 @@ export default function ProfileSetupPage() {
     }
   }, [country, selectedCountry]);
 
-  const handleUsernameChange = (value: string) => {
-    setUsername(value);
-    if (!hasUserInteracted) {
-      setHasUserInteracted(true);
-    }
-  };
+  const handleUsernameChange = useCallback(
+    (value: string) => {
+      setUsername(value);
+      if (!hasUserInteracted) {
+        setHasUserInteracted(true);
+      }
+    },
+    [hasUserInteracted],
+  );
 
   const handleFirstNameChange = (value: string) => {
     setFirstName(value);
@@ -331,11 +334,11 @@ export default function ProfileSetupPage() {
     country !== originalCountry ||
     avatarUrl !== originalAvatarUrl;
 
-  const handleAvatarSelect = (dataUri: string) => {
+  const handleAvatarSelect = useCallback((dataUri: string) => {
     // Store the data URI for display and upload later when user clicks Continue
     setAvatarDataUri(dataUri);
     setAvatarUrl(dataUri);
-  };
+  }, []);
 
   // Helper function to upload avatar to Convex storage
   const uploadAvatarToStorage = async (dataUri: string): Promise<string> => {

@@ -258,8 +258,10 @@ export default function AvatarSelector({
       const lastInitial = lastName?.charAt(0).toUpperCase() || "";
 
       try {
+        // Generate seed from initials, trimming whitespace and falling back to "User" if empty
+        const seedValue = `${firstInitial} ${lastInitial}`.trim();
         const config: Record<string, unknown> = {
-          seed: `${firstInitial} ${lastInitial}` || "User", // Pass full name for initials to be generated
+          seed: seedValue || "User", // Pass full name for initials to be generated
         };
         const avatar = createAvatar(style.style, config);
         return [avatar.toDataUri()];
