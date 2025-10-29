@@ -663,3 +663,79 @@ export const getFallbackThumbnailUrl = (site: string, key: string) => {
       return PLACEHOLDER_BACKDROP_URL;
   }
 };
+
+// Helper function to convert SVG to PNG for Clerk (Clerk doesn't support SVG directly)
+export const convertSvgToPng = async (dataUri: string): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      // Use 512x512 as default size for avatars
+      canvas.width = img.width || 512;
+      canvas.height = img.height || 512;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Could not get canvas context"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("Failed to convert SVG to PNG"));
+        }
+      }, "image/png");
+    };
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = dataUri;
+  });
+};
+
+// Helper function to convert data URI to Blob with proper MIME type
+export const dataUriToBlob = (dataUri: string): Blob => {
+  const [mimePart, data] = dataUri.split(",");
+
+  // Extract MIME type more robustly
+  let mimeType = "image/png"; // default
+  if (mimePart.includes("image/svg+xml")) {
+    // For Clerk, we need to convert SVG to PNG or another supported format
+    // But for now, let's just set it to SVG and handle conversion if needed
+    mimeType = "image/svg+xml";
+  } else if (mimePart.includes("image/png")) {
+    mimeType = "image/png";
+  } else if (
+    mimePart.includes("image/jpeg") ||
+    mimePart.includes("image/jpg")
+  ) {
+    mimeType = "image/jpeg";
+  } else if (mimePart.includes("image/gif")) {
+    mimeType = "image/gif";
+  } else if (mimePart.includes("image/webp")) {
+    mimeType = "image/webp";
+  } else {
+    // Try to extract from the data URI format
+    const match = mimePart.match(/:(.*?);/);
+    if (match && match[1]) {
+      mimeType = match[1];
+    }
+  }
+
+  // For non-base64 data (like URL-encoded SVG), decode it
+  const decodedData = mimePart.includes("base64")
+    ? data
+    : decodeURIComponent(data);
+
+  if (mimePart.includes("base64")) {
+    const byteCharacters = atob(decodedData);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  } else {
+    // For URL-encoded data, create blob with the decoded string
+    return new Blob([decodedData], { type: mimeType });
+  }
+};
