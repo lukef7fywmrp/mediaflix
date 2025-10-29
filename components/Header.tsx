@@ -1,7 +1,8 @@
 import logo from "@/images/logo.png";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import UserDropdown from "./UserDropdown";
 
 function Header() {
   return (
@@ -42,7 +43,7 @@ function Header() {
         {/* User actions placeholder */}
         <div className="flex items-center space-x-4">
           <SignedIn>
-            <UserButton />
+            <UserDropdown />
           </SignedIn>
           <SignedOut>
             <SignInButton>
