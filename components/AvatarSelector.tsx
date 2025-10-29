@@ -319,21 +319,19 @@ export default function AvatarSelector({
     return generatedAvatars[selectedStyle];
   }, [selectedStyle, generatedAvatars, firstName, lastName]);
 
-  // Regenerate initials avatar when firstName or lastName changes
+  // Regenerate initials avatar when name or relevant dependencies change
   useEffect(() => {
-    if (generatedAvatars["initials"]) {
-      const newAvatars = generateAvatars("initials");
-      setGeneratedAvatars((prev) => ({
-        ...prev,
-        initials: newAvatars,
-      }));
+    const newAvatars = generateAvatars("initials");
+    setGeneratedAvatars((prev) => ({
+      ...prev,
+      initials: newAvatars,
+    }));
 
-      // If initials is the currently selected style, update the selected avatar
-      if (selectedStyle === "initials" && newAvatars[0]) {
-        onAvatarSelectAction(newAvatars[0]);
-      }
+    // If initials is the currently selected style, update the selected avatar
+    if (selectedStyle === "initials" && newAvatars[0]) {
+      onAvatarSelectAction(newAvatars[0]);
     }
-  }, [firstName, lastName]);
+  }, [firstName, lastName, selectedStyle, onAvatarSelectAction]);
 
   const handleStyleChange = (styleId: string) => {
     setSelectedStyle(styleId);

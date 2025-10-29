@@ -1,10 +1,10 @@
 "use client";
 
 import AvatarSelector from "@/components/AvatarSelector";
-import { UsernameInput } from "@/components/UsernameInput";
 import { NameInput } from "@/components/NameInput";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -13,6 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  CountryDropdown,
+  type Country,
+} from "@/components/ui/country-dropdown";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -20,30 +24,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  CountryDropdown,
-  type Country,
-} from "@/components/ui/country-dropdown";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { countries } from "country-data-list";
+import { UsernameInput } from "@/components/UsernameInput";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { convertSvgToPng, dataUriToBlob } from "@/lib/utils";
-import {
-  usernameSchema,
-  nameSchema,
-  birthDateSchema,
-  bioSchema,
-  profileSchema,
-  countrySchema,
-} from "@/lib/validation";
+import { birthDateSchema, countrySchema, nameSchema } from "@/lib/validation";
 import { useReverification, useUser } from "@clerk/nextjs";
 import {
   isClerkRuntimeError,
@@ -51,10 +42,11 @@ import {
 } from "@clerk/nextjs/errors";
 import {
   Authenticated,
+  AuthLoading,
   useMutation,
   useQuery,
-  AuthLoading,
 } from "convex/react";
+import { countries } from "country-data-list";
 import {
   Calendar as CalendarIcon,
   Loader2,
@@ -74,7 +66,6 @@ export default function ProfileSetupPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthDate, setBirthDate] = useState("");
-  const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<Country | undefined>(
     undefined,
@@ -87,7 +78,6 @@ export default function ProfileSetupPage() {
   const [firstNameError, setFirstNameError] = useState<string>("");
   const [lastNameError, setLastNameError] = useState<string>("");
   const [birthDateError, setBirthDateError] = useState<string>("");
-  const [bioError, setBioError] = useState<string>("");
   const [countryError, setCountryError] = useState<string>("");
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [originalUsername, setOriginalUsername] = useState<string>("");
@@ -101,10 +91,20 @@ export default function ProfileSetupPage() {
 
   const getUserProfile = useQuery(api.userProfiles.getUserProfile);
   const upsertUserProfile = useMutation(api.userProfiles.upsertUserProfile);
-  const updateUsername = useMutation(api.userProfiles.updateUsername);
   const updateAvatar = useMutation(api.userProfiles.updateAvatar);
   const generateUploadUrl = useMutation(api.userProfiles.generateUploadUrl);
   const getAvatarUrl = useMutation(api.userProfiles.getAvatarUrl);
+
+  // Extract stable values from getUserProfile for useEffect dependencies
+  const userProfileUsername = getUserProfile?.username;
+  const userProfileFirstName = getUserProfile?.firstName;
+  const userProfileLastName = getUserProfile?.lastName;
+  const userProfileBirthDate = getUserProfile?.birthDate;
+  const userProfileCountry = getUserProfile?.country;
+
+  // Create stable computed values for profile state
+  const profileIsLoading = getUserProfile === undefined;
+  const profileExists = getUserProfile !== null && getUserProfile !== undefined;
   const changeUsername = useReverification((username: string) =>
     user?.update({ username }),
   );
@@ -117,8 +117,8 @@ export default function ProfileSetupPage() {
         const lowerUsername = user.username.toLowerCase();
         setUsername(lowerUsername);
         setOriginalUsername(lowerUsername);
-      } else if (getUserProfile?.username) {
-        const lowerUsername = getUserProfile.username.toLowerCase();
+      } else if (userProfileUsername) {
+        const lowerUsername = userProfileUsername.toLowerCase();
         setUsername(lowerUsername);
         setOriginalUsername(lowerUsername);
       } else {
@@ -138,15 +138,15 @@ export default function ProfileSetupPage() {
 
       // Set other profile fields
       if (getUserProfile) {
-        setFirstName(getUserProfile.firstName || user.firstName || "");
-        setLastName(getUserProfile.lastName || user.lastName || "");
-        setBirthDate(getUserProfile.birthDate || "");
-        setCountry(getUserProfile.country || "");
+        setFirstName(userProfileFirstName || user.firstName || "");
+        setLastName(userProfileLastName || user.lastName || "");
+        setBirthDate(userProfileBirthDate || "");
+        setCountry(userProfileCountry || "");
 
-        setOriginalFirstName(getUserProfile.firstName || user.firstName || "");
-        setOriginalLastName(getUserProfile.lastName || user.lastName || "");
-        setOriginalBirthDate(getUserProfile.birthDate || "");
-        setOriginalCountry(getUserProfile.country || "");
+        setOriginalFirstName(userProfileFirstName || user.firstName || "");
+        setOriginalLastName(userProfileLastName || user.lastName || "");
+        setOriginalBirthDate(userProfileBirthDate || "");
+        setOriginalCountry(userProfileCountry || "");
       } else {
         // Initialize from Clerk user data
         setFirstName(user.firstName || "");
@@ -155,24 +155,48 @@ export default function ProfileSetupPage() {
         setOriginalLastName(user.lastName || "");
       }
     }
-  }, [user, getUserProfile, hasUserInteracted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user?.id,
+    user?.username,
+    user?.firstName,
+    user?.lastName,
+    userProfileUsername,
+    userProfileFirstName,
+    userProfileLastName,
+    userProfileBirthDate,
+    userProfileCountry,
+    hasUserInteracted,
+  ]);
 
   // Update original values only on initial load (before user interaction)
   // Don't update when getUserProfile changes after saves - let explicit save handle it
   useEffect(() => {
     if (getUserProfile && !hasUserInteracted) {
       const lowerUsername = (
-        getUserProfile.username ||
+        userProfileUsername ||
         user?.username ||
         ""
       ).toLowerCase();
       setOriginalUsername(lowerUsername);
-      setOriginalFirstName(getUserProfile.firstName || user?.firstName || "");
-      setOriginalLastName(getUserProfile.lastName || user?.lastName || "");
-      setOriginalBirthDate(getUserProfile.birthDate || "");
-      setOriginalCountry(getUserProfile.country || "");
+      setOriginalFirstName(userProfileFirstName || user?.firstName || "");
+      setOriginalLastName(userProfileLastName || user?.lastName || "");
+      setOriginalBirthDate(userProfileBirthDate || "");
+      setOriginalCountry(userProfileCountry || "");
     }
-  }, [getUserProfile, user, hasUserInteracted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    userProfileUsername,
+    userProfileFirstName,
+    userProfileLastName,
+    userProfileBirthDate,
+    userProfileCountry,
+    user?.id,
+    user?.username,
+    user?.firstName,
+    user?.lastName,
+    hasUserInteracted,
+  ]);
 
   // Set initial avatar from Clerk
   useEffect(() => {
@@ -214,32 +238,6 @@ export default function ProfileSetupPage() {
 
   const handleLastNameChange = (value: string) => {
     setLastName(value);
-  };
-
-  const handleBirthDateChange = (value: string) => {
-    setBirthDate(value);
-    setHasUserInteracted(true);
-    setBirthDateError("");
-
-    if (value) {
-      const validation = birthDateSchema.safeParse(value);
-      if (!validation.success) {
-        setBirthDateError(validation.error.issues[0].message);
-      }
-    }
-  };
-
-  const handleBioChange = (value: string) => {
-    setBio(value);
-    setHasUserInteracted(true);
-    setBioError("");
-
-    if (value.length > 0) {
-      const validation = bioSchema.safeParse(value);
-      if (!validation.success) {
-        setBioError(validation.error.issues[0].message);
-      }
-    }
   };
 
   const handleCountryChange = (country: Country) => {
@@ -382,13 +380,7 @@ export default function ProfileSetupPage() {
     // - Query is still loading (undefined)
     // - Profile already exists (not null)
     // Only proceed when getUserProfile is exactly null (confirmed no profile exists)
-    if (
-      !user ||
-      !username ||
-      getUserProfile === undefined ||
-      getUserProfile !== null
-    )
-      return;
+    if (!user || !username || profileIsLoading || profileExists) return;
 
     const setupInitialProfile = async () => {
       try {
@@ -405,7 +397,8 @@ export default function ProfileSetupPage() {
     };
 
     setupInitialProfile();
-  }, [user, username, getUserProfile, upsertUserProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, username, profileIsLoading, profileExists]);
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -503,15 +496,6 @@ export default function ProfileSetupPage() {
       if (!birthDateValidation.success) {
         setBirthDateError(birthDateValidation.error.issues[0].message);
         toast.error(birthDateValidation.error.issues[0].message);
-        return;
-      }
-    }
-
-    if (bio) {
-      const bioValidation = bioSchema.safeParse(bio);
-      if (!bioValidation.success) {
-        setBioError(bioValidation.error.issues[0].message);
-        toast.error(bioValidation.error.issues[0].message);
         return;
       }
     }
@@ -869,7 +853,6 @@ export default function ProfileSetupPage() {
                         !!firstNameError ||
                         !!lastNameError ||
                         !!birthDateError ||
-                        !!bioError ||
                         !!countryError ||
                         isSubmitting
                       }

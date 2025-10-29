@@ -8,12 +8,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { usernameSchema } from "@/lib/validation";
 import { api } from "@/convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import { usernameSchema } from "@/lib/validation";
+import { useQuery } from "convex/react";
+import debounce from "lodash/debounce";
 import { AlertCircle, Check, HelpCircle, Loader2 } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import debounce from "lodash/debounce";
 
 interface UsernameInputProps {
   value: string;
@@ -49,15 +49,6 @@ export const UsernameInput = memo(function UsernameInput({
     }
   }, [value]);
 
-  // Create stable debounced functions
-  const debouncedOnChange = useMemo(
-    () =>
-      debounce((val: string) => {
-        onChange(val);
-      }, 600),
-    [onChange],
-  );
-
   const debouncedUpdate = useMemo(
     () =>
       debounce((val: string) => {
@@ -88,16 +79,17 @@ export const UsernameInput = memo(function UsernameInput({
     isValidForCheck ? { username: debouncedValue } : "skip",
   );
 
+  // Extract stable boolean value from query result
+  const usernameAvailableBoolean = isUsernameAvailable === true;
+  const usernameAvailableFalse = isUsernameAvailable === false;
+  const usernameAvailableUndefined = isUsernameAvailable === undefined;
+
   // Track last checked
   useEffect(() => {
-    if (
-      isUsernameAvailable !== undefined &&
-      isValidForCheck &&
-      debouncedValue
-    ) {
+    if (!usernameAvailableUndefined && isValidForCheck && debouncedValue) {
       lastCheckedRef.current = debouncedValue;
     }
-  }, [isUsernameAvailable, debouncedValue, isValidForCheck]);
+  }, [usernameAvailableUndefined, debouncedValue, isValidForCheck]);
 
   // Create stable debounced error callback
   const debouncedErrorChange = useMemo(
@@ -131,7 +123,7 @@ export const UsernameInput = memo(function UsernameInput({
   }, [debouncedValue, displayValue, debouncedErrorChange]);
 
   // Track checking state
-  const isChecking = isValidForCheck && isUsernameAvailable === undefined;
+  const isChecking = isValidForCheck && usernameAvailableUndefined;
 
   const handleChange = (newValue: string) => {
     // Convert to lowercase to match Clerk's requirements
@@ -148,10 +140,9 @@ export const UsernameInput = memo(function UsernameInput({
   const showStatusIcon = isDebouncedMatch && displayValue;
 
   const inputClassName = useMemo(() => {
-    const hasError =
-      error || (isUsernameAvailable === false && isDebouncedMatch);
+    const hasError = error || (usernameAvailableFalse && isDebouncedMatch);
     return `pr-10 ${hasError ? "border-red-500" : ""}`;
-  }, [error, isUsernameAvailable, isDebouncedMatch]);
+  }, [error, usernameAvailableFalse, isDebouncedMatch]);
 
   const statusIcon = useMemo(() => {
     if (!showStatusIcon) return null;
@@ -161,14 +152,20 @@ export const UsernameInput = memo(function UsernameInput({
     if (isChecking) {
       return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />;
     }
-    if (isUsernameAvailable === true) {
+    if (usernameAvailableBoolean) {
       return <Check className="h-4 w-4 text-green-500" />;
     }
-    if (isUsernameAvailable === false) {
+    if (usernameAvailableFalse) {
       return <AlertCircle className="h-4 w-4 text-red-500" />;
     }
     return null;
-  }, [showStatusIcon, error, isChecking, isUsernameAvailable]);
+  }, [
+    showStatusIcon,
+    error,
+    isChecking,
+    usernameAvailableBoolean,
+    usernameAvailableFalse,
+  ]);
 
   return (
     <div className="space-y-2">
@@ -203,7 +200,7 @@ export const UsernameInput = memo(function UsernameInput({
         )}
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
-      {isDebouncedMatch && !error && isUsernameAvailable === false && (
+      {isDebouncedMatch && !error && usernameAvailableFalse && (
         <p className="text-xs text-red-500">Username is already taken</p>
       )}
     </div>
