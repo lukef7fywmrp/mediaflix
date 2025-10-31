@@ -72,7 +72,7 @@ export const preferencesSchema = z
         tv: z.array(z.string()).optional(),
       })
       .optional(),
-    language: z.string().optional(),
+    language: z.array(z.string()).optional(),
     notifications: z.boolean().optional(),
   })
   .optional();

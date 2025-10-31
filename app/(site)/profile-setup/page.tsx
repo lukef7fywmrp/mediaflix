@@ -417,12 +417,12 @@ export default function ProfileSetupPage() {
     birthDate !== originalBirthDate ||
     country !== originalCountry ||
     avatarUrl !== originalAvatarUrl ||
-    JSON.stringify(favoriteMovieGenres.sort()) !==
-      JSON.stringify(originalFavoriteMovieGenres.sort()) ||
-    JSON.stringify(favoriteTVGenres.sort()) !==
-      JSON.stringify(originalFavoriteTVGenres.sort()) ||
-    JSON.stringify(languages.sort()) !==
-      JSON.stringify(originalLanguages.sort()) ||
+    JSON.stringify([...favoriteMovieGenres].sort()) !==
+      JSON.stringify([...originalFavoriteMovieGenres].sort()) ||
+    JSON.stringify([...favoriteTVGenres].sort()) !==
+      JSON.stringify([...originalFavoriteTVGenres].sort()) ||
+    JSON.stringify([...languages].sort()) !==
+      JSON.stringify([...originalLanguages].sort()) ||
     notifications !== originalNotifications;
 
   const handleAvatarSelect = useCallback((dataUri: string) => {
