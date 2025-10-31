@@ -77,6 +77,112 @@ interface TVShowDetailProps {
   videos?: TVGetVideosResult[];
 }
 
+// Helper function to find the best trailer
+const findBestTrailer = (videos: TVGetVideosResult[] | undefined) => {
+  if (!videos || videos.length === 0) return null;
+
+  // Helper functions to check title content
+  const hasOfficialTrailerInTitle = (name: string) => {
+    return name.toLowerCase().includes("official trailer");
+  };
+
+  const hasTrailerInTitle = (name: string) => {
+    const lowerName = name.toLowerCase();
+    // Check for "trailer" but not "official trailer" to avoid double matching
+    return (
+      lowerName.includes("trailer") && !lowerName.includes("official trailer")
+    );
+  };
+
+  // Priority: Official Trailer > Official Teaser > Trailer > Teaser
+  // Within each category, prioritize: "Official Trailer" > "Trailer" > other
+  // Always prioritize official content first
+
+  // Official Trailers - prioritize in this order:
+  // 1. Exact match "Official Trailer"
+  // 2. Contains "Official Trailer"
+  // 3. Contains "Trailer" (but not "Official Trailer")
+  // 4. Any official trailer
+  const officialTrailers = videos.filter(
+    (video) => video.type === "Trailer" && video.official === true,
+  );
+  if (officialTrailers.length > 0) {
+    // First priority: Exact match "Official Trailer"
+    const exactOfficialTrailer = officialTrailers.find(
+      (video) => video.name.toLowerCase().trim() === "official trailer",
+    );
+    if (exactOfficialTrailer) return exactOfficialTrailer;
+
+    // Second priority: Contains "Official Trailer"
+    const withOfficialTrailerTitle = officialTrailers.find((video) =>
+      hasOfficialTrailerInTitle(video.name),
+    );
+    if (withOfficialTrailerTitle) return withOfficialTrailerTitle;
+
+    // Third priority: Contains "Trailer" (but not "Official Trailer")
+    const withTrailerTitle = officialTrailers.find((video) =>
+      hasTrailerInTitle(video.name),
+    );
+    if (withTrailerTitle) return withTrailerTitle;
+
+    // Fallback: First official trailer
+    return officialTrailers[0];
+  }
+
+  // Official Teasers - prioritize in this order:
+  // 1. Contains "Official Trailer"
+  // 2. Contains "Trailer" (but not "Official Trailer")
+  // 3. Any official teaser
+  const officialTeasers = videos.filter(
+    (video) => video.type === "Teaser" && video.official === true,
+  );
+  if (officialTeasers.length > 0) {
+    // First priority: Contains "Official Trailer"
+    const withOfficialTrailerTitle = officialTeasers.find((video) =>
+      hasOfficialTrailerInTitle(video.name),
+    );
+    if (withOfficialTrailerTitle) return withOfficialTrailerTitle;
+
+    // Second priority: Contains "Trailer" (but not "Official Trailer")
+    const withTrailerTitle = officialTeasers.find((video) =>
+      hasTrailerInTitle(video.name),
+    );
+    if (withTrailerTitle) return withTrailerTitle;
+
+    // Fallback: First official teaser
+    return officialTeasers[0];
+  }
+
+  // Non-official Trailers - prioritize ones with "Trailer" in title
+  const trailers = videos.filter(
+    (video) => video.type === "Trailer" && video.official !== true,
+  );
+  if (trailers.length > 0) {
+    const withTrailerTitle = trailers.find((video) =>
+      hasTrailerInTitle(video.name),
+    );
+    if (withTrailerTitle) return withTrailerTitle;
+    // If no trailer with matching title, return first trailer
+    return trailers[0];
+  }
+
+  // Non-official Teasers - prioritize ones with "Trailer" in title
+  const teasers = videos.filter(
+    (video) => video.type === "Teaser" && video.official !== true,
+  );
+  if (teasers.length > 0) {
+    const withTrailerTitle = teasers.find((video) =>
+      hasTrailerInTitle(video.name),
+    );
+    if (withTrailerTitle) return withTrailerTitle;
+    // If no teaser with matching title, return first teaser
+    return teasers[0];
+  }
+
+  // Return null if no trailer/teaser found - don't show Watch Trailer button
+  return null;
+};
+
 export default function TVShowDetail({
   tvShow,
   watchProviders,
@@ -96,6 +202,8 @@ export default function TVShowDetail({
   const producers = tvShow.credits.crew.filter(
     (person) => person.job === "Producer",
   );
+
+  const bestTrailer = findBestTrailer(videos);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -192,7 +300,7 @@ export default function TVShowDetail({
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  {videos && videos.length > 0 && (
+                  {bestTrailer && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button size="lg" variant="secondary">
@@ -202,11 +310,11 @@ export default function TVShowDetail({
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-4xl w-full p-0 overflow-hidden border-primary bg-primary">
                         <DialogTitle className="sr-only">
-                          {videos[0].name}
+                          {bestTrailer.name}
                         </DialogTitle>
                         <div className="relative aspect-video">
                           <iframe
-                            src={getEmbedUrl(videos[0].site, videos[0].key)}
+                            src={getEmbedUrl(bestTrailer.site, bestTrailer.key)}
                             className="w-full h-full rounded-b-lg"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
