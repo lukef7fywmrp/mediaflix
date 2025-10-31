@@ -66,7 +66,12 @@ export const countrySchema = z
 // Profile preferences validation schema
 export const preferencesSchema = z
   .object({
-    favoriteGenres: z.array(z.string()).optional(),
+    favoriteGenres: z
+      .object({
+        movies: z.array(z.string()).optional(),
+        tv: z.array(z.string()).optional(),
+      })
+      .optional(),
     language: z.string().optional(),
     notifications: z.boolean().optional(),
   })
