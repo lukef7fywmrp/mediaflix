@@ -775,11 +775,17 @@ export default function ProfileSetupPage() {
         birthDate: birthDate || undefined,
         country: country || undefined,
         preferences: {
-          favoriteGenres: {
-            movies:
-              favoriteMovieGenres.length > 0 ? favoriteMovieGenres : undefined,
-            tv: favoriteTVGenres.length > 0 ? favoriteTVGenres : undefined,
-          },
+          favoriteGenres:
+            favoriteMovieGenres.length > 0 || favoriteTVGenres.length > 0
+              ? {
+                  movies:
+                    favoriteMovieGenres.length > 0
+                      ? favoriteMovieGenres
+                      : undefined,
+                  tv:
+                    favoriteTVGenres.length > 0 ? favoriteTVGenres : undefined,
+                }
+              : undefined,
           language: languages.length > 0 ? languages : undefined,
           notifications: notifications,
         },
