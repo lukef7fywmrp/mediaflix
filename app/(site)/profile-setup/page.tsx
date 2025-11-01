@@ -1,8 +1,11 @@
 "use client";
 
 import AvatarSelector from "@/components/AvatarSelector";
+import { GenreCheckboxItem } from "@/components/GenreCheckboxItem";
+import { LanguageMultiSelect } from "@/components/LanguageMultiSelect";
 import { NameInput } from "@/components/NameInput";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -30,9 +33,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
 import { UsernameInput } from "@/components/UsernameInput";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import useGetGenres from "@/hooks/useGetGenres";
+import useGetLanguages from "@/hooks/useGetLanguages";
 import { convertSvgToPng, dataUriToBlob } from "@/lib/utils";
 import { birthDateSchema, countrySchema, nameSchema } from "@/lib/validation";
 import { useReverification, useUser } from "@clerk/nextjs";
@@ -49,13 +55,16 @@ import {
 import { countries } from "country-data-list";
 import {
   Calendar as CalendarIcon,
+  Film,
+  Info,
   Loader2,
-  Undo2,
+  Tv,
   Upload,
   User,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function ProfileSetupPage() {
@@ -80,12 +89,33 @@ export default function ProfileSetupPage() {
   const [birthDateError, setBirthDateError] = useState<string>("");
   const [countryError, setCountryError] = useState<string>("");
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+
+  // Preferences state
+  const [favoriteMovieGenres, setFavoriteMovieGenres] = useState<string[]>([]);
+  const [favoriteTVGenres, setFavoriteTVGenres] = useState<string[]>([]);
+  const [languages, setLanguages] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<boolean>(true);
+
+  // Fade effects for scrollable genre lists
+  const [showMovieGenresFade, setShowMovieGenresFade] = useState(false);
+  const [showTVGenresFade, setShowTVGenresFade] = useState(false);
+  const movieGenresScrollRef = useRef<HTMLDivElement>(null);
+  const tvGenresScrollRef = useRef<HTMLDivElement>(null);
+
   const [originalUsername, setOriginalUsername] = useState<string>("");
   const [originalFirstName, setOriginalFirstName] = useState<string>("");
   const [originalLastName, setOriginalLastName] = useState<string>("");
   const [originalBirthDate, setOriginalBirthDate] = useState<string>("");
   const [originalCountry, setOriginalCountry] = useState<string>("");
   const [originalAvatarUrl, setOriginalAvatarUrl] = useState<string>("");
+  const [originalFavoriteMovieGenres, setOriginalFavoriteMovieGenres] =
+    useState<string[]>([]);
+  const [originalFavoriteTVGenres, setOriginalFavoriteTVGenres] = useState<
+    string[]
+  >([]);
+  const [originalLanguages, setOriginalLanguages] = useState<string[]>([]);
+  const [originalNotifications, setOriginalNotifications] =
+    useState<boolean>(true);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -95,12 +125,32 @@ export default function ProfileSetupPage() {
   const generateUploadUrl = useMutation(api.userProfiles.generateUploadUrl);
   const getAvatarUrl = useMutation(api.userProfiles.getAvatarUrl);
 
+  // Fetch genres and languages from TMDB
+  const { data: genresData, isLoading: isLoadingGenres } = useGetGenres();
+  const { data: languagesData, isLoading: isLoadingLanguages } =
+    useGetLanguages();
+
   // Extract stable values from getUserProfile for useEffect dependencies
   const userProfileUsername = getUserProfile?.username;
   const userProfileFirstName = getUserProfile?.firstName;
   const userProfileLastName = getUserProfile?.lastName;
   const userProfileBirthDate = getUserProfile?.birthDate;
   const userProfileCountry = getUserProfile?.country;
+  const userProfilePreferences = getUserProfile?.preferences;
+  const userProfileFavoriteGenres = userProfilePreferences?.favoriteGenres;
+  const userProfileFavoriteMovieGenres = userProfileFavoriteGenres?.movies;
+  const userProfileFavoriteTVGenres = userProfileFavoriteGenres?.tv;
+  const userProfileLanguage = userProfilePreferences?.language;
+  const userProfileLanguages = useMemo(() => {
+    if (Array.isArray(userProfileLanguage)) {
+      return userProfileLanguage;
+    }
+    if (userProfileLanguage) {
+      return [userProfileLanguage];
+    }
+    return [];
+  }, [userProfileLanguage]);
+  const userProfileNotifications = userProfilePreferences?.notifications;
 
   // Create stable computed values for profile state
   const profileIsLoading = getUserProfile === undefined;
@@ -147,6 +197,17 @@ export default function ProfileSetupPage() {
         setOriginalLastName(userProfileLastName || user.lastName || "");
         setOriginalBirthDate(userProfileBirthDate || "");
         setOriginalCountry(userProfileCountry || "");
+
+        // Set preferences
+        setFavoriteMovieGenres(userProfileFavoriteMovieGenres || []);
+        setFavoriteTVGenres(userProfileFavoriteTVGenres || []);
+        setLanguages(userProfileLanguages || []);
+        setNotifications(userProfileNotifications ?? true);
+
+        setOriginalFavoriteMovieGenres(userProfileFavoriteMovieGenres || []);
+        setOriginalFavoriteTVGenres(userProfileFavoriteTVGenres || []);
+        setOriginalLanguages(userProfileLanguages || []);
+        setOriginalNotifications(userProfileNotifications ?? true);
       } else {
         // Initialize from Clerk user data
         setFirstName(user.firstName || "");
@@ -166,6 +227,10 @@ export default function ProfileSetupPage() {
     userProfileLastName,
     userProfileBirthDate,
     userProfileCountry,
+    userProfileFavoriteMovieGenres,
+    userProfileFavoriteTVGenres,
+    userProfileLanguages,
+    userProfileNotifications,
     hasUserInteracted,
   ]);
 
@@ -183,6 +248,10 @@ export default function ProfileSetupPage() {
       setOriginalLastName(userProfileLastName || user?.lastName || "");
       setOriginalBirthDate(userProfileBirthDate || "");
       setOriginalCountry(userProfileCountry || "");
+      setOriginalFavoriteMovieGenres(userProfileFavoriteMovieGenres || []);
+      setOriginalFavoriteTVGenres(userProfileFavoriteTVGenres || []);
+      setOriginalLanguages(userProfileLanguages || []);
+      setOriginalNotifications(userProfileNotifications ?? true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -191,6 +260,10 @@ export default function ProfileSetupPage() {
     userProfileLastName,
     userProfileBirthDate,
     userProfileCountry,
+    userProfileFavoriteMovieGenres,
+    userProfileFavoriteTVGenres,
+    userProfileLanguages,
+    userProfileNotifications,
     user?.id,
     user?.username,
     user?.firstName,
@@ -274,6 +347,11 @@ export default function ProfileSetupPage() {
     setCalendarOpen(false);
   };
 
+  const handleLanguagesChange = (newLanguages: string[]) => {
+    setLanguages(newLanguages);
+    setHasUserInteracted(true);
+  };
+
   const handleDiscardChanges = () => {
     setShowDiscardDialog(true);
   };
@@ -317,6 +395,12 @@ export default function ProfileSetupPage() {
     setAvatarDataUri("");
     setCustomAvatarFile(null);
 
+    // Restore preferences
+    setFavoriteMovieGenres(originalFavoriteMovieGenres);
+    setFavoriteTVGenres(originalFavoriteTVGenres);
+    setLanguages(originalLanguages);
+    setNotifications(originalNotifications);
+
     setHasUserInteracted(true);
     setShowDiscardDialog(false);
   };
@@ -332,7 +416,14 @@ export default function ProfileSetupPage() {
     lastName !== originalLastName ||
     birthDate !== originalBirthDate ||
     country !== originalCountry ||
-    avatarUrl !== originalAvatarUrl;
+    avatarUrl !== originalAvatarUrl ||
+    JSON.stringify([...favoriteMovieGenres].sort()) !==
+      JSON.stringify([...originalFavoriteMovieGenres].sort()) ||
+    JSON.stringify([...favoriteTVGenres].sort()) !==
+      JSON.stringify([...originalFavoriteTVGenres].sort()) ||
+    JSON.stringify([...languages].sort()) !==
+      JSON.stringify([...originalLanguages].sort()) ||
+    notifications !== originalNotifications;
 
   const handleAvatarSelect = useCallback((dataUri: string) => {
     // Store the data URI for display and upload later when user clicks Continue
@@ -402,6 +493,62 @@ export default function ProfileSetupPage() {
     setupInitialProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, username, profileIsLoading, profileExists]);
+
+  // Handle scroll for movie genres fade
+  const handleMovieGenresScroll = () => {
+    if (movieGenresScrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        movieGenresScrollRef.current;
+      if (scrollHeight > clientHeight) {
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+        setShowMovieGenresFade(isAtTop && !isAtBottom);
+      } else {
+        setShowMovieGenresFade(false);
+      }
+    }
+  };
+
+  // Handle scroll for TV genres fade
+  const handleTVGenresScroll = () => {
+    if (tvGenresScrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        tvGenresScrollRef.current;
+      if (scrollHeight > clientHeight) {
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+        setShowTVGenresFade(isAtTop && !isAtBottom);
+      } else {
+        setShowTVGenresFade(false);
+      }
+    }
+  };
+
+  // Initial check for scrollability and fade visibility
+  useEffect(() => {
+    if (movieGenresScrollRef.current) {
+      const { scrollHeight, clientHeight, scrollTop } =
+        movieGenresScrollRef.current;
+      if (scrollHeight > clientHeight) {
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+        setShowMovieGenresFade(isAtTop && !isAtBottom);
+      } else {
+        setShowMovieGenresFade(false);
+      }
+    }
+    if (tvGenresScrollRef.current) {
+      const { scrollHeight, clientHeight, scrollTop } =
+        tvGenresScrollRef.current;
+      if (scrollHeight > clientHeight) {
+        const isAtTop = scrollTop === 0;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+        setShowTVGenresFade(isAtTop && !isAtBottom);
+      } else {
+        setShowTVGenresFade(false);
+      }
+    }
+  }, [genresData]);
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -627,6 +774,21 @@ export default function ProfileSetupPage() {
         lastName: lastName || undefined,
         birthDate: birthDate || undefined,
         country: country || undefined,
+        preferences: {
+          favoriteGenres:
+            favoriteMovieGenres.length > 0 || favoriteTVGenres.length > 0
+              ? {
+                  movies:
+                    favoriteMovieGenres.length > 0
+                      ? favoriteMovieGenres
+                      : undefined,
+                  tv:
+                    favoriteTVGenres.length > 0 ? favoriteTVGenres : undefined,
+                }
+              : undefined,
+          language: languages.length > 0 ? languages : undefined,
+          notifications: notifications,
+        },
       });
 
       // Update original values after successful save
@@ -636,6 +798,10 @@ export default function ProfileSetupPage() {
       setOriginalBirthDate(birthDate || "");
       setOriginalCountry(country || "");
       setOriginalAvatarUrl(finalAvatarUrl);
+      setOriginalFavoriteMovieGenres(favoriteMovieGenres);
+      setOriginalFavoriteTVGenres(favoriteTVGenres);
+      setOriginalLanguages(languages);
+      setOriginalNotifications(notifications);
       // Update avatarUrl to the final uploaded URL (not preview blob)
       setAvatarUrl(finalAvatarUrl);
 
@@ -661,7 +827,9 @@ export default function ProfileSetupPage() {
         </div>
       </AuthLoading>
       <Authenticated>
-        <div className="bg-background flex items-center justify-center p-4 min-h-[calc(100vh-64px)]">
+        <div
+          className={`bg-background flex items-center justify-center p-4 min-h-[calc(100vh-64px)] py-14 pb-22`}
+        >
           <div className="w-full max-w-6xl">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold">Complete Your Profile</h1>
@@ -672,209 +840,403 @@ export default function ProfileSetupPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Left Column - Form */}
-              <Card className="flex flex-col h-full">
-                <CardHeader>
-                  <CardTitle>Profile Information</CardTitle>
-                  <CardDescription>
-                    Set up your username and basic information
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 flex-1 flex flex-col">
-                  {/* Profile Picture Section */}
-                  <div className="space-y-2">
-                    <div className="space-y-4">
-                      <div className="flex flex-col items-center gap-4">
-                        <Label className="text-base font-medium">
-                          Profile Picture
-                        </Label>
-                        <div className="relative">
-                          <Avatar className="h-24 w-24 border border-border ring ring-muted">
-                            <AvatarImage
-                              src={avatarUrl}
-                              alt={user?.fullName || "User"}
-                              className="object-cover"
-                            />
-                            <AvatarFallback className="bg-muted">
-                              <User className="h-10 w-10 text-muted-foreground" />
-                            </AvatarFallback>
-                          </Avatar>
+              <div className="space-y-8">
+                <Card className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle>Profile Information</CardTitle>
+                    <CardDescription>
+                      Set up your username and basic information
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* Profile Picture Section */}
+                    <div className="space-y-2">
+                      <div className="space-y-4">
+                        <div className="flex flex-col items-center gap-4">
+                          <Label className="text-base font-medium">
+                            Profile Picture
+                          </Label>
+                          <div className="relative">
+                            <Avatar className="h-24 w-24 border border-border ring ring-muted">
+                              <AvatarImage
+                                src={avatarUrl}
+                                alt={user?.fullName || "User"}
+                                className="object-cover"
+                              />
+                              <AvatarFallback className="bg-muted">
+                                <User className="h-10 w-10 text-muted-foreground" />
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
                         </div>
-                      </div>
 
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                        onChange={handleAvatarUpload}
-                        className="hidden"
-                      />
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleCustomUpload}
-                        className="w-full"
-                      >
-                        <Upload className="size-4" />
-                        Upload Custom Avatar
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground text-center">
-                      JPG, PNG, GIF, or WebP • Max 5MB
-                    </p>
-                  </div>
-
-                  {/* Username Section */}
-                  <UsernameInput
-                    value={username}
-                    onChange={handleUsernameChange}
-                    error={usernameError}
-                    onErrorChange={setUsernameError}
-                    onInteraction={() => setHasUserInteracted(true)}
-                  />
-
-                  {/* Name Section */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <NameInput
-                      id="firstName"
-                      label="First Name"
-                      value={firstName}
-                      onChange={handleFirstNameChange}
-                      error={firstNameError}
-                      onErrorChange={setFirstNameError}
-                      onInteraction={() => setHasUserInteracted(true)}
-                      placeholder="Enter your first name"
-                    />
-                    <NameInput
-                      id="lastName"
-                      label="Last Name"
-                      value={lastName}
-                      onChange={handleLastNameChange}
-                      error={lastNameError}
-                      onErrorChange={setLastNameError}
-                      onInteraction={() => setHasUserInteracted(true)}
-                      placeholder="Enter your last name"
-                    />
-                  </div>
-
-                  {/* Birth Date Section */}
-                  <div className="space-y-2">
-                    <Label htmlFor="birthDate">Birth Date</Label>
-                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          id="birthDate"
-                          variant="outline"
-                          className={`w-full justify-start text-left font-normal ${
-                            !birthDate && "text-muted-foreground"
-                          } ${birthDateError ? "border-red-500" : ""}`}
-                        >
-                          <CalendarIcon className="h-4 w-4" />
-                          {birthDate ? (
-                            (() => {
-                              // Parse date string as local time to avoid timezone issues
-                              const [year, month, day] = birthDate
-                                .split("-")
-                                .map(Number);
-                              return new Date(
-                                year,
-                                month - 1,
-                                day,
-                              ).toLocaleDateString("en-US", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              });
-                            })()
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            birthDate
-                              ? (() => {
-                                  // Parse date string as local time to avoid timezone issues
-                                  const [year, month, day] = birthDate
-                                    .split("-")
-                                    .map(Number);
-                                  return new Date(year, month - 1, day);
-                                })()
-                              : undefined
-                          }
-                          onSelect={handleBirthDateSelect}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          autoFocus
-                          captionLayout="dropdown"
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                          onChange={handleAvatarUpload}
+                          className="hidden"
                         />
-                      </PopoverContent>
-                    </Popover>
-                    {birthDateError && (
-                      <p className="text-xs text-red-500">{birthDateError}</p>
-                    )}
-                  </div>
 
-                  {/* Location Section */}
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <CountryDropdown
-                      onChange={handleCountryChange}
-                      defaultValue={country}
-                      placeholder="Select your country"
-                    />
-                    {countryError && (
-                      <p className="text-xs text-red-500">{countryError}</p>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col space-y-2 mt-auto">
-                    {hasChanges && (
-                      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={handleDiscardChanges}
+                          onClick={handleCustomUpload}
                           className="w-full"
                         >
-                          <Undo2 className="size-4!" />
-                          Discard Changes
+                          <Upload className="size-4" />
+                          Upload Custom Avatar
                         </Button>
                       </div>
-                    )}
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={handleContinue}
-                      disabled={
-                        !username ||
-                        !!usernameError ||
-                        !!firstNameError ||
-                        !!lastNameError ||
-                        !!birthDateError ||
-                        !!countryError ||
-                        isSubmitting
-                      }
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="size-4! animate-spin" />
-                          Saving changes...
-                        </>
-                      ) : (
-                        "Save Changes"
+                      <p className="text-xs text-muted-foreground text-center">
+                        JPG, PNG, GIF, or WebP • Max 5MB
+                      </p>
+                    </div>
+
+                    {/* Username Section */}
+                    <UsernameInput
+                      value={username}
+                      onChange={handleUsernameChange}
+                      error={usernameError}
+                      onErrorChange={setUsernameError}
+                      onInteraction={() => setHasUserInteracted(true)}
+                    />
+
+                    {/* Name Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <NameInput
+                        id="firstName"
+                        label="First Name"
+                        value={firstName}
+                        onChange={handleFirstNameChange}
+                        error={firstNameError}
+                        onErrorChange={setFirstNameError}
+                        onInteraction={() => setHasUserInteracted(true)}
+                        placeholder="Enter your first name"
+                      />
+                      <NameInput
+                        id="lastName"
+                        label="Last Name"
+                        value={lastName}
+                        onChange={handleLastNameChange}
+                        error={lastNameError}
+                        onErrorChange={setLastNameError}
+                        onInteraction={() => setHasUserInteracted(true)}
+                        placeholder="Enter your last name"
+                      />
+                    </div>
+
+                    {/* Birth Date Section */}
+                    <div className="space-y-2">
+                      <Label htmlFor="birthDate">Birth Date</Label>
+                      <Popover
+                        open={calendarOpen}
+                        onOpenChange={setCalendarOpen}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="birthDate"
+                            variant="outline"
+                            className={`w-full justify-start text-left font-normal ${
+                              !birthDate && "text-muted-foreground"
+                            } ${birthDateError ? "border-red-500" : ""}`}
+                          >
+                            <CalendarIcon className="h-4 w-4" />
+                            {birthDate ? (
+                              (() => {
+                                // Parse date string as local time to avoid timezone issues
+                                const [year, month, day] = birthDate
+                                  .split("-")
+                                  .map(Number);
+                                return new Date(
+                                  year,
+                                  month - 1,
+                                  day,
+                                ).toLocaleDateString("en-US", {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                });
+                              })()
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              birthDate
+                                ? (() => {
+                                    // Parse date string as local time to avoid timezone issues
+                                    const [year, month, day] = birthDate
+                                      .split("-")
+                                      .map(Number);
+                                    return new Date(year, month - 1, day);
+                                  })()
+                                : undefined
+                            }
+                            onSelect={handleBirthDateSelect}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            autoFocus
+                            captionLayout="dropdown"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {birthDateError && (
+                        <p className="text-xs text-red-500">{birthDateError}</p>
                       )}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                    </div>
+
+                    {/* Location Section */}
+                    <div className="space-y-2">
+                      <Label htmlFor="country">Country</Label>
+                      <CountryDropdown
+                        onChange={handleCountryChange}
+                        defaultValue={country}
+                        placeholder="Select your country"
+                      />
+                      {countryError && (
+                        <p className="text-xs text-red-500">{countryError}</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Preferences Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Preferences</CardTitle>
+                    <CardDescription>
+                      Customize your viewing preferences and notifications
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Notifications */}
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label htmlFor="notifications">
+                          Email Notifications
+                        </Label>
+                        <p className="text-xs text-muted-foreground">
+                          Receive updates about new content and recommendations
+                        </p>
+                      </div>
+                      <Switch
+                        id="notifications"
+                        checked={notifications}
+                        onCheckedChange={(checked) => {
+                          setNotifications(checked);
+                          setHasUserInteracted(true);
+                        }}
+                      />
+                    </div>
+
+                    {/* Language Preference */}
+                    <LanguageMultiSelect
+                      id="language"
+                      label="Preferred Languages"
+                      description="Select languages for movies and TV shows you'd like to see recommended"
+                      languages={languages}
+                      onLanguagesChange={handleLanguagesChange}
+                      languagesData={languagesData}
+                      isLoading={isLoadingLanguages}
+                      onInteraction={() => setHasUserInteracted(true)}
+                    />
+
+                    {/* Favorite Genres */}
+                    <div className="space-y-4 mt-6">
+                      <div className="space-y-0.5">
+                        <Label>Favorite Genres</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Select your favorite genres for personalized
+                          recommendations
+                        </p>
+                      </div>
+
+                      {isLoadingGenres ? (
+                        <div className="flex items-center justify-center p-4">
+                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : (
+                        <>
+                          {/* Movie Genres */}
+                          <div className="space-y-2">
+                            <div className="relative border rounded-md overflow-hidden">
+                              <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/50">
+                                <Film className="h-4 w-4 text-muted-foreground" />
+                                <Label className="text-[13px] font-medium">
+                                  Movies
+                                </Label>
+                              </div>
+                              <div
+                                ref={movieGenresScrollRef}
+                                onScroll={handleMovieGenresScroll}
+                                className="max-h-32 overflow-y-auto p-3 space-y-2"
+                              >
+                                {genresData?.movieGenres.map((genre) => (
+                                  <GenreCheckboxItem
+                                    key={genre.id}
+                                    id={genre.id.toString()}
+                                    name={genre.name}
+                                    checked={favoriteMovieGenres.includes(
+                                      genre.name,
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFavoriteMovieGenres([
+                                          ...favoriteMovieGenres,
+                                          genre.name,
+                                        ]);
+                                      } else {
+                                        setFavoriteMovieGenres(
+                                          favoriteMovieGenres.filter(
+                                            (g) => g !== genre.name,
+                                          ),
+                                        );
+                                      }
+                                      setHasUserInteracted(true);
+                                    }}
+                                    prefix="genre-movie-"
+                                  />
+                                ))}
+                              </div>
+                              {/* Fade element */}
+                              <div
+                                className={`absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background/60 via-background/30 to-transparent pointer-events-none transition-opacity duration-300 rounded-b-md ${
+                                  showMovieGenresFade
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                }`}
+                              />
+                            </div>
+                            <div className="flex flex-wrap gap-1.5 mt-2 min-h-[24px] items-center">
+                              {favoriteMovieGenres.length > 0 ? (
+                                favoriteMovieGenres.map((genreName) => (
+                                  <Badge
+                                    key={`movie-${genreName}`}
+                                    variant="secondary"
+                                    className="text-xs py-0.5 flex items-center gap-1"
+                                  >
+                                    {genreName}
+                                    <button
+                                      type="button"
+                                      className="ml-px cursor-pointer hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring rounded-sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFavoriteMovieGenres(
+                                          favoriteMovieGenres.filter(
+                                            (g) => g !== genreName,
+                                          ),
+                                        );
+                                        setHasUserInteracted(true);
+                                      }}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">
+                                  No movie genres selected
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* TV Genres */}
+                          <div className="space-y-2">
+                            <div className="relative border rounded-md overflow-hidden">
+                              <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/50">
+                                <Tv className="h-4 w-4 text-muted-foreground" />
+                                <Label className="text-[13px] font-medium">
+                                  TV Shows
+                                </Label>
+                              </div>
+                              <div
+                                ref={tvGenresScrollRef}
+                                onScroll={handleTVGenresScroll}
+                                className="max-h-32 overflow-y-auto p-3 space-y-2"
+                              >
+                                {genresData?.tvGenres.map((genre) => (
+                                  <GenreCheckboxItem
+                                    key={genre.id}
+                                    id={genre.id.toString()}
+                                    name={genre.name}
+                                    checked={favoriteTVGenres.includes(
+                                      genre.name,
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFavoriteTVGenres([
+                                          ...favoriteTVGenres,
+                                          genre.name,
+                                        ]);
+                                      } else {
+                                        setFavoriteTVGenres(
+                                          favoriteTVGenres.filter(
+                                            (g) => g !== genre.name,
+                                          ),
+                                        );
+                                      }
+                                      setHasUserInteracted(true);
+                                    }}
+                                    prefix="genre-tv-"
+                                  />
+                                ))}
+                              </div>
+                              {/* Fade element */}
+                              <div
+                                className={`absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-background/60 via-background/30 to-transparent pointer-events-none transition-opacity duration-300 rounded-b-md ${
+                                  showTVGenresFade ? "opacity-100" : "opacity-0"
+                                }`}
+                              />
+                            </div>
+                            <div className="flex flex-wrap gap-1.5 mt-2 min-h-[24px] items-center">
+                              {favoriteTVGenres.length > 0 ? (
+                                favoriteTVGenres.map((genreName) => (
+                                  <Badge
+                                    key={`tv-${genreName}`}
+                                    variant="secondary"
+                                    className="text-xs py-0.5 flex items-center gap-1"
+                                  >
+                                    {genreName}
+                                    <button
+                                      type="button"
+                                      className="ml-px cursor-pointer hover:opacity-70 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring rounded-sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFavoriteTVGenres(
+                                          favoriteTVGenres.filter(
+                                            (g) => g !== genreName,
+                                          ),
+                                        );
+                                        setHasUserInteracted(true);
+                                      }}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">
+                                  No tv genres selected
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
               {/* Right Column - Avatar Selection */}
-              <Card className="flex flex-col h-full">
+              <Card className="flex flex-col h-fit">
                 <CardHeader>
                   <CardTitle>Choose Your Avatar</CardTitle>
                   <CardDescription>
@@ -891,6 +1253,48 @@ export default function ProfileSetupPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Fixed Bottom Action Bar */}
+            {hasChanges && (
+              <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-lg z-50 animate-in slide-in-from-bottom duration-300">
+                <div className="max-w-6xl mx-auto p-3.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Info className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Unsaved changes
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        onClick={handleDiscardChanges}
+                        size="sm"
+                      >
+                        Discard
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleContinue}
+                        size="sm"
+                        disabled={
+                          !username ||
+                          !!usernameError ||
+                          !!firstNameError ||
+                          !!lastNameError ||
+                          !!birthDateError ||
+                          !!countryError ||
+                          isSubmitting
+                        }
+                      >
+                        Save Changes
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Discard Changes Confirmation Dialog */}
             <Dialog

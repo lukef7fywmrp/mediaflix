@@ -17,8 +17,13 @@ export default defineSchema({
     country: v.optional(v.string()),
     preferences: v.optional(
       v.object({
-        favoriteGenres: v.optional(v.array(v.string())),
-        language: v.optional(v.string()),
+        favoriteGenres: v.optional(
+          v.object({
+            movies: v.optional(v.array(v.string())),
+            tv: v.optional(v.array(v.string())),
+          }),
+        ),
+        language: v.optional(v.array(v.string())),
         notifications: v.optional(v.boolean()),
       }),
     ),
