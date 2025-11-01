@@ -1022,7 +1022,10 @@ export default function ProfileSetupPage() {
                       <Switch
                         id="notifications"
                         checked={notifications}
-                        onCheckedChange={setNotifications}
+                        onCheckedChange={(checked) => {
+                          setNotifications(checked);
+                          setHasUserInteracted(true);
+                        }}
                       />
                     </div>
 
@@ -1089,6 +1092,7 @@ export default function ProfileSetupPage() {
                                           ),
                                         );
                                       }
+                                      setHasUserInteracted(true);
                                     }}
                                     prefix="genre-movie-"
                                   />
@@ -1122,6 +1126,7 @@ export default function ProfileSetupPage() {
                                             (g) => g !== genreName,
                                           ),
                                         );
+                                        setHasUserInteracted(true);
                                       }}
                                     >
                                       <X className="h-3 w-3" />
@@ -1171,6 +1176,7 @@ export default function ProfileSetupPage() {
                                           ),
                                         );
                                       }
+                                      setHasUserInteracted(true);
                                     }}
                                     prefix="genre-tv-"
                                   />
@@ -1202,6 +1208,7 @@ export default function ProfileSetupPage() {
                                             (g) => g !== genreName,
                                           ),
                                         );
+                                        setHasUserInteracted(true);
                                       }}
                                     >
                                       <X className="h-3 w-3" />
@@ -1275,14 +1282,7 @@ export default function ProfileSetupPage() {
                           isSubmitting
                         }
                       >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="size-4 mr-2 animate-spin" />
-                            Saving changes...
-                          </>
-                        ) : (
-                          "Save Changes"
-                        )}
+                        Save Changes
                       </Button>
                     </div>
                   </div>
