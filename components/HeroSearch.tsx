@@ -457,11 +457,11 @@ export default function HeroSearch() {
                                 >
                                   {isMovie ? "Movie" : "TV"}
                                 </span>
-                                {result.adult && (
+                                {/* {result.adult && (
                                   <span className="flex-shrink-0 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded bg-red-500/15 text-red-600 dark:bg-red-400/15 dark:text-red-400">
                                     18+
                                   </span>
-                                )}
+                                )} */}
                               </div>
                               <div className="flex items-center gap-2.5 text-xs mb-1.5">
                                 {releaseDate && (

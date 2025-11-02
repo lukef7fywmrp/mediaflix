@@ -45,8 +45,12 @@ import BackButton from "./BackButton";
 import ExpandableOverview from "./ExpandableOverview";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import TVShowVideoGallery from "./TVShowVideoGallery";
+import WatchlistButton from "./WatchlistButton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
+import { auth } from "@clerk/nextjs/server";
+import { api } from "@/convex/_generated/api";
+import { preloadQuery } from "convex/nextjs";
 
 // Helper function to get embedded video URL for modal
 const getEmbedUrl = (site: string, key: string) => {
@@ -183,12 +187,13 @@ const findBestTrailer = (videos: TVGetVideosResult[] | undefined) => {
   return null;
 };
 
-export default function TVShowDetail({
+export default async function TVShowDetail({
   tvShow,
   watchProviders,
   country,
   videos,
 }: TVShowDetailProps) {
+  const { userId } = await auth();
   const totalEpisodes = tvShow.number_of_episodes;
   const totalSeasons = tvShow.number_of_seasons;
   const lastAirDate = tvShow.last_air_date;
@@ -204,6 +209,14 @@ export default function TVShowDetail({
   );
 
   const bestTrailer = findBestTrailer(videos);
+
+  const preloaded = userId
+    ? await preloadQuery(api.watchlist.isInWatchlist, {
+        mediaType: "tv",
+        mediaId: tvShow.id,
+        userId: userId ?? "",
+      })
+    : undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
@@ -322,6 +335,19 @@ export default function TVShowDetail({
                         </div>
                       </DialogContent>
                     </Dialog>
+                  )}
+                  {preloaded && (
+                    <WatchlistButton
+                      mediaType="tv"
+                      mediaId={tvShow.id}
+                      title={tvShow.name}
+                      posterPath={tvShow.poster_path}
+                      releaseDate={tvShow.first_air_date}
+                      overview={tvShow.overview ?? undefined}
+                      voteAverage={tvShow.vote_average}
+                      voteCount={tvShow.vote_count}
+                      preloaded={preloaded}
+                    />
                   )}
                   {tvShow.homepage && (
                     <Button

@@ -34,4 +34,20 @@ export default defineSchema({
   })
     .index("by_user_id", ["userId"])
     .index("by_username", ["username"]),
+
+  // Watchlist table for movies and TV shows
+  watchlist: defineTable({
+    userId: v.string(), // Clerk user ID
+    mediaType: v.union(v.literal("movie"), v.literal("tv")), // Type of media
+    mediaId: v.number(), // TMDB ID of the movie or TV show
+    title: v.string(), // Media title
+    posterPath: v.optional(v.string()), // Poster image path
+    releaseDate: v.optional(v.string()), // Release or first air date
+    overview: v.optional(v.string()), // Media overview/description
+    voteAverage: v.optional(v.number()), // Average rating
+    voteCount: v.optional(v.number()), // Number of votes
+    addedAt: v.number(), // Timestamp when added to watchlist
+  })
+    .index("by_user_id", ["userId"])
+    .index("by_user_and_media", ["userId", "mediaType", "mediaId"]),
 });

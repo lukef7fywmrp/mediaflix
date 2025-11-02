@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { Settings, Bookmark } from "lucide-react";
 import SignOutButton from "./SignOutButton";
 import { useProfile } from "@/hooks/useProfile";
 import { Authenticated } from "convex/react";
@@ -60,6 +60,12 @@ function UserDropdown() {
           </div>
         </Authenticated>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/watchlist" className="flex items-center">
+            <Bookmark className="h-4 w-4" />
+            <span>My Watchlist</span>
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/profile-setup" className="flex items-center">
             <Settings className="h-4 w-4" />

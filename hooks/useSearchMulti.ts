@@ -8,7 +8,7 @@ export function useSearchMulti(query: string) {
       const response = await tmdbClient.v3.search.searchMulti({
         query: query.trim(),
         page: pageParam,
-        include_adult: true,
+        // include_adult: true,
       });
 
       const filtered = response.results.filter(
