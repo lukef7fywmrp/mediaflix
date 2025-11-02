@@ -14,24 +14,25 @@ import {
 import { toast } from "sonner";
 import { Authenticated, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 export default function ClearWatchlistDialog() {
   const [open, setOpen] = useState(false);
   const clearWatchlist = useMutation(api.watchlist.clearWatchlist);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const handleConfirm = async () => {
+    setIsPending(true);
     try {
-      startTransition(async () => {
-        const count = await clearWatchlist();
-        toast.success(
-          `Removed ${count} item${count !== 1 ? "s" : ""} from your watchlist`,
-        );
-        setOpen(false);
-      });
+      const count = await clearWatchlist();
+      toast.success(
+        `Removed ${count} item${count !== 1 ? "s" : ""} from your watchlist`,
+      );
+      setOpen(false);
     } catch (error) {
       console.error("Error clearing watchlist:", error);
       toast.error("Failed to clear watchlist. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   };
 

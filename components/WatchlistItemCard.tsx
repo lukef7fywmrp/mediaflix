@@ -1,27 +1,27 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
-import { formatDateShort, getPosterUrl } from "@/lib/utils";
-import { Calendar, Film, Tv, Users, Minus, X } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import RatingSource from "./RatingSource";
-import { useMutation } from "convex/react";
-import { useAuth } from "@clerk/nextjs";
-import { toast } from "sonner";
-import { useState } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { api } from "@/convex/_generated/api";
+import { formatDateShort, getPosterUrl } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
+import { useMutation } from "convex/react";
+import { Calendar, Film, Tv, Users, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { toast } from "sonner";
+import RatingSource from "./RatingSource";
 
 interface WatchlistItemCardProps {
   item: (typeof api.watchlist.getWatchlist._returnType)["page"][number];

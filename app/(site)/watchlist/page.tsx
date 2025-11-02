@@ -3,17 +3,17 @@
 import ClearWatchlistDialog from "@/components/ClearWatchlistDialog";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WatchlistItemCard from "@/components/WatchlistItemCard";
 import { api } from "@/convex/_generated/api";
-import { Authenticated, usePaginatedQuery, useQuery } from "convex/react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { usePaginatedQuery, useQuery } from "convex/react";
 import { Bookmark, Film, Grid3x3, Loader2, Search, Tv, X } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useDebounce } from "@/hooks/useDebounce";
 
 type FilterType = "all" | "movie" | "tv";
 
@@ -47,6 +47,10 @@ export default function WatchlistPage() {
       : {},
   );
 
+  // Extract stable values from countsData for dependency tracking
+  const countsFiltered = countsData?.filtered;
+  const countsTotal = countsData?.total;
+
   // Ref to store the last successfully loaded counts data
   const lastSuccessfulCountsDataRef = useRef<
     | {
@@ -58,10 +62,13 @@ export default function WatchlistPage() {
 
   // Update the ref whenever countsData is successfully loaded
   useEffect(() => {
-    if (countsData) {
-      lastSuccessfulCountsDataRef.current = countsData;
+    if (countsFiltered !== undefined && countsTotal !== undefined) {
+      lastSuccessfulCountsDataRef.current = {
+        filtered: countsFiltered,
+        total: countsTotal,
+      };
     }
-  }, [countsData]);
+  }, [countsFiltered, countsTotal]);
 
   // Use the current countsData if available, otherwise use the last successful data from the ref
   const currentCountsData = countsData ??
