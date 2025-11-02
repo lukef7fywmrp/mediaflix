@@ -9,6 +9,7 @@
  */
 
 import type * as userProfiles from "../userProfiles.js";
+import type * as watchlist from "../watchlist.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   userProfiles: typeof userProfiles;
+  watchlist: typeof watchlist;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

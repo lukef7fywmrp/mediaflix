@@ -45,8 +45,12 @@ import CastSection from "./CastSection";
 import ExpandableOverview from "./ExpandableOverview";
 import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
+import WatchlistButton from "./WatchlistButton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import WatchProviders from "./WatchProviders";
+import { preloadQuery } from "convex/nextjs";
+import { api } from "@/convex/_generated/api";
+import { auth } from "@clerk/nextjs/server";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
@@ -168,11 +172,12 @@ const findBestTrailer = (
   return null;
 };
 
-export default function MovieDetail({
+export default async function MovieDetail({
   movie,
   watchProviders,
   country,
 }: MovieDetailProps) {
+  const { userId } = await auth();
   const director = movie.credits.crew.find(
     (person) => person.job === "Director",
   );
@@ -182,6 +187,14 @@ export default function MovieDetail({
   const producers = movie.credits.crew.filter(
     (person) => person.job === "Producer",
   );
+
+  const preloaded = userId
+    ? await preloadQuery(api.watchlist.isInWatchlist, {
+        mediaType: "movie",
+        mediaId: movie.id,
+        userId: userId ?? "",
+      })
+    : undefined;
 
   const bestTrailer = findBestTrailer(movie.videos);
 
@@ -302,6 +315,19 @@ export default function MovieDetail({
                         </div>
                       </DialogContent>
                     </Dialog>
+                  )}
+                  {preloaded && (
+                    <WatchlistButton
+                      mediaType="movie"
+                      mediaId={movie.id}
+                      title={movie.title}
+                      posterPath={movie.poster_path ?? undefined}
+                      releaseDate={movie.release_date}
+                      overview={movie.overview ?? undefined}
+                      voteAverage={movie.vote_average}
+                      voteCount={movie.vote_count}
+                      preloaded={preloaded}
+                    />
                   )}
                   {movie.homepage && (
                     <Button

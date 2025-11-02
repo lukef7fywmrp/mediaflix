@@ -32,12 +32,14 @@ function Header() {
           >
             TV Shows
           </Link>
-          {/* <Link
-              href="/my-list"
+          <SignedIn>
+            <Link
+              href="/watchlist"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-            My List
-          </Link> */}
+              My Watchlist
+            </Link>
+          </SignedIn>
         </nav>
 
         {/* User actions placeholder */}

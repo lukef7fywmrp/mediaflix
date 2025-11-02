@@ -1,8 +1,7 @@
-import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
+import { useMutation, useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export function useProfile() {
   const { user, isLoaded } = useUser();
