@@ -44,9 +44,11 @@ export default function WatchlistPage() {
   // Get counts (returns both filtered and total counts in one query)
   const countsData = useQuery(
     api.watchlist.getWatchlistCounts,
-    debouncedSearchQuery.trim() !== ""
-      ? { searchQuery: debouncedSearchQuery.trim(), userId: userId! }
-      : { userId: userId! },
+    userId
+      ? debouncedSearchQuery.trim() !== ""
+        ? { searchQuery: debouncedSearchQuery.trim(), userId }
+        : { userId }
+      : "skip",
   );
 
   // Extract stable values from countsData for dependency tracking
