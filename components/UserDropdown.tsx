@@ -12,6 +12,8 @@ import { useUser } from "@clerk/nextjs";
 import { Bookmark, Settings } from "lucide-react";
 import Link from "next/link";
 import SignOutButton from "./SignOutButton";
+import UserProfile from "./UserProfile";
+import { Authenticated } from "convex/react";
 
 function UserDropdown() {
   const { user, isLoaded } = useUser();
@@ -39,21 +41,9 @@ function UserDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        <div className="flex items-center justify-start gap-2 p-2">
-          <div className="flex flex-col space-y-1 leading-none">
-            <p className="text-sm font-medium">
-              {user?.username?.toLowerCase() ||
-                (user.firstName && user.lastName
-                  ? `${user.firstName} ${user.lastName}`
-                  : user.firstName || "User")}
-            </p>
-            {user.emailAddresses?.[0]?.emailAddress && (
-              <p className="w-[200px] truncate text-xs text-muted-foreground">
-                {user.emailAddresses[0].emailAddress}
-              </p>
-            )}
-          </div>
-        </div>
+        <Authenticated>
+          <UserProfile user={user} />
+        </Authenticated>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/watchlist" className="flex items-center">
