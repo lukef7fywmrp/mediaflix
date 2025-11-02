@@ -184,7 +184,6 @@ export const getWatchlist = query({
 export const getWatchlistCounts = query({
   args: {
     searchQuery: v.optional(v.string()),
-    userId: v.string(),
   },
   returns: v.object({
     filtered: v.object({
@@ -199,13 +198,14 @@ export const getWatchlistCounts = query({
     }),
   }),
   handler: async (ctx, args) => {
-    if (!args.userId) {
-      throw new Error("User ID is required");
+    const userId = await ctx.auth.getUserIdentity();
+    if (!userId) {
+      throw new Error("Not authenticated");
     }
 
     const allItems = await ctx.db
       .query("watchlist")
-      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_id", (q) => q.eq("userId", userId.subject))
       .collect();
 
     // Calculate total (unfiltered) counts
