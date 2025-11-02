@@ -1,23 +1,20 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useUser } from "@clerk/nextjs";
+import { Bookmark, Settings } from "lucide-react";
 import Link from "next/link";
-import { Settings, Bookmark } from "lucide-react";
 import SignOutButton from "./SignOutButton";
-import { useProfile } from "@/hooks/useProfile";
-import { Authenticated } from "convex/react";
 
 function UserDropdown() {
   const { user, isLoaded } = useUser();
-  const { profile } = useProfile();
 
   // Don't render until user is loaded to prevent hydration mismatch
   if (!isLoaded || !user) {
@@ -42,23 +39,21 @@ function UserDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
-        <Authenticated>
-          <div className="flex items-center justify-start gap-2 p-2">
-            <div className="flex flex-col space-y-1 leading-none">
-              <p className="text-sm font-medium">
-                {profile?.username?.toLowerCase() ||
-                  (user.firstName && user.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : user.firstName || "User")}
+        <div className="flex items-center justify-start gap-2 p-2">
+          <div className="flex flex-col space-y-1 leading-none">
+            <p className="text-sm font-medium">
+              {user?.username?.toLowerCase() ||
+                (user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : user.firstName || "User")}
+            </p>
+            {user.emailAddresses?.[0]?.emailAddress && (
+              <p className="w-[200px] truncate text-xs text-muted-foreground">
+                {user.emailAddresses[0].emailAddress}
               </p>
-              {user.emailAddresses?.[0]?.emailAddress && (
-                <p className="w-[200px] truncate text-xs text-muted-foreground">
-                  {user.emailAddresses[0].emailAddress}
-                </p>
-              )}
-            </div>
+            )}
           </div>
-        </Authenticated>
+        </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/watchlist" className="flex items-center">

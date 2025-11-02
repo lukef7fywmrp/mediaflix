@@ -9,7 +9,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WatchlistItemCard from "@/components/WatchlistItemCard";
 import { api } from "@/convex/_generated/api";
 import { useDebounce } from "@/hooks/useDebounce";
-import { usePaginatedQuery, useQuery } from "convex/react";
+import { useAuth } from "@clerk/nextjs";
+import { Authenticated, usePaginatedQuery, useQuery } from "convex/react";
 import { Bookmark, Film, Grid3x3, Loader2, Search, Tv, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -18,6 +19,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 type FilterType = "all" | "movie" | "tv";
 
 export default function WatchlistPage() {
+  const { userId } = useAuth();
   const [filter, setFilter] = useState<FilterType>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -43,8 +45,8 @@ export default function WatchlistPage() {
   const countsData = useQuery(
     api.watchlist.getWatchlistCounts,
     debouncedSearchQuery.trim() !== ""
-      ? { searchQuery: debouncedSearchQuery.trim() }
-      : {},
+      ? { searchQuery: debouncedSearchQuery.trim(), userId: userId! }
+      : { userId: userId! },
   );
 
   // Extract stable values from countsData for dependency tracking
@@ -153,7 +155,11 @@ export default function WatchlistPage() {
               My Watchlist
             </h1>
 
-            {hasAnyWatchlistItems && <ClearWatchlistDialog />}
+            <Authenticated>
+              <ClearWatchlistDialog
+                hasAnyWatchlistItems={hasAnyWatchlistItems}
+              />
+            </Authenticated>
           </div>
 
           {(hasAnyWatchlistItems || showLoadingSkeleton) && (
