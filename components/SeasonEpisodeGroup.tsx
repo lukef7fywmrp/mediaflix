@@ -17,26 +17,26 @@ function SeasonEpisodeGroup({
   tvShowId: number;
 }) {
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow py-1 sm:p-0 border-0 shadow-none sm:border sm:shadow-sm rounded-none sm:rounded-xl border-b last:border-b-0 last:pb-0">
-      <div className="flex flex-col sm:flex-row sm:min-h-[10rem]">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow p-0">
+      <div className="flex min-h-[10rem]">
         {/* Season Poster - Touches all card edges */}
-        <div className="relative w-45 aspect-[2/3] sm:w-32 sm:h-auto sm:aspect-auto flex-shrink-0">
+        <div className="relative w-32 flex-shrink-0">
           {season.poster_path ? (
             <Image
               src={getPosterUrl(season.poster_path)}
               alt={season.name}
               fill
-              className="object-cover rounded-lg sm:rounded-none"
+              className="object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center rounded-lg sm:rounded-none">
+            <div className="w-full h-full bg-muted flex items-center justify-center">
               <Tv className="h-10 w-10 text-muted-foreground" />
             </div>
           )}
         </div>
 
         {/* Season Info - Properly padded content area */}
-        <div className="flex-1 min-w-0 px-2 py-4 sm:p-4 flex flex-col justify-center">
+        <div className="flex-1 min-w-0 p-4 flex flex-col justify-center">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-lg font-semibold truncate">{season.name}</h3>
             <Badge variant="secondary" className="text-xs px-2 py-1">
@@ -54,7 +54,7 @@ function SeasonEpisodeGroup({
           </div>
 
           {season.overview && (
-            <p className="text-[13px] sm:text-sm text-muted-foreground mb-2 line-clamp-2 leading-tight">
+            <p className="text-sm text-muted-foreground mb-2 line-clamp-2 leading-tight">
               {season.overview}
             </p>
           )}

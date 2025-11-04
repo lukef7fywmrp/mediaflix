@@ -398,16 +398,16 @@ export default function SeasonDetail({
               {season.episodes.map((episode) => (
                 <Card
                   key={episode.episode_number}
-                  className="overflow-hidden hover:shadow-md transition-all duration-300 group border border-border/50 bg-card py-0 shadow-sm rounded-lg "
+                  className="overflow-hidden hover:shadow-md transition-all duration-300 group border border-border/50 bg-card py-0 shadow-sm"
                 >
-                  <div className="flex flex-col sm:flex-row">
+                  <div className="flex">
                     {/* Episode Image - Touches card corners */}
-                    <div className="relative w-full aspect-video sm:w-56 lg:w-72 xl:w-96 sm:aspect-auto flex-shrink-0">
+                    <div className="relative w-56 lg:w-72 xl:w-96 flex-shrink-0">
                       <Image
                         src={getBackdropUrl(episode.still_path)}
                         alt={episode.name}
                         fill
-                        className="object-cover transition-transform duration-300 rounded-t-lg sm:rounded-none"
+                        className="object-cover transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-black/20" />
                       {/* Only show play icon on hover if there's a backdrop */}
@@ -428,23 +428,23 @@ export default function SeasonDetail({
                     </div>
 
                     {/* Episode Content - Better Layout */}
-                    <div className="flex-1 min-w-0 px-3.5 py-4 sm:p-6 flex flex-col justify-between">
+                    <div className="flex-1 min-w-0 p-6 flex flex-col justify-between">
                       <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-bold mb-2 group-hover:text-primary transition-colors truncate">
+                        <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors truncate">
                           {episode.name}
                         </h3>
 
                         {/* Compact metadata */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground mb-3">
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
                           <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <Calendar className="h-4 w-4" />
                             {episode.air_date
                               ? formatDateShort(episode.air_date)
                               : "TBA"}
                           </span>
                           {episode.runtime && (
                             <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <Clock className="h-4 w-4" />
                               {formatRuntime(episode.runtime)}
                             </span>
                           )}
@@ -458,7 +458,7 @@ export default function SeasonDetail({
                         {episode.crew.find(
                           (person) => person.job === "Director",
                         ) && (
-                          <div className="text-xs sm:text-sm text-muted-foreground mb-3">
+                          <div className="text-sm text-muted-foreground mb-3">
                             <span className="font-medium">Director:</span>{" "}
                             {
                               episode.crew.find(
@@ -469,13 +469,13 @@ export default function SeasonDetail({
                         )}
 
                         {/* Overview */}
-                        <p className="text-[13px] sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
                           {episode.overview || "No overview available."}
                         </p>
 
                         {/* Guest stars count */}
                         {episode.guest_stars.length > 0 && (
-                          <div className="text-xs sm:text-sm text-muted-foreground">
+                          <div className="text-sm text-muted-foreground">
                             {episode.guest_stars.length} guest star
                             {episode.guest_stars.length !== 1 ? "s" : ""}
                           </div>
@@ -490,10 +490,10 @@ export default function SeasonDetail({
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 sm:h-9 text-xs sm:text-sm group-hover:bg-primary group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+                            className="h-9 text-sm group-hover:bg-primary group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
                           >
                             View Details
-                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <ChevronRight className="h-4 w-4 ml-1" />
                           </Button>
                         </Link>
                       </div>

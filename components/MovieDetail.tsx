@@ -8,7 +8,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-  cn,
   formatDate,
   formatDateShort,
   formatLanguage,
@@ -202,7 +201,7 @@ export default async function MovieDetail({
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Backdrop Hero Section */}
-      <div className={cn("relative overflow-hidden")}>
+      <div className="relative h-[70vh] overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={getBackdropUrl(movie.backdrop_path)}
@@ -215,17 +214,17 @@ export default async function MovieDetail({
         </div>
 
         {/* Navigation */}
-        <div className="relative z-10 p-4 lg:p-6 container mx-auto">
+        <div className="relative z-10 p-6 container mx-auto">
           <BackButton />
         </div>
 
         {/* Movie Info Overlay */}
-        <div className="relative px-4 py-6 lg:px-6 lg:pt-28 xl:pt-34 z-10">
+        <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+            <div className="flex flex-col lg:flex-row gap-6">
               {/* Poster */}
               <div className="flex-shrink-0">
-                <div className="relative w-32 h-48 lg:w-64 lg:h-96 rounded-lg overflow-hidden shadow-2xl">
+                <div className="relative w-48 h-72 lg:w-64 lg:h-96 rounded-lg overflow-hidden shadow-2xl">
                   <Image
                     src={getPosterUrl(movie.poster_path)}
                     alt={movie.title}
@@ -237,7 +236,7 @@ export default async function MovieDetail({
 
               {/* Movie Details */}
               <div className="flex-1 text-white">
-                <div className="flex flex-wrap items-center gap-2 mb-3 lg:mb-4">
+                <div className="flex flex-wrap items-center gap-2 mb-4">
                   {movie.genres.map((genre) => (
                     <Badge
                       key={genre.id}
@@ -249,27 +248,27 @@ export default async function MovieDetail({
                   ))}
                 </div>
 
-                <h1 className="text-2xl lg:text-4xl font-extrabold mb-3 lg:mb-4 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-extrabold mb-4 leading-tight">
                   {movie.title}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-3 lg:gap-6 mb-4 lg:mb-6 text-xs lg:text-base">
-                  <div className="flex items-center gap-1.5 lg:gap-2">
-                    <Calendar className="h-4 w-4 lg:h-5 lg:w-5" />
+                <div className="flex flex-wrap items-center gap-6 mb-6 text-sm lg:text-base">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
                     <span>{formatDate(movie.release_date)}</span>
                   </div>
                   {movie.runtime && (
-                    <div className="flex items-center gap-1.5 lg:gap-2">
-                      <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
                       <span>{formatRuntime(movie.runtime)}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1.5 lg:gap-2">
+                  <div className="flex items-center gap-2">
                     <RatingSource
                       rating={movie.vote_average}
                       className="text-white"
                     />
-                    <span className="text-white/70 text-xs lg:text-sm">
+                    <span className="text-white/70">
                       ({movie.vote_count.toLocaleString()})
                     </span>
                   </div>
@@ -277,13 +276,13 @@ export default async function MovieDetail({
 
                 <ExpandableOverview
                   overview={movie.overview}
-                  className="mb-4 lg:mb-6 max-w-4xl"
-                  textClassName="leading-relaxed tracking-wide text-xs lg:text-base mb-1"
+                  className="mb-6 max-w-4xl"
+                  textClassName="leading-relaxed tracking-wide text-sm lg:text-base mb-1"
                   maxLines={3}
                 />
 
                 {/* Watch Providers */}
-                <div className="mb-4 lg:mb-6">
+                <div className="mb-6">
                   <WatchProviders
                     watchProviders={watchProviders || { flatrate: [] }}
                     country={country}
@@ -293,16 +292,12 @@ export default async function MovieDetail({
                   />
                 </div>
 
-                <div className="flex flex-col sm:flex-row flex-wrap gap-3 lg:gap-4">
+                <div className="flex flex-wrap gap-4">
                   {bestTrailer && (
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button
-                          size="lg"
-                          variant="secondary"
-                          className="w-full sm:w-auto h-9 px-4 lg:h-10 lg:px-6"
-                        >
-                          <Play className="h-4 w-4 lg:h-5 lg:w-5" />
+                        <Button size="lg" variant="secondary">
+                          <Play className="h-5 w-5" />
                           Watch Trailer
                         </Button>
                       </DialogTrigger>
@@ -338,7 +333,7 @@ export default async function MovieDetail({
                     <Button
                       variant="outline"
                       size="lg"
-                      className="w-full sm:w-auto h-9 px-4 lg:h-10 lg:px-6 bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl text-xs lg:text-sm"
+                      className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                       asChild
                     >
                       <a
@@ -346,18 +341,15 @@ export default async function MovieDetail({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Globe className="h-4 w-4 lg:h-5 lg:w-5" />
-                        <span className="hidden sm:inline">
-                          View more about {movie.title}
-                        </span>
-                        <span className="sm:hidden">More info</span>
+                        <Globe className="h-5 w-5" />
+                        View more about {movie.title}
                       </a>
                     </Button>
                   )}
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto h-9 px-4 lg:h-10 lg:px-6 bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl text-xs lg:text-sm"
+                    className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
                     asChild
                   >
                     <a
@@ -365,7 +357,7 @@ export default async function MovieDetail({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <ExternalLink className="h-4 w-4 lg:h-5 lg:w-5" />
+                      <ExternalLink className="h-5 w-5" />
                       View on TMDB
                     </a>
                   </Button>
