@@ -18,12 +18,12 @@ export default function Home() {
         {/* Header Section */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <TrendingUp className="hidden md:block h-8 w-8 text-primary" />
+            <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent whitespace-nowrap">
               Top {mediaType === "movies" ? "Movies" : "TV Shows"} right now
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Discover the most popular{" "}
             {mediaType === "movies" ? "movies" : "TV shows"} according to The
             Movie Database (TMDB)

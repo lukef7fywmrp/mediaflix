@@ -65,11 +65,12 @@ export default function WatchlistButton({
       <Button
         variant="outline"
         size="lg"
-        className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
+        className="w-full sm:w-auto h-9 px-4 lg:h-10 lg:px-6 bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl text-xs lg:text-sm"
         disabled
       >
-        <Loader2 className="h-5 w-5 animate-spin" />
-        Add to Watchlist
+        <Loader2 className="h-4 w-4 lg:h-5 lg:w-5 animate-spin" />
+        <span className="hidden sm:inline">Add to Watchlist</span>
+        <span className="sm:hidden">Watchlist</span>
       </Button>
     );
   }
@@ -79,17 +80,17 @@ export default function WatchlistButton({
       variant="outline"
       size="lg"
       onClick={handleToggleWatchlist}
-      className="bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl"
+      className="w-full sm:w-auto h-9 px-4 lg:h-10 lg:px-6 bg-white/20 border-white/30 text-white hover:border-white/50 shadow-lg hover:shadow-xl text-xs lg:text-sm"
     >
       {isInWatchlist ? (
         <>
-          <BookmarkCheck className="h-5 w-5" />
-          Remove from Watchlist
+          <BookmarkCheck className="h-4 w-4 lg:h-5 lg:w-5" />
+          <span>Remove from Watchlist</span>
         </>
       ) : (
         <>
-          <Bookmark className="h-5 w-5" />
-          Add to Watchlist
+          <Bookmark className="h-4 w-4 lg:h-5 lg:w-5" />
+          <span>Add to Watchlist</span>
         </>
       )}
     </Button>
