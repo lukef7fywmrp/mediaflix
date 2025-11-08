@@ -82,12 +82,17 @@ export default async function EpisodeDetailPage({
   }
 
   try {
-    const [tvEpisodesResponse, providersRes] = await Promise.all([
-      api.v3.tvEpisodes.getDetails(tvShowId, seasonNum, episodeNum, {
-        append_to_response: ["videos", "credits"],
-      }),
-      api.v3.tv.getWatchProviders(tvShowId),
-    ]);
+    const [tvEpisodesResponse, tvShowDetails, seasonDetails, providersRes] =
+      await Promise.all([
+        api.v3.tvEpisodes.getDetails(tvShowId, seasonNum, episodeNum, {
+          append_to_response: ["videos", "credits"],
+        }),
+        api.v3.tv.getDetails(tvShowId),
+        api.v3.tvSeasons.getDetails(tvShowId, seasonNum),
+        api.v3.tv.getWatchProviders(tvShowId),
+      ]);
+
+    console.log("tvEpisodesResponse", tvEpisodesResponse);
 
     if (!tvEpisodesResponse?.id) {
       notFound();
@@ -121,6 +126,8 @@ export default async function EpisodeDetailPage({
       <EpisodeDetail
         tvShowId={tvShowId}
         seasonNumber={seasonNum}
+        tvShowName={tvShowDetails.name}
+        seasonName={seasonDetails.name ?? `Season ${seasonNum}`}
         episode={tvEpisodesResponse}
         watchProviders={providers}
         country={providerCountry}

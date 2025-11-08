@@ -5,14 +5,7 @@ import {
   getBackdropUrl,
   getProfileUrl,
 } from "@/lib/utils";
-import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  ExternalLink,
-  Star,
-  ThumbsUp,
-} from "lucide-react";
+import { Calendar, Clock, ExternalLink, Star, ThumbsUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { TVEpisodesGetDetailsResponse } from "tmdb-js-node";
@@ -23,10 +16,20 @@ import WatchProviders from "./WatchProviders";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
 
 interface EpisodeDetailProps {
   tvShowId: number;
   seasonNumber: number;
+  tvShowName: string;
+  seasonName: string;
   episode: TVEpisodesGetDetailsResponse<("videos" | "credits")[]>;
   watchProviders?: {
     flatrate?: Array<{
@@ -42,23 +45,52 @@ interface EpisodeDetailProps {
 export default function EpisodeDetail({
   tvShowId,
   seasonNumber,
+  tvShowName,
+  seasonName,
   episode,
   watchProviders,
   country,
 }: EpisodeDetailProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/?type=tv">TV Shows</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/tv/${tvShowId}`}>{tvShowName}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={`/tv/${tvShowId}/season/${seasonNumber}`}>
+                  {seasonName}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="line-clamp-1 max-w-[220px] sm:max-w-xs lg:max-w-sm">
+                {episode.name}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       <div className="container mx-auto px-4 py-8">
-        {/* Back Navigation */}
-        <div className="mb-6">
-          <Link href={`/tv/${tvShowId}/season/${seasonNumber}`}>
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Season {seasonNumber}
-            </Button>
-          </Link>
-        </div>
-
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Episode Header */}
           <div className="space-y-4">
