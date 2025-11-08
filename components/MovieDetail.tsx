@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { api } from "@/convex/_generated/api";
 import {
   cn,
   formatDate,
@@ -23,6 +24,8 @@ import {
   getProfileUrl,
   getValidCountryCodeForFlag,
 } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
 import {
   Award,
   Calendar,
@@ -41,17 +44,11 @@ import {
   MoviesGetDetailsResponse,
   MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
-import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import ExpandableOverview from "./ExpandableOverview";
 import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
-import WatchlistButton from "./WatchlistButton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import WatchProviders from "./WatchProviders";
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
-import { auth } from "@clerk/nextjs/server";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -60,6 +57,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import WatchlistButton from "./WatchlistButton";
+import WatchProviders from "./WatchProviders";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<

@@ -7,7 +7,6 @@ import {
   getPosterUrl,
 } from "@/lib/utils";
 import {
-  ArrowLeft,
   Calendar,
   ChevronRight,
   Clock,
@@ -38,6 +37,14 @@ import {
 import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import { Badge } from "./ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import {
@@ -50,14 +57,6 @@ import {
 } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "./ui/breadcrumb";
 
 interface SeasonDetailProps {
   tvShow: TVGetDetailsBaseResponse & {
