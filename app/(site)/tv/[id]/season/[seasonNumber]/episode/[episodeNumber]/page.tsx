@@ -92,8 +92,6 @@ export default async function EpisodeDetailPage({
         api.v3.tv.getWatchProviders(tvShowId),
       ]);
 
-    console.log("tvEpisodesResponse", tvEpisodesResponse);
-
     if (!tvEpisodesResponse?.id) {
       notFound();
     }

@@ -219,7 +219,7 @@ export default async function MovieDetail({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link href="/?type=movie">Movies</Link>
+                <Link href="/?type=movies">Movies</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
