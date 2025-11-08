@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { api } from "@/convex/_generated/api";
 import {
   cn,
   formatDate,
@@ -23,6 +24,8 @@ import {
   getProfileUrl,
   getValidCountryCodeForFlag,
 } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
 import {
   Award,
   Calendar,
@@ -41,17 +44,21 @@ import {
   MoviesGetDetailsResponse,
   MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
-import BackButton from "./BackButton";
 import CastSection from "./CastSection";
 import ExpandableOverview from "./ExpandableOverview";
 import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
-import WatchlistButton from "./WatchlistButton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
+import WatchlistButton from "./WatchlistButton";
 import WatchProviders from "./WatchProviders";
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
-import { auth } from "@clerk/nextjs/server";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<
@@ -201,6 +208,29 @@ export default async function MovieDetail({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/">Home</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/?type=movies">Movies</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="line-clamp-1 max-w-[220px] sm:max-w-xs lg:max-w-sm">
+                {movie.title}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
       {/* Backdrop Hero Section */}
       <div className={cn("relative overflow-hidden")}>
         <div className="absolute inset-0">
@@ -214,13 +244,8 @@ export default async function MovieDetail({
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/20" />
         </div>
 
-        {/* Navigation */}
-        <div className="relative z-10 p-4 lg:p-6 container mx-auto">
-          <BackButton />
-        </div>
-
         {/* Movie Info Overlay */}
-        <div className="relative px-4 py-6 lg:px-6 lg:pt-28 xl:pt-34 z-10">
+        <div className="relative px-4 py-6 lg:px-6 lg:pt-48 xl:pt-60 z-10">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
               {/* Poster */}

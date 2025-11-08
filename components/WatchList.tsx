@@ -206,7 +206,7 @@ export default function WatchList() {
                     className="flex items-center gap-2 tabular-nums"
                     aria-label="Show All"
                   >
-                    <Grid3x3 className="h-4 w-4" />
+                    <Grid3x3 className="h-4 w-4 hidden sm:block" />
                     All ({counts.all})
                   </TabsTrigger>
                   {counts.movies > 0 && (
@@ -215,7 +215,7 @@ export default function WatchList() {
                       className="flex items-center gap-2 tabular-nums"
                       aria-label="Show Movies"
                     >
-                      <Film className="h-4 w-4" />
+                      <Film className="h-4 w-4 hidden sm:block" />
                       Movies ({counts.movies})
                     </TabsTrigger>
                   )}
@@ -225,7 +225,7 @@ export default function WatchList() {
                       className="flex items-center gap-2 tabular-nums"
                       aria-label="Show TV Shows"
                     >
-                      <Tv className="h-4 w-4" />
+                      <Tv className="h-4 w-4 hidden sm:block" />
                       TV Shows ({counts.tv})
                     </TabsTrigger>
                   )}
