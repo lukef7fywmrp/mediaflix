@@ -37,6 +37,8 @@ export default function Page() {
             socialButtonsPlacement: "bottom",
           },
         }}
+        signUpForceRedirectUrl={"/profile-setup"}
+        signUpFallbackRedirectUrl={"/profile-setup"}
       />
 
       {/* Sign up link */}
