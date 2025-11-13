@@ -1,11 +1,11 @@
 "use client";
 
+import HeroSearch from "@/components/HeroSearch";
 import MediaTypeToggle from "@/components/MediaTypeToggle";
 import TopMovies from "@/components/TopMovies";
 import TopTVShows from "@/components/TopTVShows";
-import HeroSearch from "@/components/HeroSearch";
 import { Separator } from "@/components/ui/separator";
-import { TrendingUp, Radio, Star } from "lucide-react";
+import { Radio, Star, TrendingUp } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 export default function Home() {
@@ -58,11 +58,6 @@ export default function Home() {
 
         {/* Content Grid */}
         {mediaType === "movies" ? <TopMovies /> : <TopTVShows />}
-
-        {/* Footer */}
-        <div className="text-center mt-16 text-sm text-muted-foreground">
-          <p>Powered by The Movie Database (TMDB)</p>
-        </div>
       </div>
     </div>
   );
