@@ -1,4 +1,4 @@
-import logo from "@/images/logo.png";
+import logo from "@/images/logo.svg";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,14 +7,14 @@ import UserDropdown from "./UserDropdown";
 function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* MediaFlix Logo */}
         <Link href="/" className="flex items-center space-x-2">
           {/* Play Icon */}
           <Image
             src={logo}
             alt="MediaFlix Logo"
-            className="w-38 object-contain"
+            className="size-24 md:size-28 object-contain"
           />
         </Link>
 

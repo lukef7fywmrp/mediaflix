@@ -6,7 +6,11 @@ import TopTVShows from "@/components/TopTVShows";
 import HeroSearch from "@/components/HeroSearch";
 import { Separator } from "@/components/ui/separator";
 import { TrendingUp, Radio, Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import TmdbLogo from "@/images/The Movie Database Logo.png";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -58,11 +62,6 @@ export default function Home() {
 
         {/* Content Grid */}
         {mediaType === "movies" ? <TopMovies /> : <TopTVShows />}
-
-        {/* Footer */}
-        <div className="text-center mt-16 text-sm text-muted-foreground">
-          <p>Powered by The Movie Database (TMDB)</p>
-        </div>
       </div>
     </div>
   );
