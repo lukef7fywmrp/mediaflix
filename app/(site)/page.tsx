@@ -1,16 +1,12 @@
 "use client";
 
+import HeroSearch from "@/components/HeroSearch";
 import MediaTypeToggle from "@/components/MediaTypeToggle";
 import TopMovies from "@/components/TopMovies";
 import TopTVShows from "@/components/TopTVShows";
-import HeroSearch from "@/components/HeroSearch";
 import { Separator } from "@/components/ui/separator";
-import { TrendingUp, Radio, Star } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+import { Radio, Star, TrendingUp } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import TmdbLogo from "@/images/The Movie Database Logo.png";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const searchParams = useSearchParams();

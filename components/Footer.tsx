@@ -19,7 +19,6 @@ function Footer() {
             src={TmdbLogo}
             alt="The Movie Database (TMDB)"
             className="h-10 w-auto"
-            priority
           />
         </Link>
         <p className="max-w-2xl text-xs md:text-sm text-muted-foreground">

@@ -1,4 +1,4 @@
-import logo from "@/images/logo.png";
+import logo from "@/images/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 import AuthHeroSlideshow from "@/components/AuthHeroSlideshow";
@@ -12,7 +12,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
             <Image
               src={logo}
               alt="MediaFlix Logo"
-              className="object-contain h-12 w-fit"
+              className="size-24 md:size-28 object-contain"
             />
           </Link>
         </div>
