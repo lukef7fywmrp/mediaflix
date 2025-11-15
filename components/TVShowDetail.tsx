@@ -651,10 +651,10 @@ export default async function TVShowDetail({
                               src={getPosterUrl(show.poster_path)}
                               alt={show.name}
                               fill
-                              className="object-cover transition-transform group-hover:scale-105"
+                              className="object-cover transition-transform md:group-hover:scale-105"
                             />
                           </div>
-                          <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary">
+                          <h4 className="font-medium text-sm line-clamp-2 md:group-hover:text-primary">
                             {show.name}
                           </h4>
                           <p className="text-xs text-muted-foreground">
@@ -687,10 +687,10 @@ export default async function TVShowDetail({
                               src={getPosterUrl(show.poster_path)}
                               alt={show.name}
                               fill
-                              className="object-cover transition-transform group-hover:scale-105"
+                              className="object-cover transition-transform md:group-hover:scale-105"
                             />
                           </div>
-                          <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary">
+                          <h4 className="font-medium text-sm line-clamp-2 md:group-hover:text-primary">
                             {show.name}
                           </h4>
                           <p className="text-xs text-muted-foreground">
