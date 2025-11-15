@@ -12,6 +12,13 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       defaults: "2025-05-24",
       capture_exceptions: true,
       debug: process.env.NODE_ENV === "development",
+      loaded: function (ph) {
+        // Opt out of capturing in development
+        if (process.env.NODE_ENV === "development") {
+          ph.opt_out_capturing(); // opts out of event capture
+          ph.set_config({ disable_session_recording: true });
+        }
+      },
     });
   }, []);
 
