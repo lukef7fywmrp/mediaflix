@@ -580,7 +580,7 @@ export default async function MovieDetail({
                               className="object-cover transition-transform md:group-hover:scale-105"
                             />
                           </div>
-                          <h4 className="font-medium text-sm line-clamp-2 group-hover:text-primary">
+                          <h4 className="font-medium text-sm line-clamp-2 md:group-hover:text-primary">
                             {movie.title}
                           </h4>
                           <p className="text-xs text-muted-foreground">
