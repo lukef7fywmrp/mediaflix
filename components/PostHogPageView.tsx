@@ -44,7 +44,7 @@ export default function PostHogPageView(): null {
     if (!isSignedIn && posthog._isIdentified()) {
       posthog.reset();
     }
-  }, [posthog, user]);
+  }, [posthog, user, isSignedIn, userId]);
 
   return null;
 }
