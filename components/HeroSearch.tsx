@@ -242,7 +242,7 @@ export default function HeroSearch() {
           }}
           onFocus={handleInputFocus}
           placeholder="Search for movies and TV shows..."
-          className="w-full pl-12 pr-12 py-3 text-sm rounded-2xl border border-border/40 bg-background/50 backdrop-blur-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background/80 transition-all duration-300 hover:border-border/60 hover:bg-background/60 shadow-sm"
+          className="w-full pl-12 pr-12 py-3 text-base sm:text-sm rounded-2xl border border-border/40 bg-background/50 backdrop-blur-xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/20 focus:bg-background/80 transition-all duration-300 hover:border-border/60 hover:bg-background/60 shadow-sm"
         />
         {(isLoading || isPending) && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-4">

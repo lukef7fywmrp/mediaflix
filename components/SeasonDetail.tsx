@@ -58,6 +58,9 @@ import {
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
+const JUSTWATCH_LOGO_URL =
+  "https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg";
+
 interface SeasonDetailProps {
   tvShow: TVGetDetailsBaseResponse & {
     account_states: TVGetAccountStatesResponse;
@@ -192,7 +195,7 @@ export default function SeasonDetail({
                         </h3>
                         <div className="h-px bg-border/50 flex-1" />
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-wrap">
                         {watchProviders.flatrate &&
                           watchProviders.flatrate.length > 0 && (
                             <div className="flex items-center gap-1">
@@ -223,6 +226,31 @@ export default function SeasonDetail({
                             Streaming in {getCountryName(country)}
                           </span>
                         )}
+                        {/* JustWatch Attribution - Only show if there are providers or country info */}
+                        {(watchProviders.flatrate &&
+                          watchProviders.flatrate.length > 0) ||
+                        country ? (
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-xs text-muted-foreground opacity-60">
+                              Powered by
+                            </span>
+                            <a
+                              href="https://www.justwatch.com"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center hover:opacity-80 transition-opacity"
+                              aria-label="JustWatch"
+                            >
+                              <Image
+                                src={JUSTWATCH_LOGO_URL}
+                                alt="JustWatch"
+                                width={80}
+                                height={12}
+                                className="h-3 w-auto object-contain"
+                              />
+                            </a>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   )}
