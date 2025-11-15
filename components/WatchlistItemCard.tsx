@@ -76,10 +76,10 @@ export default function WatchlistItemCard({ item }: WatchlistItemCardProps) {
               size="icon"
               onClick={handleRemove}
               disabled={isRemoving}
-              className="h-8 w-8 rounded-full bg-background backdrop-blur-sm border border-border/40 shadow-sm hover:bg-background/80 hover:border-border/60 hover:shadow-md transition-all duration-200"
+              className="h-8 w-8 rounded-full bg-background backdrop-blur-sm border border-border/40 shadow-sm md:hover:bg-background/80 md:hover:border-border/60 md:hover:shadow-md transition-all duration-200"
               aria-label={`Remove ${item.title} from watchlist`}
             >
-              <X className="h-4 w-4 text-muted-foreground/80 hover:text-foreground/70 transition-colors" />
+              <X className="h-4 w-4 text-muted-foreground/80 md:hover:text-foreground/70 transition-colors" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="mb-1">
@@ -89,7 +89,7 @@ export default function WatchlistItemCard({ item }: WatchlistItemCardProps) {
       </div>
 
       <Link href={href}>
-        <Card className="pt-0 relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 group-hover:border-primary/50 transition-all duration-300 group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+        <Card className="pt-0 relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 md:group-hover:border-primary/50 transition-all duration-300 md:group-hover:shadow-xl md:group-hover:shadow-primary/10 md:group-hover:-translate-y-1 cursor-pointer h-full flex flex-col">
           {/* Media Type Badge */}
           <div className="absolute top-3 left-3 z-10">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/85 backdrop-blur-sm border border-border/50 shadow-sm">
@@ -106,14 +106,14 @@ export default function WatchlistItemCard({ item }: WatchlistItemCardProps) {
               src={getPosterUrl(item.posterPath || null)}
               alt={item.title}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 md:group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
           </div>
 
           <CardHeader className="pb-2">
-            <h3 className="font-bold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+            <h3 className="font-bold text-lg leading-tight line-clamp-2 md:group-hover:text-primary transition-colors">
               {item.title}
             </h3>
             {item.releaseDate && (

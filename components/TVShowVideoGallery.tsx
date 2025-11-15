@@ -37,7 +37,7 @@ export default function TVShowVideoGallery({
         {sortedVideos.map((video) => (
           <div
             key={video.id}
-            className="group relative bg-muted/50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300"
+            className="group relative bg-muted/50 rounded-xl overflow-hidden md:hover:shadow-lg transition-all duration-300"
           >
             {/* Video Thumbnail */}
             <div className="relative aspect-video">
@@ -45,7 +45,7 @@ export default function TVShowVideoGallery({
                 src={getThumbnailUrl(video.site, video.key)}
                 alt={video.name}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover md:group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   // Fallback to a lower quality thumbnail
                   const target = e.target as HTMLImageElement;
@@ -54,7 +54,7 @@ export default function TVShowVideoGallery({
               />
 
               {/* Play overlay */}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                 <div className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg">
                   <Play className="h-4 w-4 text-foreground fill-foreground" />
                 </div>

@@ -27,7 +27,7 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
 
   return (
     <Link href={`/movie/${movie.id}`}>
-      <Card className="group pt-0 relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
+      <Card className="group pt-0 relative overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 md:hover:border-primary/50 transition-all duration-300 md:hover:shadow-xl md:hover:shadow-primary/10 md:hover:-translate-y-1 cursor-pointer h-full flex flex-col">
         {/* Rank Badge */}
         <div className="absolute top-3 left-3 z-10">
           <div
@@ -47,14 +47,14 @@ export default function MovieCard({ movie, rank }: MovieCardProps) {
             src={getPosterUrl(movie.poster_path)}
             alt={movie.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 md:group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
         <CardHeader className="pb-2">
-          <h3 className="font-bold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+          <h3 className="font-bold text-lg leading-tight line-clamp-2 md:group-hover:text-primary transition-colors">
             {movie.title}
           </h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

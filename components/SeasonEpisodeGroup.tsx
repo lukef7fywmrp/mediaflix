@@ -17,7 +17,7 @@ function SeasonEpisodeGroup({
   tvShowId: number;
 }) {
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow py-1 sm:p-0 border-0 shadow-none sm:border sm:shadow-sm rounded-none sm:rounded-xl border-b last:border-b-0 last:pb-0">
+    <Card className="overflow-hidden md:hover:shadow-md transition-shadow py-1 sm:p-0 border-0 shadow-none sm:border sm:shadow-sm rounded-none sm:rounded-xl border-b last:border-b-0 last:pb-0">
       <div className="flex flex-col sm:flex-row sm:min-h-[10rem]">
         {/* Season Poster - Touches all card edges */}
         <div className="relative w-45 aspect-[2/3] sm:w-32 sm:h-auto sm:aspect-auto flex-shrink-0">
