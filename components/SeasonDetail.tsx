@@ -226,27 +226,31 @@ export default function SeasonDetail({
                             Streaming in {getCountryName(country)}
                           </span>
                         )}
-                        {/* JustWatch Attribution */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-xs text-muted-foreground opacity-60">
-                            Powered by
-                          </span>
-                          <a
-                            href="https://www.justwatch.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center hover:opacity-80 transition-opacity"
-                            aria-label="JustWatch"
-                          >
-                            <Image
-                              src={JUSTWATCH_LOGO_URL}
-                              alt="JustWatch"
-                              width={80}
-                              height={12}
-                              className="h-3 w-auto object-contain"
-                            />
-                          </a>
-                        </div>
+                        {/* JustWatch Attribution - Only show if there are providers or country info */}
+                        {(watchProviders.flatrate &&
+                          watchProviders.flatrate.length > 0) ||
+                        country ? (
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-xs text-muted-foreground opacity-60">
+                              Powered by
+                            </span>
+                            <a
+                              href="https://www.justwatch.com"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center hover:opacity-80 transition-opacity"
+                              aria-label="JustWatch"
+                            >
+                              <Image
+                                src={JUSTWATCH_LOGO_URL}
+                                alt="JustWatch"
+                                width={80}
+                                height={12}
+                                className="h-3 w-auto object-contain"
+                              />
+                            </a>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                   )}

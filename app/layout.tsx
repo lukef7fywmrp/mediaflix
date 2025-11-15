@@ -16,13 +16,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const viewport: Viewport = {
-  initialScale: 1,
-  width: "device-width",
-  maximumScale: 1,
-  viewportFit: "cover",
-};
-
 export const metadata: Metadata = {
   title: "MediaFlix",
   description: "A modern movie and TV show discovery app",
