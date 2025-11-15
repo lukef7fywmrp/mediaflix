@@ -2,9 +2,12 @@ import ConvexClientProvider from "@/components/ConvexClientProvider";
 import QueryClientProvider from "@/components/QueryClientProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PostHogPageView from "@/components/PostHogPageView";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,12 +63,16 @@ export default function RootLayout({
             socialButtonsBlockButton: `Login with {{provider|titleize}}`,
           }}
         >
-          <ConvexClientProvider>
-            <QueryClientProvider>
-              {children}
-              <Toaster />
-            </QueryClientProvider>
-          </ConvexClientProvider>
+          <PostHogProvider>
+            <PostHogPageView />
+            <ConvexClientProvider>
+              <QueryClientProvider>
+                {children}
+                <Toaster />
+                <Analytics />
+              </QueryClientProvider>
+            </ConvexClientProvider>
+          </PostHogProvider>
         </ClerkProvider>
       </body>
     </html>
