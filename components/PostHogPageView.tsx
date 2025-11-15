@@ -30,6 +30,11 @@ export default function PostHogPageView(): null {
   }, [pathname, searchParams, posthog]);
 
   useEffect(() => {
+    // Early return if posthog is not initialized
+    if (!posthog) {
+      return;
+    }
+
     // 👉 Check the sign in status and user info,
     //    and identify the user if they aren't already
     if (isSignedIn && userId && user && !posthog._isIdentified()) {
