@@ -22,5 +22,5 @@ export async function getBaseUrl(): Promise<string> {
   const hdrs = await headers();
   const proto = hdrs.get("x-forwarded-proto") ?? "https";
   const host = hdrs.get("host") ?? "localhost:3000";
-  return `${proto}://${host}`;
+  return `${proto}://${host}`.replace(/\/$/, "");
 }
