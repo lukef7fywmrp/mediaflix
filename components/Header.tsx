@@ -14,7 +14,7 @@ function Header() {
           <Image
             src={logo}
             alt="MediaFlix Logo"
-            className="size-24 md:size-28 object-contain"
+            className="size-24 md:size-28 object-contain dark:invert"
           />
         </Link>
 

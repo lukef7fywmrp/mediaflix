@@ -3,6 +3,7 @@ import QueryClientProvider from "@/components/QueryClientProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -63,16 +64,18 @@ export default function RootLayout({
             socialButtonsBlockButton: `Login with {{provider|titleize}}`,
           }}
         >
-          <PostHogProvider>
-            <PostHogPageView />
-            <ConvexClientProvider>
-              <QueryClientProvider>
-                {children}
-                <Toaster />
-                <Analytics />
-              </QueryClientProvider>
-            </ConvexClientProvider>
-          </PostHogProvider>
+          <ThemeProvider>
+            <PostHogProvider>
+              <PostHogPageView />
+              <ConvexClientProvider>
+                <QueryClientProvider>
+                  {children}
+                  <Toaster />
+                  <Analytics />
+                </QueryClientProvider>
+              </ConvexClientProvider>
+            </PostHogProvider>
+          </ThemeProvider>
         </ClerkProvider>
       </body>
     </html>

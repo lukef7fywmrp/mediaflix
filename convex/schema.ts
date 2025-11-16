@@ -25,6 +25,7 @@ export default defineSchema({
         ),
         language: v.optional(v.array(v.string())),
         notifications: v.optional(v.boolean()),
+        theme: v.optional(v.union(v.literal("light"), v.literal("dark"), v.literal("system"))),
       }),
     ),
     isProfileComplete: v.boolean(),
