@@ -15,6 +15,7 @@ function Header() {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const headerRef = React.useRef<HTMLElement>(null);
   const lastInteractionRef = React.useRef<HTMLElement | null>(null);
+  const isClosingRef = React.useRef(false);
 
   const handleOpenChange = (open: boolean) => {
     // If trying to close, check if the last interaction was on header (but not menu button or logo)
@@ -31,6 +32,12 @@ function Header() {
         }
       }
     }
+
+    // Set closing flag when closing from outside click
+    if (!open && sheetOpen) {
+      isClosingRef.current = true;
+    }
+
     lastInteractionRef.current = null;
     setSheetOpen(open);
   };
@@ -51,6 +58,27 @@ function Header() {
       document.removeEventListener("mousedown", handleMouseDown, true);
     };
   }, [sheetOpen]);
+
+  // Intercept clicks when sheet is closing to prevent navigation
+  React.useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (isClosingRef.current) {
+        const target = e.target as HTMLElement;
+        // Don't block header clicks
+        if (!headerRef.current?.contains(target)) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+        }
+        isClosingRef.current = false;
+      }
+    };
+
+    document.addEventListener("click", handleClick, true);
+    return () => {
+      document.removeEventListener("click", handleClick, true);
+    };
+  }, []);
 
   return (
     <header
@@ -76,34 +104,44 @@ function Header() {
               side="left"
               showOverlay={false}
               showCloseButton={false}
-              className="top-18 !h-[calc(100vh-5rem)] !w-3/4 sm:max-w-sm border-r p-0 bg-background border-0"
+              className="top-20 h-[calc(100vh-5rem)]! w-3/4! sm:max-w-sm border-r p-0 bg-background border-0"
               onInteractOutside={(e) => {
                 const target = e.target as HTMLElement;
                 lastInteractionRef.current = target;
+
                 if (headerRef.current?.contains(target)) {
                   const menuButtonArea = target.closest(
                     "[data-menu-button-area]",
                   );
                   const logoLink = target.closest("[data-logo-link]");
-                  // Allow closing if it's the menu button or logo, otherwise prevent closing
+                  // Only allow closing if it's the menu button or logo
                   if (!menuButtonArea && !logoLink) {
+                    // Don't close - it was a click on header but not menu button or logo
                     e.preventDefault();
+                    return;
                   }
                 }
+                // For clicks outside header, let the sheet close
+                // The global click handler will prevent navigation
               }}
               onPointerDownOutside={(e) => {
                 const target = e.target as HTMLElement;
                 lastInteractionRef.current = target;
+
                 if (headerRef.current?.contains(target)) {
                   const menuButtonArea = target.closest(
                     "[data-menu-button-area]",
                   );
                   const logoLink = target.closest("[data-logo-link]");
-                  // Allow closing if it's the menu button or logo, otherwise prevent closing
+                  // Only allow closing if it's the menu button or logo
                   if (!menuButtonArea && !logoLink) {
+                    // Don't close - it was a click on header but not menu button or logo
                     e.preventDefault();
+                    return;
                   }
                 }
+                // For clicks outside header, let the sheet close
+                // The global click handler will prevent navigation
               }}
             >
               <SheetTitle className="sr-only">Menu</SheetTitle>
