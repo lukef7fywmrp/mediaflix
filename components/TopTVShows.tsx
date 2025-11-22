@@ -1,11 +1,19 @@
 import TVShowCard from "@/components/TVShowCard";
 import useGetPopular from "@/hooks/tv/useGetPopular";
 import LoadingSkeleton from "./LoadingSkeleton";
+import NetworkWarning from "./NetworkWarning";
 
 export default function TopTVShows() {
   const { data, isLoading, error } = useGetPopular();
 
-  if (isLoading) return <LoadingSkeleton />;
+  if (isLoading) {
+    return (
+      <>
+        <NetworkWarning isLoading={isLoading} loadingDuration={5000} />
+        <LoadingSkeleton />
+      </>
+    );
+  }
   if (error) return <div>Error: {error.message}</div>;
 
   return (
