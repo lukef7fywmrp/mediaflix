@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { getProfileUrl } from "@/lib/utils";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import ConditionalTooltip from "./ConditionalTooltip";
 
 interface GuestStarsListProps {
   guestStars: Array<{
@@ -16,65 +16,50 @@ interface GuestStarsListProps {
 }
 
 export default function GuestStarsList({ guestStars }: GuestStarsListProps) {
-  const [showAll, setShowAll] = useState(false);
-  const initialDisplayCount = 8;
-
-  const displayedStars = showAll
-    ? guestStars
-    : guestStars.slice(0, initialDisplayCount);
-  const hasMore = guestStars.length > initialDisplayCount;
+  if (!guestStars || guestStars.length === 0) return null;
 
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-3">
-        {displayedStars.map((star) => (
-          <div key={star.id} className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src={getProfileUrl(star.profile_path)}
-                alt={star.name}
-                className="object-cover"
-              />
-              <AvatarFallback className="text-xs">
-                {star.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-medium text-sm">{star.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {star.character || "Guest Star"}
-              </p>
+    <ScrollArea className="overflow-x-auto">
+      <div className="flex gap-3 pb-2 snap-x snap-mandatory">
+        {guestStars.map((star) => (
+          <ConditionalTooltip
+            key={star.id}
+            name={star.name}
+            character={star.character || "Guest Star"}
+          >
+            <div
+              className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+              title={star.name}
+            >
+              <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                <Image
+                  src={
+                    star.profile_path
+                      ? (getProfileUrl(star.profile_path) ?? "")
+                      : PLACEHOLDER_POSTER_URL
+                  }
+                  alt={star.name}
+                  fill
+                  className="object-cover"
+                  sizes="128px"
+                />
+              </div>
+              <div className="mt-2">
+                <p className="font-medium text-sm line-clamp-1" data-name>
+                  {star.name}
+                </p>
+                <p
+                  className="text-xs text-muted-foreground line-clamp-1"
+                  data-character
+                >
+                  {star.character || "Guest Star"}
+                </p>
+              </div>
             </div>
-          </div>
+          </ConditionalTooltip>
         ))}
       </div>
-
-      {hasMore && (
-        <div className="mt-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowAll(!showAll)}
-            className="text-muted-foreground hover:text-foreground -ml-2 h-7 w-fit justify-start px-2 text-xs"
-          >
-            {showAll ? (
-              <>
-                <ChevronUp className="h-3 w-3" />
-                Show Less
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-3 w-3" />
-                Show All {guestStars.length}
-              </>
-            )}
-          </Button>
-        </div>
-      )}
-    </div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 }

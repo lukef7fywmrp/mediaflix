@@ -21,7 +21,7 @@ export const getBackdropUrl = (backdropPath: string | null) => {
 
 export const getProfileUrl = (profilePath: string | null) => {
   if (!profilePath) return undefined;
-  return `https://image.tmdb.org/t/p/w185${profilePath}`;
+  return `https://image.tmdb.org/t/p/original${profilePath}`;
 };
 
 export const formatRuntime = (minutes: number) => {
@@ -616,7 +616,7 @@ export const getCountryName = (countryCode: string): string => {
 
 export const getProviderLogoUrl = (logoPath: string | null) => {
   if (!logoPath) return null;
-  return `https://image.tmdb.org/t/p/w92${logoPath}`;
+  return `https://image.tmdb.org/t/p/original${logoPath}`;
 };
 
 export const getEmbedUrl = (site: string, key: string) => {

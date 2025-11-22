@@ -13,7 +13,6 @@ import EpisodeVideoGallery from "./EpisodeVideoGallery";
 import GuestStarsList from "./GuestStarsList";
 import ShareButton from "./ShareButton";
 import WatchProviders from "./WatchProviders";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
@@ -24,6 +23,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import ConditionalTooltip from "./ConditionalTooltip";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 
 interface EpisodeDetailProps {
   tvShowId: number;
@@ -51,6 +53,45 @@ export default function EpisodeDetail({
   watchProviders,
   country,
 }: EpisodeDetailProps) {
+  // Deduplicate crew members by person ID and combine their roles
+  type CrewMember = (typeof episode.crew)[number];
+  const crewByPerson = new Map<
+    number,
+    { person: CrewMember; roles: string[] }
+  >();
+
+  if (episode.crew && episode.crew.length > 0) {
+    episode.crew.forEach((member) => {
+      const existing = crewByPerson.get(member.id);
+      if (existing) {
+        // Person already exists, add role if not already present
+        if (!existing.roles.includes(member.job ?? "")) {
+          existing.roles.push(member.job ?? "");
+        }
+      } else {
+        // New person, add them with their role
+        crewByPerson.set(member.id, {
+          person: member,
+          roles: [member.job ?? ""],
+        });
+      }
+    });
+  }
+
+  // Sort roles: Director first, then Writer, then others
+  const rolePriority: Record<string, number> = {
+    Director: 0,
+    Writer: 1,
+  };
+  const sortedCrew = Array.from(crewByPerson.values()).map((entry) => ({
+    ...entry,
+    roles: entry.roles.sort(
+      (a, b) =>
+        (rolePriority[a] ?? 999) - (rolePriority[b] ?? 999) ||
+        a.localeCompare(b),
+    ),
+  }));
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -259,143 +300,118 @@ export default function EpisodeDetail({
 
           {/* Crew & Cast */}
           {((episode.crew && episode.crew.length > 0) ||
-            (episode.guest_stars && episode.guest_stars.length > 0)) && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            (episode.credits?.cast && episode.credits.cast.length > 0) ||
+            (episode.credits?.guest_stars &&
+              episode.credits.guest_stars.length > 0)) && (
+            <div className="space-y-8">
               {/* Crew */}
-              {episode.crew && episode.crew.length > 0 && (
+              {sortedCrew.length > 0 && (
                 <div className="space-y-4">
                   <h2 className="text-xl font-bold">Crew</h2>
-
-                  {episode.crew.find((person) => person.job === "Director") && (
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground mb-3">
-                        Director
-                      </h3>
-                      {episode.crew
-                        .filter((person) => person.job === "Director")
-                        .map((director) => (
-                          <div
-                            key={director.id}
-                            className="flex items-center gap-3 mb-3"
-                          >
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage
-                                src={getProfileUrl(director.profile_path)}
-                                alt={director.name}
+                  <ScrollArea className="overflow-x-auto">
+                    <div className="flex gap-3 pb-2 snap-x snap-mandatory">
+                      {sortedCrew.map((entry) => (
+                        <ConditionalTooltip
+                          key={entry.person.id}
+                          name={entry.person.name}
+                          character={entry.roles.join(", ")}
+                        >
+                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                              <Image
+                                src={
+                                  entry.person.profile_path
+                                    ? (getProfileUrl(
+                                        entry.person.profile_path,
+                                      ) ?? "")
+                                    : PLACEHOLDER_POSTER_URL
+                                }
+                                alt={entry.person.name}
+                                fill
                                 className="object-cover"
+                                sizes="128px"
                               />
-                              <AvatarFallback className="text-sm">
-                                {director.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-lg">
-                                {director.name}
+                            </div>
+                            <div className="mt-2">
+                              <p
+                                className="font-medium text-sm line-clamp-1"
+                                data-name
+                              >
+                                {entry.person.name}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                {director.known_for_department}
+                              <p
+                                className="text-xs text-muted-foreground line-clamp-1"
+                                data-character
+                              >
+                                {entry.roles.join(", ")}
                               </p>
                             </div>
                           </div>
-                        ))}
+                        </ConditionalTooltip>
+                      ))}
                     </div>
-                  )}
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
+                </div>
+              )}
 
-                  {episode.crew.filter((person) => person.job === "Writer")
-                    .length > 0 && (
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground mb-3">
-                        Writers
-                      </h3>
-                      <div className="space-y-3">
-                        {episode.crew
-                          .filter((person) => person.job === "Writer")
-                          .map((writer) => (
-                            <div
-                              key={writer.id}
-                              className="flex items-center gap-3"
-                            >
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage
-                                  src={getProfileUrl(writer.profile_path)}
-                                  alt={writer.name}
-                                  className="object-cover"
-                                />
-                                <AvatarFallback className="text-xs">
-                                  {writer.name
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")
-                                    .toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-medium">{writer.name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {writer.known_for_department}
-                                </p>
-                              </div>
+              {/* Cast */}
+              {episode.credits?.cast && episode.credits.cast.length > 0 && (
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold">Cast</h2>
+                  <ScrollArea className="overflow-x-auto">
+                    <div className="flex gap-3 pb-2 snap-x snap-mandatory">
+                      {episode.credits.cast.map((actor) => (
+                        <ConditionalTooltip
+                          key={actor.id}
+                          name={actor.name}
+                          character={actor.character || "Actor"}
+                        >
+                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                              <Image
+                                src={
+                                  actor.profile_path
+                                    ? (getProfileUrl(actor.profile_path) ?? "")
+                                    : PLACEHOLDER_POSTER_URL
+                                }
+                                alt={actor.name}
+                                fill
+                                className="object-cover"
+                                sizes="128px"
+                              />
                             </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Additional crew roles */}
-                  {episode.crew
-                    .filter(
-                      (person) =>
-                        !["Director", "Writer"].includes(person.job || ""),
-                    )
-                    .slice(0, 5)
-                    .map((person) => (
-                      <div key={person.id}>
-                        <h3 className="font-semibold text-muted-foreground mb-2">
-                          {person.job}
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage
-                              src={getProfileUrl(person.profile_path)}
-                              alt={person.name}
-                              className="object-cover"
-                            />
-                            <AvatarFallback className="text-xs">
-                              {person.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{person.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {person.known_for_department}
-                            </p>
+                            <div className="mt-2">
+                              <p
+                                className="font-medium text-sm line-clamp-1"
+                                data-name
+                              >
+                                {actor.name}
+                              </p>
+                              <p
+                                className="text-xs text-muted-foreground line-clamp-1"
+                                data-character
+                              >
+                                {actor.character || "Actor"}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        </ConditionalTooltip>
+                      ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
                 </div>
               )}
 
               {/* Guest Stars */}
-              {episode.guest_stars && episode.guest_stars.length > 0 && (
-                <div className="space-y-4">
-                  <h2 className="text-xl font-bold">Cast</h2>
-                  <div>
-                    <h3 className="font-semibold text-muted-foreground mb-3">
-                      Guest Stars ({episode.guest_stars.length})
-                    </h3>
-                    <GuestStarsList guestStars={episode.guest_stars} />
+              {episode.credits?.guest_stars &&
+                episode.credits.guest_stars.length > 0 && (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-bold">Guest Stars</h2>
+                    <GuestStarsList guestStars={episode.credits.guest_stars} />
                   </div>
-                </div>
-              )}
+                )}
             </div>
           )}
 

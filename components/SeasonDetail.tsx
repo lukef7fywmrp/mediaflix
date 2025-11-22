@@ -5,6 +5,7 @@ import {
   getBackdropUrl,
   getCountryName,
   getPosterUrl,
+  getProfileUrl,
 } from "@/lib/utils";
 import {
   Calendar,
@@ -57,6 +58,8 @@ import {
 } from "./ui/dialog";
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const JUSTWATCH_LOGO_URL =
   "https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg";
@@ -204,12 +207,12 @@ export default function SeasonDetail({
                                 .map((provider) => (
                                   <Tooltip key={provider.provider_id}>
                                     <TooltipTrigger asChild>
-                                      <div className="w-6 h-6 rounded overflow-hidden">
+                                      <div className="w-10 h-10 rounded overflow-hidden">
                                         <Image
                                           src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
                                           alt={provider.provider_name}
-                                          width={24}
-                                          height={24}
+                                          width={40}
+                                          height={40}
                                           className="object-cover w-full h-full"
                                         />
                                       </div>
@@ -294,133 +297,66 @@ export default function SeasonDetail({
                     </div>
                   )}
                 </div>
-
-                {/* Cast Section */}
-                {season.credits?.cast && season.credits.cast.length > 0 && (
-                  <div className="pt-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <h3 className="text-sm font-semibold text-muted-foreground">
-                        Cast
-                      </h3>
-                      <div className="h-px bg-border/50 flex-1" />
-                    </div>
-                    <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                      {season.credits.cast.slice(0, 6).map((person) => (
-                        <ConditionalTooltip
-                          key={person.id}
-                          name={person.name}
-                          character={person.character || ""}
-                        >
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {person.profile_path ? (
-                              <div className="w-8 h-8 rounded-full overflow-hidden">
-                                <Image
-                                  src={`https://image.tmdb.org/t/p/w92${person.profile_path}`}
-                                  alt={person.name}
-                                  width={32}
-                                  height={32}
-                                  className="object-cover w-full h-full"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                <span className="text-xs font-medium text-muted-foreground">
-                                  {person.name.charAt(0)}
-                                </span>
-                              </div>
-                            )}
-                            <div className="min-w-0">
-                              <div
-                                className="text-xs font-medium truncate max-w-[80px]"
-                                data-name
-                              >
-                                {person.name}
-                              </div>
-                              <div
-                                className="text-xs text-muted-foreground truncate max-w-[80px]"
-                                data-character
-                              >
-                                {person.character}
-                              </div>
-                            </div>
-                          </div>
-                        </ConditionalTooltip>
-                      ))}
-                      {season.credits.cast.length > 6 && (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-xs text-muted-foreground hover:text-foreground h-auto p-1 font-normal"
-                            >
-                              +{season.credits.cast.length - 6} more
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>
-                                Full Cast - {season.name}
-                              </DialogTitle>
-                              <DialogDescription>
-                                All cast members for this season
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                              {season.credits.cast.map((person) => (
-                                <ConditionalTooltip
-                                  key={person.id}
-                                  name={person.name}
-                                  character={person.character || ""}
-                                >
-                                  <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                                    {person.profile_path ? (
-                                      <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                                        <Image
-                                          src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
-                                          alt={person.name}
-                                          width={48}
-                                          height={48}
-                                          className="object-cover w-full h-full"
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                                        <span className="text-sm font-medium text-muted-foreground">
-                                          {person.name.charAt(0)}
-                                        </span>
-                                      </div>
-                                    )}
-                                    <div className="min-w-0 flex-1">
-                                      <div
-                                        className="font-medium truncate"
-                                        data-name
-                                      >
-                                        {person.name}
-                                      </div>
-                                      <div
-                                        className="text-sm text-muted-foreground truncate"
-                                        data-character
-                                      >
-                                        {person.character}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ConditionalTooltip>
-                              ))}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </div>
 
-        <Separator className="mb-8" />
+        {/* Cast Section */}
+        {season.credits?.cast && season.credits.cast.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold">Cast</h2>
+            </div>
+            <ScrollArea className="overflow-x-auto">
+              <div className="flex items-center gap-3 overflow-x-auto pb-2">
+                {season.credits.cast.map((person) => (
+                  <ConditionalTooltip
+                    key={person.id}
+                    name={person.name}
+                    character={person.character || ""}
+                  >
+                    <div
+                      className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+                      title={person.name}
+                    >
+                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                        <Image
+                          src={
+                            person.profile_path
+                              ? (getProfileUrl(person.profile_path) ?? "")
+                              : PLACEHOLDER_POSTER_URL
+                          }
+                          alt={person.name}
+                          fill
+                          className="object-cover"
+                          sizes="128px"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <div
+                          className="text-sm font-medium line-clamp-1"
+                          data-name
+                        >
+                          {person.name}
+                        </div>
+                        <div
+                          className="text-xs text-muted-foreground line-clamp-1"
+                          data-character
+                        >
+                          {person.character}
+                        </div>
+                      </div>
+                    </div>
+                  </ConditionalTooltip>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
+        )}
+
+        <Separator className="mb-8 bg-border/50" />
 
         {/* Episodes Section */}
         <div className="space-y-8">

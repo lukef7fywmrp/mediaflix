@@ -40,8 +40,20 @@ function Footer() {
         </p>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/50" />
       <div className="flex items-center justify-center">
+        <Button
+          asChild
+          variant="link"
+          className="text-muted-foreground text-xs md:text-sm py-0 h-fit"
+        >
+          <Link
+            href="/about"
+            className="transition-colors hover:text-foreground"
+          >
+            About
+          </Link>
+        </Button>
         <Button
           asChild
           variant="link"

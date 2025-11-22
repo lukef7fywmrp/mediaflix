@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const JUSTWATCH_LOGO_URL =
   "https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg";
@@ -99,7 +100,7 @@ export default function WatchProviders({
           alt={provider.provider_name}
           width={40}
           height={40}
-          className="rounded object-contain hover:scale-105 transition-transform duration-200"
+          className="rounded object-contain transition-transform duration-200"
         />
       ) : (
         <div className="w-10 h-10 rounded flex items-center justify-center">
@@ -181,7 +182,16 @@ export default function WatchProviders({
       <div className="flex items-center gap-3">
         <div className="flex overflow-x-auto scrollbar-hide">
           {sortedProviders.slice(0, 6).map((provider) => (
-            <ProviderLogo key={provider.provider_id} provider={provider} />
+            <Tooltip key={provider.provider_id}>
+              <TooltipTrigger asChild>
+                <div>
+                  <ProviderLogo provider={provider} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{provider.provider_name}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
         </div>
         {/* JustWatch Attribution */}
