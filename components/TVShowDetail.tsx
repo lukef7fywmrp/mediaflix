@@ -7,6 +7,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { api } from "@/convex/_generated/api";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import {
   formatDate,
   formatDateShort,
@@ -19,6 +21,8 @@ import {
   getProfileUrl,
   getValidCountryCodeForFlag,
 } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
 import {
   Award,
   Calendar,
@@ -41,11 +45,10 @@ import {
   TVGetDetailsResponse,
   TVGetVideosResult,
 } from "tmdb-js-node";
+import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";
 import TVShowVideoGallery from "./TVShowVideoGallery";
-import WatchlistButton from "./WatchlistButton";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -54,13 +57,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
-import WatchProviders from "./WatchProviders";
-import { auth } from "@clerk/nextjs/server";
-import { api } from "@/convex/_generated/api";
-import { preloadQuery } from "convex/nextjs";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import ConditionalTooltip from "./ConditionalTooltip";
-import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import WatchlistButton from "./WatchlistButton";
+import WatchProviders from "./WatchProviders";
 
 // Helper function to get embedded video URL for modal
 const getEmbedUrl = (site: string, key: string) => {

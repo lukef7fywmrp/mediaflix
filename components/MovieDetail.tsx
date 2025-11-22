@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import {
   cn,
   formatDate,
@@ -45,10 +46,10 @@ import {
   MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
 import CastSection from "./CastSection";
+import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -57,11 +58,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import WatchlistButton from "./WatchlistButton";
 import WatchProviders from "./WatchProviders";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import ConditionalTooltip from "./ConditionalTooltip";
-import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 
 interface MovieDetailProps {
   movie: MoviesGetDetailsResponse<

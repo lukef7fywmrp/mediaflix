@@ -48,18 +48,6 @@ function Footer() {
           className="text-muted-foreground text-xs md:text-sm py-0 h-fit"
         >
           <Link
-            href="/about"
-            className="transition-colors hover:text-foreground"
-          >
-            About
-          </Link>
-        </Button>
-        <Button
-          asChild
-          variant="link"
-          className="text-muted-foreground text-xs md:text-sm py-0 h-fit"
-        >
-          <Link
             href="/privacy-policy"
             className="transition-colors hover:text-foreground"
           >

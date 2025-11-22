@@ -13,7 +13,7 @@ import { getBackdropUrl } from "@/lib/utils";
 export const metadata = {
   title: "About",
   description:
-    "About this project, the creator, why it exists, and how Popular is defined.",
+    "MediaFlix is a platform for discovering and exploring movies and TV shows with clean detail pages and watch provider links.",
 };
 
 // Using a popular movie backdrop for the hero banner (landscape/widescreen format)
@@ -85,10 +85,11 @@ export default function AboutPage() {
                     </Link>
                   </h3>
                   <p className="text-muted-foreground leading-relaxed text-sm">
-                    I'm a developer who loves movies and TV shows, and I wanted
-                    to create a better way to explore and discover content. This
-                    project combines my interests in building clean, useful web
-                    experiences with my passion for entertainment.
+                    I&apos;m a developer who loves movies and TV shows, and I
+                    wanted to create a better way to explore and discover
+                    content. This project combines my interests in building
+                    clean, useful web experiences with my passion for
+                    entertainment.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
@@ -132,7 +133,7 @@ export default function AboutPage() {
           <section className="space-y-1 group">
             <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
               <Rocket className="hidden sm:block w-4 h-4 sm:w-5 sm:h-5 text-primary/70 transition-colors group-hover:text-primary flex-shrink-0" />
-              Why it was created and where it's going
+              Why it was created
             </h2>
             <p className="text-muted-foreground leading-relaxed text-sm pl-0 sm:pl-7">
               I built MediaFlix because I kept{" "}
@@ -140,11 +141,11 @@ export default function AboutPage() {
                 spending more time deciding what to watch than actually watching
                 something
               </strong>
-              . It's designed to be{" "}
+              . It&apos;s designed to be{" "}
               <strong className="font-bold">
                 lightweight, minimal, and distraction-free
               </strong>
-              , built as a fun learning experience. It's{" "}
+              , built as a fun learning experience. It&apos;s{" "}
               <strong className="font-bold">
                 not meant to replace TMDB or IMDb
               </strong>
@@ -160,8 +161,8 @@ export default function AboutPage() {
             </h2>
             <p className="text-muted-foreground leading-relaxed text-sm pl-0 sm:pl-7 mb-2">
               This is <strong className="font-bold">v1</strong> of the platform.
-              In <strong className="font-bold">v2</strong>, we're planning to
-              add:
+              In <strong className="font-bold">v2</strong>, we&apos;re planning
+              to add:
             </p>
             <ul className="text-muted-foreground leading-relaxed text-sm pl-0 sm:pl-7 space-y-1">
               <li className="flex items-start gap-2.5">
@@ -194,7 +195,7 @@ export default function AboutPage() {
           <section className="space-y-1 group">
             <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
               <TrendingUp className="hidden sm:block w-4 h-4 sm:w-5 sm:h-5 text-primary/70 transition-colors group-hover:text-primary flex-shrink-0" />
-              What "most popular" means
+              What &quot;most popular&quot; means
             </h2>
             <p className="text-muted-foreground leading-relaxed text-sm pl-0 sm:pl-7">
               Popularity is a lifetime score calculated by TMDB based on

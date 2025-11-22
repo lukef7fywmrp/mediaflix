@@ -54,14 +54,14 @@ export default function EpisodeDetail({
   country,
 }: EpisodeDetailProps) {
   // Deduplicate crew members by person ID and combine their roles
-  type CrewMember = (typeof episode.crew)[number];
+  type CrewMember = NonNullable<typeof episode.credits>["crew"][number];
   const crewByPerson = new Map<
     number,
     { person: CrewMember; roles: string[] }
   >();
 
-  if (episode.crew && episode.crew.length > 0) {
-    episode.crew.forEach((member) => {
+  if (episode.credits?.crew && episode.credits.crew.length > 0) {
+    episode.credits.crew.forEach((member) => {
       const existing = crewByPerson.get(member.id);
       if (existing) {
         // Person already exists, add role if not already present
@@ -299,7 +299,7 @@ export default function EpisodeDetail({
           )}
 
           {/* Crew & Cast */}
-          {((episode.crew && episode.crew.length > 0) ||
+          {((episode.credits?.crew && episode.credits.crew.length > 0) ||
             (episode.credits?.cast && episode.credits.cast.length > 0) ||
             (episode.credits?.guest_stars &&
               episode.credits.guest_stars.length > 0)) && (

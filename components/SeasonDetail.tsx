@@ -1,3 +1,4 @@
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import {
   formatDate,
   formatDateShort,
@@ -48,18 +49,9 @@ import {
 } from "./ui/breadcrumb";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 const JUSTWATCH_LOGO_URL =
   "https://www.themoviedb.org/assets/2/v4/logos/justwatch-c2e58adf5809b6871db650fb74b43db2b8f3637fe3709262572553fa056d8d0a.svg";
