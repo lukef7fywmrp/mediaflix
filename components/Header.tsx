@@ -33,11 +33,6 @@ function Header() {
       }
     }
 
-    // Set closing flag when closing from outside click
-    if (!open && sheetOpen) {
-      isClosingRef.current = true;
-    }
-
     lastInteractionRef.current = null;
     setSheetOpen(open);
   };
@@ -121,8 +116,9 @@ function Header() {
                     return;
                   }
                 }
-                // For clicks outside header, let the sheet close
-                // The global click handler will prevent navigation
+                // For clicks outside header, set the closing flag BEFORE the click propagates
+                // This way the global click handler will catch it and prevent navigation
+                isClosingRef.current = true;
               }}
               onPointerDownOutside={(e) => {
                 const target = e.target as HTMLElement;
