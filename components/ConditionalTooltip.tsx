@@ -23,18 +23,24 @@ export default function ConditionalTooltip({
 
       const nameElement = containerRef.current.querySelector(
         "[data-name]",
-      ) as HTMLElement;
+      ) as HTMLElement | null;
       const characterElement = containerRef.current.querySelector(
         "[data-character]",
-      ) as HTMLElement;
+      ) as HTMLElement | null;
 
-      if (nameElement && characterElement) {
-        const isNameTruncated =
-          nameElement.scrollWidth > nameElement.clientWidth;
-        const isCharacterTruncated =
-          characterElement.scrollWidth > characterElement.clientWidth;
-        setShowTooltip(isNameTruncated || isCharacterTruncated);
-      }
+      const isElTruncated = (el: HTMLElement | null) => {
+        if (!el) return false;
+        const style = window.getComputedStyle(el);
+        const lineClamp = Number(style.webkitLineClamp) || 0;
+        const truncByWidth = el.scrollWidth > el.clientWidth + 1;
+        const truncByHeight =
+          lineClamp > 0 ? el.scrollHeight > el.clientHeight + 1 : false;
+        return truncByWidth || truncByHeight;
+      };
+
+      const isNameTruncated = isElTruncated(nameElement);
+      const isCharacterTruncated = isElTruncated(characterElement);
+      setShowTooltip(isNameTruncated || isCharacterTruncated);
     };
 
     checkTruncation();

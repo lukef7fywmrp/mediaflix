@@ -1,22 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { Users, ChevronDown, ChevronUp } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Users } from "lucide-react";
+import Image from "next/image";
 import { getProfileUrl } from "@/lib/utils";
 import { MoviesGetCreditsResponse } from "tmdb-js-node";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import ConditionalTooltip from "./ConditionalTooltip";
 
 function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
-  const [showAll, setShowAll] = useState(false);
-  const initialDisplayCount = 8;
-
-  const displayedCast = showAll
-    ? credits.cast
-    : credits.cast.slice(0, initialDisplayCount);
-  const hasMoreCast = credits.cast.length > initialDisplayCount;
-
   // Don't render anything if cast is empty
   if (!credits.cast || credits.cast.length === 0) {
     return null;
@@ -31,47 +25,48 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {displayedCast.map((actor) => (
-            <div key={actor.id} className="text-center">
-              <Avatar className="h-10 w-10 mx-auto mb-2">
-                <AvatarImage
-                  src={getProfileUrl(actor.profile_path)}
-                  className="object-cover"
-                />
-                <AvatarFallback className="uppercase">
-                  {actor.name.length >= 2
-                    ? actor.name.charAt(0) + actor.name.charAt(1)
-                    : actor.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <p className="font-medium text-sm">{actor.name}</p>
-              <p className="text-xs text-muted-foreground">{actor.character}</p>
-            </div>
-          ))}
-        </div>
-
-        {hasMoreCast && (
-          <div className="flex justify-center mt-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowAll(!showAll)}
-              className="flex items-center gap-2"
-            >
-              {showAll ? (
-                <>
-                  <ChevronUp className="h-4 w-4" />
-                  Show Less
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-4 w-4" />
-                  Show More ({credits.cast.length - initialDisplayCount} more)
-                </>
-              )}
-            </Button>
+        <ScrollArea className="overflow-x-auto">
+          <div className="flex gap-3 pb-2 snap-x snap-mandatory">
+            {credits.cast.map((actor) => (
+              <ConditionalTooltip
+                key={actor.id}
+                name={actor.name}
+                character={actor.character}
+              >
+                <div
+                  className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+                  title={actor.name}
+                >
+                  <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                    <Image
+                      src={
+                        actor.profile_path
+                          ? (getProfileUrl(actor.profile_path) ?? "")
+                          : PLACEHOLDER_POSTER_URL
+                      }
+                      alt={actor.name}
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <p className="font-medium text-sm line-clamp-1" data-name>
+                      {actor.name}
+                    </p>
+                    <p
+                      className="text-xs text-muted-foreground line-clamp-1"
+                      data-character
+                    >
+                      {actor.character}
+                    </p>
+                  </div>
+                </div>
+              </ConditionalTooltip>
+            ))}
           </div>
-        )}
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </CardContent>
     </Card>
   );

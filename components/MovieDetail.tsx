@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import {
   cn,
   formatDate,
@@ -45,10 +46,10 @@ import {
   MoviesGetWatchProvidersBuy,
 } from "tmdb-js-node";
 import CastSection from "./CastSection";
+import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import MovieVideoGallery from "./MovieVideoGallery";
 import RatingSource from "./RatingSource";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -57,6 +58,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import WatchlistButton from "./WatchlistButton";
 import WatchProviders from "./WatchProviders";
 
@@ -195,6 +197,45 @@ export default async function MovieDetail({
   const producers = movie.credits.crew.filter(
     (person) => person.job === "Producer",
   );
+
+  // Deduplicate crew members by person ID and combine their roles
+  const allCrew = [...(director ? [director] : []), ...writers, ...producers];
+  type CrewMember = (typeof movie.credits.crew)[number];
+  const crewByPerson = new Map<
+    number,
+    { person: CrewMember; roles: string[] }
+  >();
+
+  allCrew.forEach((member) => {
+    const existing = crewByPerson.get(member.id);
+    if (existing) {
+      // Person already exists, add role if not already present
+      if (!existing.roles.includes(member.job ?? "")) {
+        existing.roles.push(member.job ?? "");
+      }
+    } else {
+      // New person, add them with their role
+      crewByPerson.set(member.id, {
+        person: member,
+        roles: [member.job ?? ""],
+      });
+    }
+  });
+
+  // Sort roles: Director first, then Writer, then Producer, then others
+  const rolePriority: Record<string, number> = {
+    Director: 0,
+    Writer: 1,
+    Producer: 2,
+  };
+  const sortedCrew = Array.from(crewByPerson.values()).map((entry) => ({
+    ...entry,
+    roles: entry.roles.sort(
+      (a, b) =>
+        (rolePriority[a] ?? 999) - (rolePriority[b] ?? 999) ||
+        a.localeCompare(b),
+    ),
+  }));
 
   const preloaded = userId
     ? await preloadQuery(api.watchlist.isInWatchlist, {
@@ -410,7 +451,7 @@ export default async function MovieDetail({
             <CastSection credits={movie.credits} />
 
             {/* Crew */}
-            {(director || writers.length > 0 || producers.length > 0) && (
+            {sortedCrew.length > 0 && (
               <Card className="gap-3">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -418,91 +459,51 @@ export default async function MovieDetail({
                     Crew
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {director && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                        Director
-                      </h4>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={getProfileUrl(director.profile_path)}
-                            className="object-cover"
-                          />
-                          <AvatarFallback className="uppercase">
-                            {director.name.charAt(0) + director.name.charAt(1)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <p className="text-sm font-medium">{director.name}</p>
-                      </div>
-                    </div>
-                  )}
-                  {writers.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                        Writers
-                      </h4>
-                      <div className="space-y-3">
-                        {writers.slice(0, 4).map((writer) => (
-                          <div
-                            key={writer.id}
-                            className="flex items-center gap-3"
-                          >
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage
-                                src={getProfileUrl(writer.profile_path)}
+                <CardContent>
+                  <ScrollArea className="overflow-x-auto">
+                    <div className="flex gap-3 pb-2 snap-x snap-mandatory">
+                      {sortedCrew.map((entry) => (
+                        <ConditionalTooltip
+                          key={entry.person.id}
+                          name={entry.person.name}
+                          character={entry.roles.join(", ")}
+                        >
+                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                              <Image
+                                src={
+                                  entry.person.profile_path
+                                    ? (getProfileUrl(
+                                        entry.person.profile_path,
+                                      ) ?? "")
+                                    : PLACEHOLDER_POSTER_URL
+                                }
+                                alt={entry.person.name}
+                                fill
                                 className="object-cover"
+                                sizes="128px"
                               />
-                              <AvatarFallback className="uppercase">
-                                {writer.name.charAt(0) + writer.name.charAt(1)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <p className="text-sm font-medium">{writer.name}</p>
+                            </div>
+                            <div className="mt-2">
+                              <p
+                                className="font-medium text-sm line-clamp-1"
+                                data-name
+                              >
+                                {entry.person.name}
+                              </p>
+                              <p
+                                className="text-xs text-muted-foreground line-clamp-1"
+                                data-character
+                              >
+                                {entry.roles.join(", ")}
+                              </p>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                      {writers.length > 4 && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          +{writers.length - 4} more writers
-                        </p>
-                      )}
+                        </ConditionalTooltip>
+                      ))}
                     </div>
-                  )}
-                  {producers.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                        Producers
-                      </h4>
-                      <div className="space-y-3">
-                        {producers.slice(0, 4).map((producer) => (
-                          <div
-                            key={producer.id}
-                            className="flex items-center gap-3"
-                          >
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage
-                                src={getProfileUrl(producer.profile_path)}
-                                className="object-cover"
-                              />
-                              <AvatarFallback className="uppercase">
-                                {producer.name.charAt(0) +
-                                  producer.name.charAt(1)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <p className="text-sm font-medium">
-                              {producer.name}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                      {producers.length > 4 && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          +{producers.length - 4} more producers
-                        </p>
-                      )}
-                    </div>
-                  )}
+                    <ScrollBar orientation="horizontal" />
+                  </ScrollArea>
                 </CardContent>
               </Card>
             )}

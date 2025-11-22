@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: "image.tmdb.org",
         protocol: "https",
       },
+      {
+        hostname: "yt3.googleusercontent.com",
+        protocol: "https",
+      },
     ],
     unoptimized: true,
   },

@@ -23,7 +23,7 @@ import { useSearchMulti } from "@/hooks/useSearchMulti";
 import useGetTrending from "@/hooks/useGetTrending";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { formatPopularity } from "@/lib/utils";
+import { formatPopularity, getPosterUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export default function HeroSearch() {
@@ -426,7 +426,7 @@ export default function HeroSearch() {
                             <div className="relative flex-shrink-0 w-20 h-[120px] rounded-xl overflow-hidden shadow-lg ring-1 ring-border/20 group-hover:ring-foreground/20 transition-all duration-200">
                               {result.poster_path ? (
                                 <Image
-                                  src={`https://image.tmdb.org/t/p/w185${result.poster_path}`}
+                                  src={getPosterUrl(result.poster_path)}
                                   alt={title || "Poster"}
                                   fill
                                   className="object-cover"

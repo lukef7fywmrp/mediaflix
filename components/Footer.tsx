@@ -40,7 +40,7 @@ function Footer() {
         </p>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/50" />
       <div className="flex items-center justify-center">
         <Button
           asChild
