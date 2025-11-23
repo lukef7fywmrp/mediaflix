@@ -33,6 +33,8 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { UsernameInput } from "@/components/UsernameInput";
+import { ThemeSelect } from "@/components/ThemeSelect";
+import { useTheme } from "next-themes";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import useGetGenres from "@/hooks/useGetGenres";
@@ -88,6 +90,7 @@ export default function ProfileSetup() {
   const [favoriteTVGenres, setFavoriteTVGenres] = useState<string[]>([]);
   const [languages, setLanguages] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<boolean>(true);
+  const { theme, setTheme } = useTheme();
 
   // Fade effects for scrollable genre lists
   const [showMovieGenresFade, setShowMovieGenresFade] = useState(false);
@@ -109,6 +112,7 @@ export default function ProfileSetup() {
   const [originalLanguages, setOriginalLanguages] = useState<string[]>([]);
   const [originalNotifications, setOriginalNotifications] =
     useState<boolean>(true);
+  const [originalTheme, setOriginalTheme] = useState<string>("system");
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -144,6 +148,7 @@ export default function ProfileSetup() {
     return [];
   }, [userProfileLanguage]);
   const userProfileNotifications = userProfilePreferences?.notifications;
+  const userProfileTheme = userProfilePreferences?.theme;
 
   // Create stable computed values for profile state
   const profileIsLoading = getUserProfile === undefined;
@@ -196,11 +201,15 @@ export default function ProfileSetup() {
         setFavoriteTVGenres(userProfileFavoriteTVGenres || []);
         setLanguages(userProfileLanguages || []);
         setNotifications(userProfileNotifications ?? true);
+        if (userProfileTheme) {
+          setTheme(userProfileTheme);
+        }
 
         setOriginalFavoriteMovieGenres(userProfileFavoriteMovieGenres || []);
         setOriginalFavoriteTVGenres(userProfileFavoriteTVGenres || []);
         setOriginalLanguages(userProfileLanguages || []);
         setOriginalNotifications(userProfileNotifications ?? true);
+        setOriginalTheme(userProfileTheme || "system");
       } else {
         // Initialize from Clerk user data
         setFirstName(user.firstName || "");
@@ -245,6 +254,7 @@ export default function ProfileSetup() {
       setOriginalFavoriteTVGenres(userProfileFavoriteTVGenres || []);
       setOriginalLanguages(userProfileLanguages || []);
       setOriginalNotifications(userProfileNotifications ?? true);
+      setOriginalTheme(userProfileTheme || "system");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -257,6 +267,7 @@ export default function ProfileSetup() {
     userProfileFavoriteTVGenres,
     userProfileLanguages,
     userProfileNotifications,
+    userProfileTheme,
     user?.id,
     user?.username,
     user?.firstName,
@@ -393,6 +404,7 @@ export default function ProfileSetup() {
     setFavoriteTVGenres(originalFavoriteTVGenres);
     setLanguages(originalLanguages);
     setNotifications(originalNotifications);
+    setTheme(originalTheme);
 
     setHasUserInteracted(true);
     setShowDiscardDialog(false);
@@ -416,7 +428,8 @@ export default function ProfileSetup() {
       JSON.stringify([...originalFavoriteTVGenres].sort()) ||
     JSON.stringify([...languages].sort()) !==
       JSON.stringify([...originalLanguages].sort()) ||
-    notifications !== originalNotifications;
+    notifications !== originalNotifications ||
+    theme !== originalTheme;
 
   const handleAvatarSelect = useCallback((dataUri: string) => {
     // Store the data URI for display and upload later when user clicks Continue
@@ -781,6 +794,7 @@ export default function ProfileSetup() {
               : undefined,
           language: languages.length > 0 ? languages : undefined,
           notifications: notifications,
+          theme: theme as "light" | "dark" | "system",
         },
       });
 
@@ -795,6 +809,7 @@ export default function ProfileSetup() {
       setOriginalFavoriteTVGenres(favoriteTVGenres);
       setOriginalLanguages(languages);
       setOriginalNotifications(notifications);
+      setOriginalTheme(theme || "system");
       // Update avatarUrl to the final uploaded URL (not preview blob)
       setAvatarUrl(finalAvatarUrl);
 
@@ -998,6 +1013,17 @@ export default function ProfileSetup() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Theme Preference */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="theme">Theme</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Choose your preferred theme or follow system setting
+                    </p>
+                  </div>
+                  <ThemeSelect />
+                </div>
+
                 {/* Notifications */}
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">

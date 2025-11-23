@@ -31,7 +31,7 @@ export default function TVShowCard({ tvShow, rank }: TVShowCardProps) {
         {/* Rank Badge */}
         <div className="absolute top-3 left-3 z-10">
           <div
-            className="text-muted font-black text-7xl drop-shadow-2xl"
+            className="text-muted dark:text-white font-black text-7xl drop-shadow-2xl"
             style={{
               textShadow:
                 "0 0 15px rgba(0,0,0,0.5), 0 0 30px rgba(0,0,0,0.3), 0 0 45px rgba(0,0,0,0.2)",
