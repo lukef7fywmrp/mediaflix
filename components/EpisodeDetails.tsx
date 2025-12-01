@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  Calendar,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Play,
+  Star,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,16 +21,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { formatDate, formatDateShort, formatRuntime } from "@/lib/utils";
-import {
-  Calendar,
-  Clock,
-  Play,
-  Star,
-  ExternalLink,
-  ChevronRight,
-} from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
 
 interface Episode {
   id: number;

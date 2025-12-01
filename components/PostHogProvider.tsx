@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
+import type React from "react";
+import { useEffect } from "react";
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -12,7 +13,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       defaults: "2025-05-24",
       capture_exceptions: true,
       debug: process.env.NODE_ENV === "development",
-      loaded: function (ph) {
+      loaded: (ph) => {
         // Opt out of capturing in development
         if (process.env.NODE_ENV === "development") {
           ph.opt_out_capturing(); // opts out of event capture

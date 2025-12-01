@@ -1,4 +1,8 @@
 "use client";
+import { useUser } from "@clerk/nextjs";
+import { Authenticated } from "convex/react";
+import { Bookmark, Settings } from "lucide-react";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,12 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useUser } from "@clerk/nextjs";
-import { Bookmark, Settings } from "lucide-react";
-import Link from "next/link";
 import SignOutButton from "./SignOutButton";
 import UserProfile from "./UserProfile";
-import { Authenticated } from "convex/react";
 
 function UserDropdown() {
   const { user, isLoaded } = useUser();

@@ -1,3 +1,8 @@
+import { usePaginatedQuery, useQuery } from "convex/react";
+import { Bookmark, Film, Grid3x3, Loader2, Search, Tv, X } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import ClearWatchlistDialog from "@/components/ClearWatchlistDialog";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { Button } from "@/components/ui/button";
@@ -7,11 +12,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WatchlistItemCard from "@/components/WatchlistItemCard";
 import { api } from "@/convex/_generated/api";
 import { useDebounce } from "@/hooks/useDebounce";
-import { usePaginatedQuery, useQuery } from "convex/react";
-import { Bookmark, Film, Grid3x3, Loader2, Search, Tv, X } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 type FilterType = "all" | "movie" | "tv";
 

@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { getProfileUrl } from "@/lib/utils";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import { getProfileUrl } from "@/lib/utils";
 import ConditionalTooltip from "./ConditionalTooltip";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 interface GuestStarsListProps {
   guestStars: Array<{

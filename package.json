@@ -10,12 +10,13 @@
     "build": "next build",
     "vercel-build": "if [ \"$VERCEL_ENV\" = \"production\" ]; then npx convex deploy --cmd 'npm run build'; else npm run build; fi",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "biome check",
+    "format": "biome format --write"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.25.0",
-    "@clerk/nextjs": "^6.12.6",
-    "@clerk/types": "^4.96.0",
+    "@clerk/clerk-react": "^5.57.0",
+    "@clerk/nextjs": "^6.35.5",
+    "@clerk/types": "^4.101.3",
     "@dicebear/collection": "^9.2.4",
     "@dicebear/converter": "^9.2.4",
     "@dicebear/core": "^9.2.4",
@@ -65,6 +66,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.3.8",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.91.0",

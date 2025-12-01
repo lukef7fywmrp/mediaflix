@@ -1,15 +1,15 @@
 "use client";
 
+import { Play, Youtube } from "lucide-react";
+import Image from "next/image";
+import type { TVGetVideosResult } from "tmdb-js-node";
 import { Badge } from "@/components/ui/badge";
 import {
   formatDateShort,
-  getVideoUrl,
-  getThumbnailUrl,
   getFallbackThumbnailUrl,
+  getThumbnailUrl,
+  getVideoUrl,
 } from "@/lib/utils";
-import { Play, Youtube } from "lucide-react";
-import Image from "next/image";
-import { TVGetVideosResult } from "tmdb-js-node";
 
 interface TVShowVideoGalleryProps {
   videos: TVGetVideosResult[];

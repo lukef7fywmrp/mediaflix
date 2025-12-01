@@ -1,3 +1,7 @@
+import { Calendar, Users } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type { MoviesGetTopRatedResult } from "tmdb-js-node";
 import {
   Card,
   CardContent,
@@ -5,10 +9,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { getPosterUrl } from "@/lib/utils";
-import { Calendar, Users } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { MoviesGetTopRatedResult } from "tmdb-js-node";
 import RatingSource from "./RatingSource";
 
 interface MovieCardProps {

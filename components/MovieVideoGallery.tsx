@@ -1,17 +1,17 @@
 "use client";
 
+import { ChevronDown, ChevronUp, Play, Youtube } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import type { MoviesGetVideosResponse } from "tmdb-js-node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   formatDateShort,
-  getVideoUrl,
-  getThumbnailUrl,
   getFallbackThumbnailUrl,
+  getThumbnailUrl,
+  getVideoUrl,
 } from "@/lib/utils";
-import { Play, Youtube, ChevronDown, ChevronUp } from "lucide-react";
-import Image from "next/image";
-import { MoviesGetVideosResponse } from "tmdb-js-node";
-import { useState } from "react";
 
 export default function MovieVideoGallery({
   videos,

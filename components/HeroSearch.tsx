@@ -1,30 +1,30 @@
 "use client";
 
 import {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
+  ChevronRight,
+  Film,
+  Loader2,
+  Search,
+  TrendingUp,
+  Tv,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
   useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
   useTransition,
 } from "react";
-import {
-  Search,
-  Film,
-  Tv,
-  Loader2,
-  X,
-  ChevronRight,
-  TrendingUp,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchMulti } from "@/hooks/useSearchMulti";
-import useGetTrending from "@/hooks/useGetTrending";
-import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { formatPopularity, getPosterUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useDebounce } from "@/hooks/useDebounce";
+import useGetTrending from "@/hooks/useGetTrending";
+import { useSearchMulti } from "@/hooks/useSearchMulti";
+import { formatPopularity, getPosterUrl } from "@/lib/utils";
 
 export default function HeroSearch() {
   const [query, setQuery] = useState("");
@@ -96,7 +96,7 @@ export default function HeroSearch() {
       // Hide results while user is still typing (debounced query hasn't caught up)
       setShowResults(false);
     }
-  }, [results, query, debouncedQuery]);
+  }, [query, debouncedQuery]);
 
   // Lock body scroll when hovering over search results
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function HeroSearch() {
         document.body.style.position = "";
         document.body.style.top = "";
         document.body.style.width = "";
-        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
       };
     }
   }, [showResults, isFocused, isHoveringResults]);
@@ -121,7 +121,7 @@ export default function HeroSearch() {
   // Track scroll state and reset when query changes
   useEffect(() => {
     setHasScrolled(false);
-  }, [query]);
+  }, []);
 
   // Reset hover state when results close
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function HeroSearch() {
       scrollableDiv.removeEventListener("scroll", handleScroll);
       resizeObserver.disconnect();
     };
-  }, [showResults, results]);
+  }, []);
 
   const handleResultClick = useCallback(
     (path: string) => {

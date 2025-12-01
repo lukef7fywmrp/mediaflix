@@ -1,8 +1,8 @@
 "use client";
 
-import WatchList from "@/components/WatchList";
 import { Authenticated, AuthLoading } from "convex/react";
 import { Loader2 } from "lucide-react";
+import WatchList from "@/components/WatchList";
 
 export default function WatchListPage() {
   return (

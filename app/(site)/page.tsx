@@ -1,12 +1,12 @@
 "use client";
 
+import { Radio, Star, TrendingUp } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import HeroSearch from "@/components/HeroSearch";
 import MediaTypeToggle from "@/components/MediaTypeToggle";
 import TopMovies from "@/components/TopMovies";
 import TopTVShows from "@/components/TopTVShows";
 import { Separator } from "@/components/ui/separator";
-import { Radio, Star, TrendingUp } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 
 export default function Home() {
   const searchParams = useSearchParams();

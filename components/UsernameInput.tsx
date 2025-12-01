@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import debounce from "lodash/debounce";
+import { AlertCircle, Check, HelpCircle, Loader2 } from "lucide-react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,10 +14,6 @@ import {
 } from "@/components/ui/tooltip";
 import { api } from "@/convex/_generated/api";
 import { usernameSchema } from "@/lib/validation";
-import { useQuery } from "convex/react";
-import debounce from "lodash/debounce";
-import { AlertCircle, Check, HelpCircle, Loader2 } from "lucide-react";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 interface UsernameInputProps {
   value: string;

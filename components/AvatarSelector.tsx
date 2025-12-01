@@ -1,37 +1,38 @@
 "use client";
 
-import { useMemo, useState, useRef, useEffect } from "react";
-import { createAvatar, type Style } from "@dicebear/core";
 import {
-  avataaars,
-  lorelei,
-  personas,
   adventurer,
+  adventurerNeutral,
+  avataaars,
+  avataaarsNeutral,
+  bigEars,
+  bigEarsNeutral,
   bigSmile,
   bottts,
+  botttsNeutral,
   croodles,
+  croodlesNeutral,
+  dylan,
   funEmoji,
   identicon,
   initials,
+  lorelei,
+  loreleiNeutral,
   micah,
   miniavs,
   notionists,
-  openPeeps,
-  adventurerNeutral,
-  botttsNeutral,
-  croodlesNeutral,
-  bigEars,
-  bigEarsNeutral,
-  dylan,
   notionistsNeutral,
+  openPeeps,
+  personas,
   pixelArt,
-  avataaarsNeutral,
-  loreleiNeutral,
   pixelArtNeutral,
   rings,
 } from "@dicebear/collection";
+import { createAvatar, type Style } from "@dicebear/core";
+import { Check, Shuffle } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Shuffle, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AvatarSelectorProps {
@@ -248,65 +249,68 @@ export default function AvatarSelector({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Generate avatars for each style
-  const generateAvatars = (styleId: string, count: number = 8) => {
-    const style = avatarStyles.find((s) => s.id === styleId);
-    if (!style) return [];
+  const generateAvatars = useCallback(
+    (styleId: string, count: number = 8) => {
+      const style = avatarStyles.find((s) => s.id === styleId);
+      if (!style) return [];
 
-    // Special handling for initials style - only show one avatar with user's initials
-    if (styleId === "initials") {
-      const firstInitial = firstName?.charAt(0).toUpperCase() || "";
-      const lastInitial = lastName?.charAt(0).toUpperCase() || "";
+      // Special handling for initials style - only show one avatar with user's initials
+      if (styleId === "initials") {
+        const firstInitial = firstName?.charAt(0).toUpperCase() || "";
+        const lastInitial = lastName?.charAt(0).toUpperCase() || "";
 
-      try {
-        // Generate seed from initials, trimming whitespace and falling back to "User" if empty
-        const seedValue = `${firstInitial} ${lastInitial}`.trim();
-        const config: Record<string, unknown> = {
-          seed: seedValue || "User", // Pass full name for initials to be generated
-        };
-        const avatar = createAvatar(style.style, config);
-        return [avatar.toDataUri()];
-      } catch (error) {
-        console.error(`Error generating initials avatar:`, error);
-        return [];
-      }
-    }
-
-    const backgroundColors = [
-      "f0f9ff",
-      "fef3c7",
-      "f3e8ff",
-      "ecfdf5",
-      "fef2f2",
-      "f0fdf4",
-      "fefce8",
-      "f0f9ff",
-    ];
-
-    const avatars = Array.from({ length: count }, (_, i) => {
-      const seed = `${styleId}-${i}-${Date.now()}`;
-      try {
-        // Create base configuration
-        const config: Record<string, unknown> = {
-          size: 128,
-          seed: seed,
-        };
-
-        // Only add backgroundColor if the style supports it
-        // Some styles like rings don't support backgroundColor
-        if (styleId !== "rings") {
-          config.backgroundColor =
-            backgroundColors[i % backgroundColors.length];
+        try {
+          // Generate seed from initials, trimming whitespace and falling back to "User" if empty
+          const seedValue = `${firstInitial} ${lastInitial}`.trim();
+          const config: Record<string, unknown> = {
+            seed: seedValue || "User", // Pass full name for initials to be generated
+          };
+          const avatar = createAvatar(style.style, config);
+          return [avatar.toDataUri()];
+        } catch (error) {
+          console.error(`Error generating initials avatar:`, error);
+          return [];
         }
-
-        return createAvatar(style.style, config).toDataUri();
-      } catch (error) {
-        console.error(`Error generating avatar for style ${styleId}:`, error);
-        return "";
       }
-    });
 
-    return avatars.filter(Boolean);
-  };
+      const backgroundColors = [
+        "f0f9ff",
+        "fef3c7",
+        "f3e8ff",
+        "ecfdf5",
+        "fef2f2",
+        "f0fdf4",
+        "fefce8",
+        "f0f9ff",
+      ];
+
+      const avatars = Array.from({ length: count }, (_, i) => {
+        const seed = `${styleId}-${i}-${Date.now()}`;
+        try {
+          // Create base configuration
+          const config: Record<string, unknown> = {
+            size: 128,
+            seed: seed,
+          };
+
+          // Only add backgroundColor if the style supports it
+          // Some styles like rings don't support backgroundColor
+          if (styleId !== "rings") {
+            config.backgroundColor =
+              backgroundColors[i % backgroundColors.length];
+          }
+
+          return createAvatar(style.style, config).toDataUri();
+        } catch (error) {
+          console.error(`Error generating avatar for style ${styleId}:`, error);
+          return "";
+        }
+      });
+
+      return avatars.filter(Boolean);
+    },
+    [firstName, lastName],
+  );
 
   // Get or generate avatars for the selected style
   const currentAvatars = useMemo(() => {
@@ -319,7 +323,7 @@ export default function AvatarSelector({
       return newAvatars;
     }
     return generatedAvatars[selectedStyle];
-  }, [selectedStyle, generatedAvatars, firstName, lastName]);
+  }, [selectedStyle, generatedAvatars, generateAvatars]);
 
   // Regenerate initials avatar when name or relevant dependencies change
   useEffect(() => {
@@ -333,7 +337,7 @@ export default function AvatarSelector({
     if (selectedStyle === "initials" && newAvatars[0]) {
       onAvatarSelectAction(newAvatars[0]);
     }
-  }, [firstName, lastName, selectedStyle, onAvatarSelectAction]);
+  }, [selectedStyle, onAvatarSelectAction, generateAvatars]);
 
   const handleStyleChange = (styleId: string) => {
     setSelectedStyle(styleId);
@@ -382,7 +386,7 @@ export default function AvatarSelector({
         setShowFade(false);
       }
     }
-  }, [selectedStyle, generatedAvatars]); // Re-check if avatars or style changes
+  }, []); // Re-check if avatars or style changes
 
   return (
     <div className="space-y-6">
@@ -411,6 +415,7 @@ export default function AvatarSelector({
             {avatarStyles.map((style) => (
               <button
                 key={style.id}
+                type="button"
                 onClick={() => handleStyleChange(style.id)}
                 className={cn(
                   "p-3 rounded-lg border text-left transition-colors",
@@ -443,7 +448,8 @@ export default function AvatarSelector({
         <div className="grid grid-cols-3 gap-3">
           {currentAvatars.map((avatarUrl, index) => (
             <button
-              key={`${selectedStyle}-${index}`}
+              key={avatarUrl}
+              type="button"
               onClick={() => handleAvatarClick(avatarUrl)}
               className={cn(
                 "relative p-2 rounded-lg border transition-colors",
@@ -452,10 +458,12 @@ export default function AvatarSelector({
                   : "border-border hover:border-muted-foreground/50 hover:bg-muted/30",
               )}
             >
-              <img
+              <Image
                 src={avatarUrl}
                 alt={`${selectedStyle} avatar ${index + 1}`}
                 className="w-full h-16 object-contain rounded-md"
+                width={64}
+                height={64}
               />
               {selectedAvatar === avatarUrl && (
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">

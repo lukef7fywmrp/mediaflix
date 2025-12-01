@@ -1,13 +1,22 @@
-import Link from "next/link";
-import React from "react";
-import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 const TMDB_LOGO_URL =
   "https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_2-d537fb228cf3ded904ef09b136fe3fec72548ebc1fea3fbbd1ad9e36364db38b.svg";
 
 function Footer() {
+  const pathname = usePathname();
+  const isProfileSetupPage = pathname === "/profile-setup";
+
+  if (isProfileSetupPage) {
+    return null;
+  }
+
   return (
     <div className="mt-16 py-6 space-y-4 md:space-y-5 text-center text-sm text-muted-foreground container mx-auto px-4">
       <div className="flex flex-col items-center justify-center gap-3">

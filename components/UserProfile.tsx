@@ -1,7 +1,6 @@
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import React from "react";
 import type { UserResource } from "@clerk/types";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 function UserProfile({ user }: { user: UserResource }) {
   const userProfile = useQuery(api.userProfiles.getUserProfile);

@@ -1,6 +1,6 @@
-import apiClient from "@/lib/tmdbClient";
 import { useQuery } from "@tanstack/react-query";
-import { ConfigurationGetLanguagesResponse } from "tmdb-js-web";
+import type { ConfigurationGetLanguagesResponse } from "tmdb-js-web";
+import apiClient from "@/lib/tmdbClient";
 
 function useGetLanguages() {
   return useQuery<ConfigurationGetLanguagesResponse>({

@@ -1,44 +1,3 @@
-import AvatarSelector from "@/components/AvatarSelector";
-import { GenreCheckboxItem } from "@/components/GenreCheckboxItem";
-import { LanguageMultiSelect } from "@/components/LanguageMultiSelect";
-import { NameInput } from "@/components/NameInput";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  CountryDropdown,
-  type Country,
-} from "@/components/ui/country-dropdown";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Switch } from "@/components/ui/switch";
-import { UsernameInput } from "@/components/UsernameInput";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import useGetGenres from "@/hooks/useGetGenres";
-import useGetLanguages from "@/hooks/useGetLanguages";
-import { convertSvgToPng, dataUriToBlob } from "@/lib/utils";
-import { birthDateSchema, countrySchema, nameSchema } from "@/lib/validation";
 import { useReverification, useUser } from "@clerk/nextjs";
 import {
   isClerkRuntimeError,
@@ -59,6 +18,47 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import AvatarSelector from "@/components/AvatarSelector";
+import { GenreCheckboxItem } from "@/components/GenreCheckboxItem";
+import { LanguageMultiSelect } from "@/components/LanguageMultiSelect";
+import { NameInput } from "@/components/NameInput";
+import { UsernameInput } from "@/components/UsernameInput";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  type Country,
+  CountryDropdown,
+} from "@/components/ui/country-dropdown";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import useGetGenres from "@/hooks/useGetGenres";
+import useGetLanguages from "@/hooks/useGetLanguages";
+import { convertSvgToPng, dataUriToBlob } from "@/lib/utils";
+import { birthDateSchema, countrySchema, nameSchema } from "@/lib/validation";
 
 export default function ProfileSetup() {
   const { user, isLoaded } = useUser();
@@ -225,6 +225,8 @@ export default function ProfileSetup() {
     userProfileLanguages,
     userProfileNotifications,
     hasUserInteracted,
+    getUserProfile,
+    user,
   ]);
 
   // Update original values only on initial load (before user interaction)
@@ -257,11 +259,11 @@ export default function ProfileSetup() {
     userProfileFavoriteTVGenres,
     userProfileLanguages,
     userProfileNotifications,
-    user?.id,
     user?.username,
     user?.firstName,
     user?.lastName,
     hasUserInteracted,
+    getUserProfile,
   ]);
 
   // Set initial avatar from Clerk
@@ -485,7 +487,14 @@ export default function ProfileSetup() {
 
     setupInitialProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, username, profileIsLoading, profileExists]);
+  }, [
+    user?.id,
+    username,
+    profileIsLoading,
+    profileExists,
+    upsertUserProfile,
+    user,
+  ]);
 
   // Handle scroll for movie genres fade
   const handleMovieGenresScroll = () => {
@@ -541,7 +550,7 @@ export default function ProfileSetup() {
         setShowTVGenresFade(false);
       }
     }
-  }, [genresData]);
+  }, []);
 
   const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -692,7 +701,7 @@ export default function ProfileSetup() {
       let finalAvatarUrl = avatarUrl;
 
       // Check if avatar is a data URI (from AvatarSelector)
-      if (avatarDataUri && avatarDataUri.startsWith("data:")) {
+      if (avatarDataUri?.startsWith("data:")) {
         try {
           finalAvatarUrl = await uploadAvatarToStorage(avatarDataUri);
 
@@ -1233,7 +1242,7 @@ export default function ProfileSetup() {
 
         {/* Fixed Bottom Action Bar */}
         {hasChanges && (
-          <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-lg z-50 animate-in slide-in-from-bottom duration-300">
+          <div className="fixed bottom-0 left-0 right-0 bg-background border-t shadow-lg z-51 animate-in slide-in-from-bottom duration-300">
             <div className="max-w-6xl mx-auto p-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">

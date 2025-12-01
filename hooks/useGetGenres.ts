@@ -1,6 +1,9 @@
-import apiClient from "@/lib/tmdbClient";
 import { useQuery } from "@tanstack/react-query";
-import { GenresGetMovieListGenre, GenresGetTVListGenre } from "tmdb-js-web";
+import type {
+  GenresGetMovieListGenre,
+  GenresGetTVListGenre,
+} from "tmdb-js-web";
+import apiClient from "@/lib/tmdbClient";
 
 function useGetGenres() {
   return useQuery<{

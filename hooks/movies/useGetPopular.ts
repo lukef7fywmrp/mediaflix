@@ -1,6 +1,6 @@
-import apiClient from "@/lib/tmdbClient";
 import { useQuery } from "@tanstack/react-query";
-import { MoviesGetPopularResponse } from "tmdb-js-web";
+import type { MoviesGetPopularResponse } from "tmdb-js-web";
+import apiClient from "@/lib/tmdbClient";
 
 function useGetPopular() {
   return useQuery<MoviesGetPopularResponse>({

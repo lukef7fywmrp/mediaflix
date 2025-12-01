@@ -1,14 +1,13 @@
 "use client";
 
-import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import { Users } from "lucide-react";
 import Image from "next/image";
-import { getProfileUrl } from "@/lib/utils";
-import { MoviesGetCreditsResponse } from "tmdb-js-node";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
+import type { MoviesGetCreditsResponse } from "tmdb-js-node";
 import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import { getProfileUrl } from "@/lib/utils";
 import ConditionalTooltip from "./ConditionalTooltip";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
 function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
   // Don't render anything if cast is empty

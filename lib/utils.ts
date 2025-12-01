@@ -51,15 +51,15 @@ export const formatOrdinal = (num: number) => {
   const j = num % 10;
   const k = num % 100;
   if (j === 1 && k !== 11) {
-    return num + "st";
+    return `${num}st`;
   }
   if (j === 2 && k !== 12) {
-    return num + "nd";
+    return `${num}nd`;
   }
   if (j === 3 && k !== 13) {
-    return num + "rd";
+    return `${num}rd`;
   }
-  return num + "th";
+  return `${num}th`;
 };
 
 export const formatDateShort = (dateString: string) => {
@@ -716,7 +716,7 @@ export const dataUriToBlob = (dataUri: string): Blob => {
   } else {
     // Try to extract from the data URI format
     const match = mimePart.match(/:(.*?);/);
-    if (match && match[1]) {
+    if (match?.[1]) {
       mimeType = match[1];
     }
   }
