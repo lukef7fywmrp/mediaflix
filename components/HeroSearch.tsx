@@ -251,6 +251,7 @@ export default function HeroSearch() {
         )}
         {!isLoading && !isPending && query && (
           <button
+            type="button"
             onClick={() => {
               setQuery("");
               setShowResults(false);
@@ -266,13 +267,12 @@ export default function HeroSearch() {
       <div className="mt-4 h-[50px]">
         {isTrendingLoading ? (
           <div className="flex flex-wrap items-center justify-center gap-1.5">
-            {[70, 85, 75, 90, 80, 65].map((width, index) => (
+            {[70, 85, 75, 90, 80, 65].map((width) => (
               <div
-                key={index}
+                key={`skeleton-${width}`}
                 className="h-6 bg-muted/60 rounded-full animate-pulse"
                 style={{
                   width: `${width}px`,
-                  animationDelay: `${index * 0.1}s`,
                 }}
               />
             ))}
@@ -292,6 +292,7 @@ export default function HeroSearch() {
                     }}
                   >
                     <button
+                      type="button"
                       onClick={() => handleSuggestedTermClick(term.title)}
                       className="flex items-center gap-1"
                     >
@@ -312,7 +313,8 @@ export default function HeroSearch() {
 
       {/* Results Dropdown */}
       {showResults && isFocused && (
-        <div
+        <section
+          aria-label="Search results"
           className="absolute top-full left-0 right-0 z-40 animate-in fade-in slide-in-from-top-2 duration-300 -mt-[58px]"
           onMouseEnter={() => setIsHoveringResults(true)}
           onMouseLeave={() => setIsHoveringResults(false)}
@@ -359,6 +361,7 @@ export default function HeroSearch() {
                         className="cursor-pointer transition-colors duration-150 text-xs"
                       >
                         <button
+                          type="button"
                           onClick={() => handleSuggestedTermClick(term.title)}
                           className="flex items-center gap-1"
                         >
@@ -409,6 +412,7 @@ export default function HeroSearch() {
 
                       return (
                         <button
+                          type="button"
                           key={uniqueKey}
                           onClick={() => handleResultClick(path)}
                           onMouseEnter={() => router.prefetch(path)}
@@ -516,7 +520,7 @@ export default function HeroSearch() {
               }`}
             />
           </div>
-        </div>
+        </section>
       )}
     </div>
   );
