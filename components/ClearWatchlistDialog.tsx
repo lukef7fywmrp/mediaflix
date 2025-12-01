@@ -1,5 +1,9 @@
 "use client";
 
+import { useMutation } from "convex/react";
+import { Loader2, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,10 +15,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
-import { Loader2, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function ClearWatchlistDialog({
   hasAnyWatchlistItems,

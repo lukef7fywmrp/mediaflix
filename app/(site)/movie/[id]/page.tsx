@@ -1,8 +1,8 @@
+import { notFound } from "next/navigation";
+import type { MoviesGetWatchProvidersResults } from "tmdb-js-node";
 import MovieDetail from "@/components/MovieDetail";
 import getCountry from "@/lib/getCountry";
 import api from "@/lib/tmdb";
-import { notFound } from "next/navigation";
-import { MoviesGetWatchProvidersResults } from "tmdb-js-node";
 
 interface MovieDetailPageProps {
   params: Promise<{ id: string }>;
@@ -10,9 +10,9 @@ interface MovieDetailPageProps {
 
 export async function generateMetadata({ params }: MovieDetailPageProps) {
   const { id } = await params;
-  const movieId = parseInt(id);
+  const movieId = parseInt(id, 10);
 
-  if (isNaN(movieId)) {
+  if (Number.isNaN(movieId)) {
     return {
       title: "Movie Not Found",
     };
@@ -47,9 +47,9 @@ export default async function MovieDetailPage({
   params,
 }: MovieDetailPageProps) {
   const { id } = await params;
-  const movieId = parseInt(id);
+  const movieId = parseInt(id, 10);
 
-  if (isNaN(movieId)) {
+  if (Number.isNaN(movieId)) {
     notFound();
   }
 

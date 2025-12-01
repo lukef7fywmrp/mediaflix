@@ -1,7 +1,6 @@
 import MovieCard from "@/components/MovieCard";
 import useGetPopular from "@/hooks/movies/useGetPopular";
 import LoadingSkeleton from "./LoadingSkeleton";
-import NetworkWarning from "./NetworkWarning";
 
 export default function TopMovies() {
   const { data, isLoading, error } = useGetPopular();
@@ -9,7 +8,7 @@ export default function TopMovies() {
   if (isLoading) {
     return (
       <>
-        <NetworkWarning isLoading={isLoading} loadingDuration={5000} />
+        {/* <NetworkWarning isLoading={isLoading} loadingDuration={5000} /> */}
         <LoadingSkeleton />
       </>
     );

@@ -1,5 +1,5 @@
-import tmdbClient from "@/lib/tmdbClient";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import tmdbClient from "@/lib/tmdbClient";
 
 export function useSearchMulti(query: string) {
   return useInfiniteQuery({

@@ -1,13 +1,3 @@
-import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
-import {
-  formatDate,
-  formatDateShort,
-  formatRuntime,
-  getBackdropUrl,
-  getCountryName,
-  getPosterUrl,
-  getProfileUrl,
-} from "@/lib/utils";
 import {
   Calendar,
   ChevronRight,
@@ -19,7 +9,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
+import type {
   TVGetAccountStatesResponse,
   TVGetAlternativeTitlesResponse,
   TVGetChangesResponse,
@@ -36,6 +26,16 @@ import {
   TVSeasonsGetImagesResponse,
   TVSeasonsGetVideosResponse,
 } from "tmdb-js-node";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import {
+  formatDate,
+  formatDateShort,
+  formatRuntime,
+  getBackdropUrl,
+  getCountryName,
+  getPosterUrl,
+  getProfileUrl,
+} from "@/lib/utils";
 import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import { Badge } from "./ui/badge";

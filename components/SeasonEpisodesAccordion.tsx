@@ -1,4 +1,4 @@
-import { TVGetDetailsSeason } from "tmdb-js-node";
+import type { TVGetDetailsSeason } from "tmdb-js-node";
 import SeasonEpisodeGroup from "./SeasonEpisodeGroup";
 
 interface SeasonEpisodesAccordionProps {

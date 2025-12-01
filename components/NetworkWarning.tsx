@@ -1,8 +1,8 @@
 "use client";
 
-import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { Wifi, WifiOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 interface NetworkWarningProps {

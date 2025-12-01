@@ -1,12 +1,12 @@
 "use client";
-import React, {
-  useCallback,
-  useState,
-  forwardRef,
-  useEffect,
-  useRef,
-} from "react";
 
+// data
+import { countries } from "country-data-list";
+// assets
+import { CheckIcon, ChevronDown, Globe } from "lucide-react";
+import type React from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { CircleFlag } from "react-circle-flags";
 // shadcn
 import {
   Command,
@@ -21,16 +21,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
 // utils
 import { cn } from "@/lib/utils";
-
-// assets
-import { ChevronDown, CheckIcon, Globe } from "lucide-react";
-import { CircleFlag } from "react-circle-flags";
-
-// data
-import { countries } from "country-data-list";
 
 // Country interface
 export interface Country {

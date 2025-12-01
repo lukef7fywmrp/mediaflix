@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect, useCallback } from "react";
 
 interface ExpandableOverviewProps {
   overview: string;
@@ -60,7 +60,9 @@ export default function ExpandableOverview({
     const computedStyle = window.getComputedStyle(element);
     const lineHeight = parseFloat(computedStyle.lineHeight);
     const fontSize = parseFloat(computedStyle.fontSize);
-    const actualLineHeight = isNaN(lineHeight) ? fontSize * 1.2 : lineHeight;
+    const actualLineHeight = Number.isNaN(lineHeight)
+      ? fontSize * 1.2
+      : lineHeight;
     const maxHeight = actualLineHeight * maxLines;
 
     setIsTruncated(fullHeight > maxHeight);

@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { ClerkLoaded, SignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   return (

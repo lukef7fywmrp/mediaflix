@@ -1,8 +1,8 @@
 "use client";
 
-import ProfileSetup from "@/components/ProfileSetup";
 import { Authenticated, AuthLoading } from "convex/react";
 import { Loader2 } from "lucide-react";
+import ProfileSetup from "@/components/ProfileSetup";
 
 function ProfileSetupPage() {
   return (

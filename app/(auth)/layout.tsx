@@ -1,7 +1,7 @@
-import logo from "@/images/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 import AuthHeroSlideshow from "@/components/AuthHeroSlideshow";
+import logo from "@/images/logo.svg";
 
 function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

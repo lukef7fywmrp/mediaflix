@@ -1,3 +1,23 @@
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
+import {
+  Award,
+  Calendar,
+  Clock,
+  ExternalLink,
+  Film,
+  Globe,
+  Play,
+  TrendingUp,
+  Youtube,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import ReactCountryFlag from "react-country-flag";
+import type {
+  MoviesGetDetailsResponse,
+  MoviesGetWatchProvidersBuy,
+} from "tmdb-js-node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,26 +45,6 @@ import {
   getProfileUrl,
   getValidCountryCodeForFlag,
 } from "@/lib/utils";
-import { auth } from "@clerk/nextjs/server";
-import { preloadQuery } from "convex/nextjs";
-import {
-  Award,
-  Calendar,
-  Clock,
-  ExternalLink,
-  Film,
-  Globe,
-  Play,
-  TrendingUp,
-  Youtube,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import ReactCountryFlag from "react-country-flag";
-import {
-  MoviesGetDetailsResponse,
-  MoviesGetWatchProvidersBuy,
-} from "tmdb-js-node";
 import CastSection from "./CastSection";
 import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";

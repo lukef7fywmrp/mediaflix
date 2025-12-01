@@ -10,8 +10,7 @@ import { headers } from "next/headers";
  */
 export async function getBaseUrl(): Promise<string> {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;
-  if (explicit && explicit.startsWith("http"))
-    return explicit.replace(/\/$/, "");
+  if (explicit?.startsWith("http")) return explicit.replace(/\/$/, "");
 
   const projectProd = process.env.VERCEL_PROJECT_PRODUCTION_URL;
   if (projectProd) return `https://${projectProd}`.replace(/\/$/, "");

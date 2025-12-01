@@ -1,8 +1,8 @@
+import { notFound } from "next/navigation";
+import type { TVGetWatchProvidersResults } from "tmdb-js-node";
 import TVShowDetail from "@/components/TVShowDetail";
 import getCountry from "@/lib/getCountry";
 import api from "@/lib/tmdb";
-import { notFound } from "next/navigation";
-import { TVGetWatchProvidersResults } from "tmdb-js-node";
 
 interface TVShowDetailPageProps {
   params: Promise<{ id: string }>;
@@ -10,9 +10,9 @@ interface TVShowDetailPageProps {
 
 export async function generateMetadata({ params }: TVShowDetailPageProps) {
   const { id } = await params;
-  const tvShowId = parseInt(id);
+  const tvShowId = parseInt(id, 10);
 
-  if (isNaN(tvShowId)) {
+  if (Number.isNaN(tvShowId)) {
     return {
       title: "TV Show Not Found",
     };
@@ -47,9 +47,9 @@ export default async function TVShowDetailPage({
   params,
 }: TVShowDetailPageProps) {
   const { id } = await params;
-  const tvShowId = parseInt(id);
+  const tvShowId = parseInt(id, 10);
 
-  if (isNaN(tvShowId)) {
+  if (Number.isNaN(tvShowId)) {
     notFound();
   }
 

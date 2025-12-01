@@ -1,8 +1,8 @@
-import EpisodeDetail from "@/components/EpisodeDetail";
-import api from "@/lib/tmdb";
-import getCountry from "@/lib/getCountry";
 import { notFound } from "next/navigation";
-import { TVGetWatchProvidersResults } from "tmdb-js-node";
+import type { TVGetWatchProvidersResults } from "tmdb-js-node";
+import EpisodeDetail from "@/components/EpisodeDetail";
+import getCountry from "@/lib/getCountry";
+import api from "@/lib/tmdb";
 
 interface EpisodeDetailPageProps {
   params: Promise<{
@@ -14,11 +14,15 @@ interface EpisodeDetailPageProps {
 
 export async function generateMetadata({ params }: EpisodeDetailPageProps) {
   const { id, seasonNumber, episodeNumber } = await params;
-  const tvShowId = parseInt(id);
-  const seasonNum = parseInt(seasonNumber);
-  const episodeNum = parseInt(episodeNumber);
+  const tvShowId = parseInt(id, 10);
+  const seasonNum = parseInt(seasonNumber, 10);
+  const episodeNum = parseInt(episodeNumber, 10);
 
-  if (isNaN(tvShowId) || isNaN(seasonNum) || isNaN(episodeNum)) {
+  if (
+    Number.isNaN(tvShowId) ||
+    Number.isNaN(seasonNum) ||
+    Number.isNaN(episodeNum)
+  ) {
     return {
       title: "Episode Not Found",
     };
@@ -73,11 +77,15 @@ export default async function EpisodeDetailPage({
   params,
 }: EpisodeDetailPageProps) {
   const { id, seasonNumber, episodeNumber } = await params;
-  const tvShowId = parseInt(id);
-  const seasonNum = parseInt(seasonNumber);
-  const episodeNum = parseInt(episodeNumber);
+  const tvShowId = parseInt(id, 10);
+  const seasonNum = parseInt(seasonNumber, 10);
+  const episodeNum = parseInt(episodeNumber, 10);
 
-  if (isNaN(tvShowId) || isNaN(seasonNum) || isNaN(episodeNum)) {
+  if (
+    Number.isNaN(tvShowId) ||
+    Number.isNaN(seasonNum) ||
+    Number.isNaN(episodeNum)
+  ) {
     notFound();
   }
 

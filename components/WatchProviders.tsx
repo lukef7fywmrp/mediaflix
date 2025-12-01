@@ -1,10 +1,10 @@
 "use client";
 
-import { getProviderLogoUrl, getCountryName } from "@/lib/utils";
-import { ChevronRight, Monitor, MapPin, ExternalLink } from "lucide-react";
+import { ChevronRight, ExternalLink, MapPin, Monitor } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { MoviesGetWatchProvidersBuy } from "tmdb-js-node";
+import type { MoviesGetWatchProvidersBuy } from "tmdb-js-node";
+import { getCountryName, getProviderLogoUrl } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -64,7 +64,7 @@ export default function WatchProviders({
     return (
       <div className={`${className} w-fit`}>
         <a
-          href={`https://www.google.com/search?q=${encodeURIComponent((movieTitle || "movie") + " showtimes near me")}`}
+          href={`https://www.google.com/search?q=${encodeURIComponent(`${movieTitle || "movie"} showtimes near me`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-2 text-background/80 hover:text-background transition-colors duration-200"

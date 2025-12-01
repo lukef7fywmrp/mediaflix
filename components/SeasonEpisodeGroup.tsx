@@ -1,10 +1,10 @@
 "use client";
 
-import { formatDateShort, getPosterUrl } from "@/lib/utils";
 import { Calendar, ChevronRight, Tv } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { TVGetDetailsSeason } from "tmdb-js-node";
+import type { TVGetDetailsSeason } from "tmdb-js-node";
+import { formatDateShort, getPosterUrl } from "@/lib/utils";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";

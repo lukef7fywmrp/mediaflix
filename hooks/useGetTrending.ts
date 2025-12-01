@@ -1,6 +1,6 @@
-import apiClient from "@/lib/tmdbClient";
 import { useQuery } from "@tanstack/react-query";
-import { TrendingGetTrendingResponse } from "tmdb-js-web";
+import type { TrendingGetTrendingResponse } from "tmdb-js-web";
+import apiClient from "@/lib/tmdbClient";
 
 function useGetTrending() {
   return useQuery<TrendingGetTrendingResponse>({

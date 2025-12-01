@@ -1,11 +1,11 @@
 "use client";
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import apiClient from "@/lib/tmdbClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { Film, Tv } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import apiClient from "@/lib/tmdbClient";
 
 export default function MediaTypeToggle() {
   const queryClient = useQueryClient();

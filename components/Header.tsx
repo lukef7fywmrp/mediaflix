@@ -1,15 +1,15 @@
 "use client";
 
-import React from "react";
-import logo from "@/images/logo.svg";
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import UserDropdown from "./UserDropdown";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { Button } from "./ui/button";
+import React from "react";
+import logo from "@/images/logo.svg";
 import { cn } from "@/lib/utils";
+import UserDropdown from "./UserDropdown";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 function Header() {
   const [sheetOpen, setSheetOpen] = React.useState(false);

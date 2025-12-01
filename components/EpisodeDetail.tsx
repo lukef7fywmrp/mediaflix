@@ -1,3 +1,8 @@
+import { Calendar, Clock, ExternalLink, Star, ThumbsUp } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type { TVEpisodesGetDetailsResponse } from "tmdb-js-node";
+import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import {
   formatDate,
   formatOrdinal,
@@ -5,16 +10,11 @@ import {
   getBackdropUrl,
   getProfileUrl,
 } from "@/lib/utils";
-import { Calendar, Clock, ExternalLink, Star, ThumbsUp } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { TVEpisodesGetDetailsResponse } from "tmdb-js-node";
+import ConditionalTooltip from "./ConditionalTooltip";
 import EpisodeVideoGallery from "./EpisodeVideoGallery";
 import GuestStarsList from "./GuestStarsList";
 import ShareButton from "./ShareButton";
-import WatchProviders from "./WatchProviders";
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,9 +23,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./ui/breadcrumb";
+import { Button } from "./ui/button";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import ConditionalTooltip from "./ConditionalTooltip";
-import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
+import WatchProviders from "./WatchProviders";
 
 interface EpisodeDetailProps {
   tvShowId: number;

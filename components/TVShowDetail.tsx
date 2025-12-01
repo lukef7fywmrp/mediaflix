@@ -1,3 +1,27 @@
+import { auth } from "@clerk/nextjs/server";
+import { preloadQuery } from "convex/nextjs";
+import {
+  Award,
+  Calendar,
+  CalendarDays,
+  ExternalLink,
+  Film,
+  Globe,
+  Play,
+  Star,
+  TrendingUp,
+  Tv,
+  Users,
+  Youtube,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import ReactCountryFlag from "react-country-flag";
+import type {
+  MoviesGetWatchProvidersBuy,
+  TVGetDetailsResponse,
+  TVGetVideosResult,
+} from "tmdb-js-node";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,30 +45,6 @@ import {
   getProfileUrl,
   getValidCountryCodeForFlag,
 } from "@/lib/utils";
-import { auth } from "@clerk/nextjs/server";
-import { preloadQuery } from "convex/nextjs";
-import {
-  Award,
-  Calendar,
-  CalendarDays,
-  ExternalLink,
-  Film,
-  Globe,
-  Play,
-  Star,
-  TrendingUp,
-  Tv,
-  Users,
-  Youtube,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import ReactCountryFlag from "react-country-flag";
-import {
-  MoviesGetWatchProvidersBuy,
-  TVGetDetailsResponse,
-  TVGetVideosResult,
-} from "tmdb-js-node";
 import ConditionalTooltip from "./ConditionalTooltip";
 import ExpandableOverview from "./ExpandableOverview";
 import SeasonEpisodesAccordion from "./SeasonEpisodesAccordion";

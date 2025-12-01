@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface ConditionalTooltipProps {
@@ -51,7 +51,7 @@ export default function ConditionalTooltip({
     }
 
     return () => resizeObserver.disconnect();
-  }, [name, character]);
+  }, []);
 
   if (!showTooltip) {
     return <div ref={containerRef}>{children}</div>;

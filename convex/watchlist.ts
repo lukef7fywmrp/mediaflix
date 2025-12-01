@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
 import { paginationOptsValidator } from "convex/server";
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
 
 /**
  * Toggle a movie or TV show in the user's watchlist (add if not present, remove if present)
@@ -124,7 +124,7 @@ export const getWatchlist = query({
     }
 
     // Base query
-    let query = ctx.db
+    const query = ctx.db
       .query("watchlist")
       .withIndex("by_user_id", (q) => q.eq("userId", userId.subject))
       .order("desc");

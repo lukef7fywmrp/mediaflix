@@ -1,30 +1,30 @@
 "use client";
 
 import {
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
+  ChevronRight,
+  Film,
+  Loader2,
+  Search,
+  TrendingUp,
+  Tv,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import {
   useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
   useTransition,
 } from "react";
-import {
-  Search,
-  Film,
-  Tv,
-  Loader2,
-  X,
-  ChevronRight,
-  TrendingUp,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useSearchMulti } from "@/hooks/useSearchMulti";
-import useGetTrending from "@/hooks/useGetTrending";
-import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { formatPopularity, getPosterUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useDebounce } from "@/hooks/useDebounce";
+import useGetTrending from "@/hooks/useGetTrending";
+import { useSearchMulti } from "@/hooks/useSearchMulti";
+import { formatPopularity, getPosterUrl } from "@/lib/utils";
 
 export default function HeroSearch() {
   const [query, setQuery] = useState("");
@@ -96,7 +96,7 @@ export default function HeroSearch() {
       // Hide results while user is still typing (debounced query hasn't caught up)
       setShowResults(false);
     }
-  }, [results, query, debouncedQuery]);
+  }, [query, debouncedQuery]);
 
   // Lock body scroll when hovering over search results
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function HeroSearch() {
         document.body.style.position = "";
         document.body.style.top = "";
         document.body.style.width = "";
-        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
       };
     }
   }, [showResults, isFocused, isHoveringResults]);
@@ -121,7 +121,7 @@ export default function HeroSearch() {
   // Track scroll state and reset when query changes
   useEffect(() => {
     setHasScrolled(false);
-  }, [query]);
+  }, []);
 
   // Reset hover state when results close
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function HeroSearch() {
       scrollableDiv.removeEventListener("scroll", handleScroll);
       resizeObserver.disconnect();
     };
-  }, [showResults, results]);
+  }, []);
 
   const handleResultClick = useCallback(
     (path: string) => {
@@ -251,6 +251,7 @@ export default function HeroSearch() {
         )}
         {!isLoading && !isPending && query && (
           <button
+            type="button"
             onClick={() => {
               setQuery("");
               setShowResults(false);
@@ -266,13 +267,12 @@ export default function HeroSearch() {
       <div className="mt-4 h-[50px]">
         {isTrendingLoading ? (
           <div className="flex flex-wrap items-center justify-center gap-1.5">
-            {[70, 85, 75, 90, 80, 65].map((width, index) => (
+            {[70, 85, 75, 90, 80, 65].map((width) => (
               <div
-                key={index}
+                key={`skeleton-${width}`}
                 className="h-6 bg-muted/60 rounded-full animate-pulse"
                 style={{
                   width: `${width}px`,
-                  animationDelay: `${index * 0.1}s`,
                 }}
               />
             ))}
@@ -292,6 +292,7 @@ export default function HeroSearch() {
                     }}
                   >
                     <button
+                      type="button"
                       onClick={() => handleSuggestedTermClick(term.title)}
                       className="flex items-center gap-1"
                     >
@@ -312,7 +313,8 @@ export default function HeroSearch() {
 
       {/* Results Dropdown */}
       {showResults && isFocused && (
-        <div
+        <section
+          aria-label="Search results"
           className="absolute top-full left-0 right-0 z-40 animate-in fade-in slide-in-from-top-2 duration-300 -mt-[58px]"
           onMouseEnter={() => setIsHoveringResults(true)}
           onMouseLeave={() => setIsHoveringResults(false)}
@@ -359,6 +361,7 @@ export default function HeroSearch() {
                         className="cursor-pointer transition-colors duration-150 text-xs"
                       >
                         <button
+                          type="button"
                           onClick={() => handleSuggestedTermClick(term.title)}
                           className="flex items-center gap-1"
                         >
@@ -409,6 +412,7 @@ export default function HeroSearch() {
 
                       return (
                         <button
+                          type="button"
                           key={uniqueKey}
                           onClick={() => handleResultClick(path)}
                           onMouseEnter={() => router.prefetch(path)}
@@ -516,7 +520,7 @@ export default function HeroSearch() {
               }`}
             />
           </div>
-        </div>
+        </section>
       )}
     </div>
   );

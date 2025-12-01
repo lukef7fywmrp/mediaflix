@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { api } from "@/convex/_generated/api";
 import { useAuth } from "@clerk/nextjs";
-import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
+import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
 
 interface WatchlistButtonProps {
   mediaType: "movie" | "tv";

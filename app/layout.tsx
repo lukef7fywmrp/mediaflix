@@ -1,13 +1,13 @@
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-import QueryClientProvider from "@/components/QueryClientProvider";
-import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from "@clerk/nextjs";
-import { PostHogProvider } from "@/components/PostHogProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ConvexClientProvider from "@/components/ConvexClientProvider";
+import { PostHogProvider } from "@/components/PostHogProvider";
+import QueryClientProvider from "@/components/QueryClientProvider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import PostHogPageView from "@/components/PostHogPageView";
 import { Analytics } from "@vercel/analytics/next";
+import PostHogPageView from "@/components/PostHogPageView";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
