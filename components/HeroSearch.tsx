@@ -264,7 +264,7 @@ export default function HeroSearch() {
       </div>
 
       {/* Suggested Search Terms - Only show when no search results */}
-      <div className="mt-4 h-[50px]">
+      <div className="mt-4 min-h-[50px]">
         {isTrendingLoading ? (
           <div className="flex flex-wrap items-center justify-center gap-1.5">
             {[70, 85, 75, 90, 80, 65].map((width) => (
@@ -280,7 +280,7 @@ export default function HeroSearch() {
         ) : (
           suggestedTerms.length > 0 && (
             <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <div className="flex flex-wrap items-center justify-center gap-1.5">
+              <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2">
                 {suggestedTerms.map((term, index) => (
                   <Badge
                     key={term.id}

@@ -312,7 +312,7 @@ export default function SeasonDetail({
                       className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
                       title={person.name}
                     >
-                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
                         <Image
                           src={
                             person.profile_path
@@ -322,7 +322,8 @@ export default function SeasonDetail({
                           alt={person.name}
                           fill
                           className="object-cover"
-                          sizes="128px"
+                          sizes="(max-width: 640px) 112px, 128px"
+                          loading="lazy"
                         />
                       </div>
                       <div className="mt-2">
