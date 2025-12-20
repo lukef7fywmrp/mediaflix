@@ -29,7 +29,7 @@ function CastSection({
       const params = new URLSearchParams({
         from: mediaType,
         mediaId: String(mediaId),
-        mediaTitle: encodeURIComponent(mediaTitle),
+        mediaTitle: mediaTitle,
       });
       return `/person/${personId}?${params.toString()}`;
     }

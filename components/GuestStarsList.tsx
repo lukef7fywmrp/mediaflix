@@ -41,15 +41,15 @@ export default function GuestStarsList({
       const params = new URLSearchParams({
         from: mediaType,
         mediaId: String(mediaId),
-        mediaTitle: encodeURIComponent(mediaTitle),
+        mediaTitle: mediaTitle,
       });
       if (seasonNumber !== undefined && seasonName) {
         params.set("seasonNumber", String(seasonNumber));
-        params.set("seasonName", encodeURIComponent(seasonName));
+        params.set("seasonName", seasonName);
       }
       if (episodeNumber !== undefined && episodeName) {
         params.set("episodeNumber", String(episodeNumber));
-        params.set("episodeName", encodeURIComponent(episodeName));
+        params.set("episodeName", episodeName);
       }
       return `/person/${personId}?${params.toString()}`;
     }

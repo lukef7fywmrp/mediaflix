@@ -76,20 +76,19 @@ export default async function PersonDetailPage({
   }
 
   // Build referrer info if coming from a movie or TV page
+  // Note: Next.js automatically decodes search params, so no decodeURIComponent needed
   const referrer =
     from && mediaId && mediaTitle
       ? {
           type: from,
           id: mediaId,
-          title: decodeURIComponent(mediaTitle),
+          title: mediaTitle,
           seasonNumber: seasonNumber ? parseInt(seasonNumber, 10) : undefined,
-          seasonName: seasonName ? decodeURIComponent(seasonName) : undefined,
+          seasonName: seasonName || undefined,
           episodeNumber: episodeNumber
             ? parseInt(episodeNumber, 10)
             : undefined,
-          episodeName: episodeName
-            ? decodeURIComponent(episodeName)
-            : undefined,
+          episodeName: episodeName || undefined,
         }
       : null;
 

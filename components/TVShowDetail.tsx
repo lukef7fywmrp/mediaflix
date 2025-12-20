@@ -209,7 +209,7 @@ export default async function TVShowDetail({
     const params = new URLSearchParams({
       from: "tv",
       mediaId: String(tvShow.id),
-      mediaTitle: encodeURIComponent(tvShow.name),
+      mediaTitle: tvShow.name,
     });
     return `/person/${personId}?${params.toString()}`;
   };

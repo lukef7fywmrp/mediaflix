@@ -194,7 +194,7 @@ export default async function MovieDetail({
     const params = new URLSearchParams({
       from: "movie",
       mediaId: String(movie.id),
-      mediaTitle: encodeURIComponent(movie.title),
+      mediaTitle: movie.title,
     });
     return `/person/${personId}?${params.toString()}`;
   };
