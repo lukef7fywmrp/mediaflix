@@ -317,7 +317,7 @@ export default function EpisodeDetail({
                           character={entry.roles.join(", ")}
                         >
                           <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
                               <Image
                                 src={
                                   entry.person.profile_path
@@ -329,7 +329,8 @@ export default function EpisodeDetail({
                                 alt={entry.person.name}
                                 fill
                                 className="object-cover"
-                                sizes="128px"
+                                sizes="(max-width: 640px) 112px, 128px"
+                                loading="lazy"
                               />
                             </div>
                             <div className="mt-2">
@@ -368,7 +369,7 @@ export default function EpisodeDetail({
                           character={actor.character || "Actor"}
                         >
                           <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
                               <Image
                                 src={
                                   actor.profile_path
@@ -378,7 +379,8 @@ export default function EpisodeDetail({
                                 alt={actor.name}
                                 fill
                                 className="object-cover"
-                                sizes="128px"
+                                sizes="(max-width: 640px) 112px, 128px"
+                                loading="lazy"
                               />
                             </div>
                             <div className="mt-2">
