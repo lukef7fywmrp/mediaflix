@@ -2,6 +2,7 @@
 
 import { Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { MoviesGetCreditsResponse } from "tmdb-js-node";
 import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import { getProfileUrl } from "@/lib/utils";
@@ -9,7 +10,31 @@ import ConditionalTooltip from "./ConditionalTooltip";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea, ScrollBar } from "./ui/scroll-area";
 
-function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
+interface CastSectionProps {
+  credits: MoviesGetCreditsResponse;
+  mediaType?: "movie" | "tv";
+  mediaId?: number;
+  mediaTitle?: string;
+}
+
+function CastSection({
+  credits,
+  mediaType,
+  mediaId,
+  mediaTitle,
+}: CastSectionProps) {
+  // Build query params for person page links
+  const buildPersonLink = (personId: number) => {
+    if (mediaType && mediaId && mediaTitle) {
+      const params = new URLSearchParams({
+        from: mediaType,
+        mediaId: String(mediaId),
+        mediaTitle: encodeURIComponent(mediaTitle),
+      });
+      return `/person/${personId}?${params.toString()}`;
+    }
+    return `/person/${personId}`;
+  };
   // Don't render anything if cast is empty
   if (!credits.cast || credits.cast.length === 0) {
     return null;
@@ -32,8 +57,9 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
                 name={actor.name}
                 character={actor.character}
               >
-                <div
-                  className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+                <Link
+                  href={buildPersonLink(actor.id)}
+                  className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
                   title={actor.name}
                 >
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
@@ -51,7 +77,10 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
                     />
                   </div>
                   <div className="mt-2">
-                    <p className="font-medium text-sm line-clamp-1" data-name>
+                    <p
+                      className="font-medium text-sm line-clamp-1 group-hover:text-primary"
+                      data-name
+                    >
                       {actor.name}
                     </p>
                     <p
@@ -61,7 +90,7 @@ function CastSection({ credits }: { credits: MoviesGetCreditsResponse }) {
                       {actor.character}
                     </p>
                   </div>
-                </div>
+                </Link>
               </ConditionalTooltip>
             ))}
           </div>

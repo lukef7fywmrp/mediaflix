@@ -188,6 +188,17 @@ export default async function MovieDetail({
   country,
 }: MovieDetailProps) {
   const { userId } = await auth();
+
+  // Helper to build person page links with referrer info
+  const buildPersonLink = (personId: number) => {
+    const params = new URLSearchParams({
+      from: "movie",
+      mediaId: String(movie.id),
+      mediaTitle: encodeURIComponent(movie.title),
+    });
+    return `/person/${personId}?${params.toString()}`;
+  };
+
   const director = movie.credits.crew.find(
     (person) => person.job === "Director",
   );
@@ -448,7 +459,12 @@ export default async function MovieDetail({
           {/* Left Column - Main Info */}
           <div className="lg:col-span-2 space-y-8">
             {/* Cast */}
-            <CastSection credits={movie.credits} />
+            <CastSection
+              credits={movie.credits}
+              mediaType="movie"
+              mediaId={movie.id}
+              mediaTitle={movie.title}
+            />
 
             {/* Crew */}
             {sortedCrew.length > 0 && (
@@ -468,7 +484,10 @@ export default async function MovieDetail({
                           name={entry.person.name}
                           character={entry.roles.join(", ")}
                         >
-                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
+                          <Link
+                            href={buildPersonLink(entry.person.id)}
+                            className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
+                          >
                             <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
                               <Image
                                 src={
@@ -480,13 +499,13 @@ export default async function MovieDetail({
                                 }
                                 alt={entry.person.name}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform group-hover:scale-105"
                                 sizes="128px"
                               />
                             </div>
                             <div className="mt-2">
                               <p
-                                className="font-medium text-sm line-clamp-1"
+                                className="font-medium text-sm line-clamp-1 group-hover:text-primary"
                                 data-name
                               >
                                 {entry.person.name}
@@ -498,7 +517,7 @@ export default async function MovieDetail({
                                 {entry.roles.join(", ")}
                               </p>
                             </div>
-                          </div>
+                          </Link>
                         </ConditionalTooltip>
                       ))}
                     </div>

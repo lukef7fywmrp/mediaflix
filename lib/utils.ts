@@ -30,7 +30,8 @@ export const formatRuntime = (minutes: number) => {
   return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
 };
 
-export const formatCurrency = (amount: number) => {
+// Internal helper for formatLargeNumber
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -612,6 +613,100 @@ const COUNTRY_CODE_TO_NAME_MAP: Record<string, string> = {
 
 export const getCountryName = (countryCode: string): string => {
   return COUNTRY_CODE_TO_NAME_MAP[countryCode] || countryCode;
+};
+
+// Helper function to get country code from place of birth string
+// Handles formats like "City, State, USA" or "City, United States"
+export const getCountryCodeFromPlaceOfBirth = (
+  placeOfBirth: string,
+): string => {
+  // Common country name variations and regional mappings
+  const countryVariations: Record<string, string> = {
+    // United States variations
+    USA: "US",
+    "United States": "US",
+    "United States of America": "US",
+    US: "US",
+    // United Kingdom regions (use ISO 3166-2 codes for regional flags)
+    Wales: "gb-wls",
+    Scotland: "gb-sct",
+    England: "gb-eng",
+    "Northern Ireland": "gb-nir",
+    // United Kingdom (generic)
+    UK: "GB",
+    "United Kingdom": "GB",
+    "Great Britain": "GB",
+    Britain: "GB",
+    // UAE variations
+    UAE: "AE",
+    "United Arab Emirates": "AE",
+    // Other common variations
+    Russia: "RU",
+    "Russian Federation": "RU",
+    "South Korea": "KR",
+    Korea: "KR",
+    "North Korea": "KP",
+    DPRK: "KP",
+    Iran: "IR",
+    Vatican: "VA",
+    "Vatican City": "VA",
+  };
+
+  // Split by comma and get the last part (usually the country)
+  const parts = placeOfBirth.split(",").map((p) => p.trim());
+  const lastPart = parts[parts.length - 1];
+
+  // Check variations first (case-insensitive)
+  const normalizedLastPart = lastPart.trim();
+  if (countryVariations[normalizedLastPart]) {
+    return countryVariations[normalizedLastPart];
+  }
+
+  // Try case-insensitive match for variations
+  for (const [key, value] of Object.entries(countryVariations)) {
+    if (key.toLowerCase() === normalizedLastPart.toLowerCase()) {
+      return value;
+    }
+  }
+
+  // Try to find in COUNTRY_CODE_TO_NAME_MAP (reverse lookup, case-insensitive)
+  for (const [code, name] of Object.entries(COUNTRY_CODE_TO_NAME_MAP)) {
+    if (name.toLowerCase() === normalizedLastPart.toLowerCase()) {
+      return code;
+    }
+  }
+
+  // If last part is already a 2-letter code, try it
+  if (
+    normalizedLastPart.length === 2 &&
+    COUNTRY_CODE_TO_NAME_MAP[normalizedLastPart.toUpperCase()]
+  ) {
+    return normalizedLastPart.toUpperCase();
+  }
+
+  // Fallback to UN (United Nations) flag
+  return "UN";
+};
+
+// Calculate age from birthday and optional deathday
+export const calculateAge = (
+  birthday: string,
+  deathday?: string | null,
+): number => {
+  const birthDate = new Date(birthday);
+  const endDate = deathday ? new Date(deathday) : new Date();
+
+  let age = endDate.getFullYear() - birthDate.getFullYear();
+  const monthDiff = endDate.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && endDate.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
 };
 
 export const getProviderLogoUrl = (logoPath: string | null) => {

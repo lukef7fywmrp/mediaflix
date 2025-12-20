@@ -302,47 +302,51 @@ export default function SeasonDetail({
             </div>
             <ScrollArea className="overflow-x-auto">
               <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                {season.credits.cast.map((person) => (
-                  <ConditionalTooltip
-                    key={person.id}
-                    name={person.name}
-                    character={person.character || ""}
-                  >
-                    <div
-                      className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
-                      title={person.name}
+                {season.credits.cast.map((person) => {
+                  const personLink = `/person/${person.id}?from=tv&mediaId=${tvShowId}&mediaTitle=${encodeURIComponent(tvShow.name)}&seasonNumber=${season.season_number}&seasonName=${encodeURIComponent(season.name)}`;
+                  return (
+                    <ConditionalTooltip
+                      key={person.id}
+                      name={person.name}
+                      character={person.character || ""}
                     >
-                      <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
-                        <Image
-                          src={
-                            person.profile_path
-                              ? (getProfileUrl(person.profile_path) ?? "")
-                              : PLACEHOLDER_POSTER_URL
-                          }
-                          alt={person.name}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 112px, 128px"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="mt-2">
-                        <div
-                          className="text-sm font-medium line-clamp-1"
-                          data-name
-                        >
-                          {person.name}
+                      <Link
+                        href={personLink}
+                        className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
+                        title={person.name}
+                      >
+                        <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
+                          <Image
+                            src={
+                              person.profile_path
+                                ? (getProfileUrl(person.profile_path) ?? "")
+                                : PLACEHOLDER_POSTER_URL
+                            }
+                            alt={person.name}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 112px, 128px"
+                            loading="lazy"
+                          />
                         </div>
-                        <div
-                          className="text-xs text-muted-foreground line-clamp-1"
-                          data-character
-                        >
-                          {person.character}
+                        <div className="mt-2">
+                          <div
+                            className="text-sm font-medium line-clamp-1 group-hover:text-primary"
+                            data-name
+                          >
+                            {person.name}
+                          </div>
+                          <div
+                            className="text-xs text-muted-foreground line-clamp-1"
+                            data-character
+                          >
+                            {person.character}
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </ConditionalTooltip>
-                ))}
+                      </Link>
+                    </ConditionalTooltip>
+                  );
+                })}
               </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
