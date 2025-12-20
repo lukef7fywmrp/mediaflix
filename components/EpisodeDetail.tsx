@@ -310,46 +310,52 @@ export default function EpisodeDetail({
                   <h2 className="text-xl font-bold">Crew</h2>
                   <ScrollArea className="overflow-x-auto">
                     <div className="flex gap-3 pb-2 snap-x snap-mandatory">
-                      {sortedCrew.map((entry) => (
-                        <ConditionalTooltip
-                          key={entry.person.id}
-                          name={entry.person.name}
-                          character={entry.roles.join(", ")}
-                        >
-                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
-                              <Image
-                                src={
-                                  entry.person.profile_path
-                                    ? (getProfileUrl(
-                                        entry.person.profile_path,
-                                      ) ?? "")
-                                    : PLACEHOLDER_POSTER_URL
-                                }
-                                alt={entry.person.name}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 112px, 128px"
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="mt-2">
-                              <p
-                                className="font-medium text-sm line-clamp-1"
-                                data-name
-                              >
-                                {entry.person.name}
-                              </p>
-                              <p
-                                className="text-xs text-muted-foreground line-clamp-1"
-                                data-character
-                              >
-                                {entry.roles.join(", ")}
-                              </p>
-                            </div>
-                          </div>
-                        </ConditionalTooltip>
-                      ))}
+                      {sortedCrew.map((entry) => {
+                        const personLink = `/person/${entry.person.id}?from=tv&mediaId=${tvShowId}&mediaTitle=${encodeURIComponent(tvShowName)}&seasonNumber=${seasonNumber}&seasonName=${encodeURIComponent(seasonName)}&episodeNumber=${episode.episode_number}&episodeName=${encodeURIComponent(episode.name)}`;
+                        return (
+                          <ConditionalTooltip
+                            key={entry.person.id}
+                            name={entry.person.name}
+                            character={entry.roles.join(", ")}
+                          >
+                            <Link
+                              href={personLink}
+                              className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
+                            >
+                              <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
+                                <Image
+                                  src={
+                                    entry.person.profile_path
+                                      ? (getProfileUrl(
+                                          entry.person.profile_path,
+                                        ) ?? "")
+                                      : PLACEHOLDER_POSTER_URL
+                                  }
+                                  alt={entry.person.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 640px) 112px, 128px"
+                                  loading="lazy"
+                                />
+                              </div>
+                              <div className="mt-2">
+                                <p
+                                  className="font-medium text-sm line-clamp-1 group-hover:text-primary"
+                                  data-name
+                                >
+                                  {entry.person.name}
+                                </p>
+                                <p
+                                  className="text-xs text-muted-foreground line-clamp-1"
+                                  data-character
+                                >
+                                  {entry.roles.join(", ")}
+                                </p>
+                              </div>
+                            </Link>
+                          </ConditionalTooltip>
+                        );
+                      })}
                     </div>
                     <ScrollBar orientation="horizontal" />
                   </ScrollArea>
@@ -362,44 +368,51 @@ export default function EpisodeDetail({
                   <h2 className="text-xl font-bold">Cast</h2>
                   <ScrollArea className="overflow-x-auto">
                     <div className="flex gap-3 pb-2 snap-x snap-mandatory">
-                      {episode.credits.cast.map((actor) => (
-                        <ConditionalTooltip
-                          key={actor.id}
-                          name={actor.name}
-                          character={actor.character || "Actor"}
-                        >
-                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
-                              <Image
-                                src={
-                                  actor.profile_path
-                                    ? (getProfileUrl(actor.profile_path) ?? "")
-                                    : PLACEHOLDER_POSTER_URL
-                                }
-                                alt={actor.name}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 112px, 128px"
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="mt-2">
-                              <p
-                                className="font-medium text-sm line-clamp-1"
-                                data-name
-                              >
-                                {actor.name}
-                              </p>
-                              <p
-                                className="text-xs text-muted-foreground line-clamp-1"
-                                data-character
-                              >
-                                {actor.character || "Actor"}
-                              </p>
-                            </div>
-                          </div>
-                        </ConditionalTooltip>
-                      ))}
+                      {episode.credits.cast.map((actor) => {
+                        const personLink = `/person/${actor.id}?from=tv&mediaId=${tvShowId}&mediaTitle=${encodeURIComponent(tvShowName)}&seasonNumber=${seasonNumber}&seasonName=${encodeURIComponent(seasonName)}&episodeNumber=${episode.episode_number}&episodeName=${encodeURIComponent(episode.name)}`;
+                        return (
+                          <ConditionalTooltip
+                            key={actor.id}
+                            name={actor.name}
+                            character={actor.character || "Actor"}
+                          >
+                            <Link
+                              href={personLink}
+                              className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
+                            >
+                              <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20 min-h-0">
+                                <Image
+                                  src={
+                                    actor.profile_path
+                                      ? (getProfileUrl(actor.profile_path) ??
+                                        "")
+                                      : PLACEHOLDER_POSTER_URL
+                                  }
+                                  alt={actor.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="(max-width: 640px) 112px, 128px"
+                                  loading="lazy"
+                                />
+                              </div>
+                              <div className="mt-2">
+                                <p
+                                  className="font-medium text-sm line-clamp-1 group-hover:text-primary"
+                                  data-name
+                                >
+                                  {actor.name}
+                                </p>
+                                <p
+                                  className="text-xs text-muted-foreground line-clamp-1"
+                                  data-character
+                                >
+                                  {actor.character || "Actor"}
+                                </p>
+                              </div>
+                            </Link>
+                          </ConditionalTooltip>
+                        );
+                      })}
                     </div>
                     <ScrollBar orientation="horizontal" />
                   </ScrollArea>
@@ -411,7 +424,16 @@ export default function EpisodeDetail({
                 episode.credits.guest_stars.length > 0 && (
                   <div className="space-y-4">
                     <h2 className="text-xl font-bold">Guest Stars</h2>
-                    <GuestStarsList guestStars={episode.credits.guest_stars} />
+                    <GuestStarsList
+                      guestStars={episode.credits.guest_stars}
+                      mediaType="tv"
+                      mediaId={tvShowId}
+                      mediaTitle={tvShowName}
+                      seasonNumber={seasonNumber}
+                      seasonName={seasonName}
+                      episodeNumber={episode.episode_number}
+                      episodeName={episode.name}
+                    />
                   </div>
                 )}
             </div>

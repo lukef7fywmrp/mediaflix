@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { PLACEHOLDER_POSTER_URL } from "@/lib/constants";
 import { getProfileUrl } from "@/lib/utils";
 import ConditionalTooltip from "./ConditionalTooltip";
@@ -13,10 +14,47 @@ interface GuestStarsListProps {
     character?: string;
     profile_path: string | null;
   }>;
+  mediaType?: "movie" | "tv";
+  mediaId?: number;
+  mediaTitle?: string;
+  seasonNumber?: number;
+  seasonName?: string;
+  episodeNumber?: number;
+  episodeName?: string;
 }
 
-export default function GuestStarsList({ guestStars }: GuestStarsListProps) {
+export default function GuestStarsList({
+  guestStars,
+  mediaType,
+  mediaId,
+  mediaTitle,
+  seasonNumber,
+  seasonName,
+  episodeNumber,
+  episodeName,
+}: GuestStarsListProps) {
   if (!guestStars || guestStars.length === 0) return null;
+
+  // Build query params for person page links
+  const buildPersonLink = (personId: number) => {
+    if (mediaType && mediaId && mediaTitle) {
+      const params = new URLSearchParams({
+        from: mediaType,
+        mediaId: String(mediaId),
+        mediaTitle: mediaTitle,
+      });
+      if (seasonNumber !== undefined && seasonName) {
+        params.set("seasonNumber", String(seasonNumber));
+        params.set("seasonName", seasonName);
+      }
+      if (episodeNumber !== undefined && episodeName) {
+        params.set("episodeNumber", String(episodeNumber));
+        params.set("episodeName", episodeName);
+      }
+      return `/person/${personId}?${params.toString()}`;
+    }
+    return `/person/${personId}`;
+  };
 
   return (
     <ScrollArea className="overflow-x-auto">
@@ -27,8 +65,9 @@ export default function GuestStarsList({ guestStars }: GuestStarsListProps) {
             name={star.name}
             character={star.character || "Guest Star"}
           >
-            <div
-              className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+            <Link
+              href={buildPersonLink(star.id)}
+              className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
               title={star.name}
             >
               <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
@@ -45,7 +84,10 @@ export default function GuestStarsList({ guestStars }: GuestStarsListProps) {
                 />
               </div>
               <div className="mt-2">
-                <p className="font-medium text-sm line-clamp-1" data-name>
+                <p
+                  className="font-medium text-sm line-clamp-1 group-hover:text-primary"
+                  data-name
+                >
                   {star.name}
                 </p>
                 <p
@@ -55,7 +97,7 @@ export default function GuestStarsList({ guestStars }: GuestStarsListProps) {
                   {star.character || "Guest Star"}
                 </p>
               </div>
-            </div>
+            </Link>
           </ConditionalTooltip>
         ))}
       </div>

@@ -203,6 +203,16 @@ export default async function TVShowDetail({
   videos,
 }: TVShowDetailProps) {
   const { userId } = await auth();
+
+  // Helper to build person page links with referrer info
+  const buildPersonLink = (personId: number) => {
+    const params = new URLSearchParams({
+      from: "tv",
+      mediaId: String(tvShow.id),
+      mediaTitle: tvShow.name,
+    });
+    return `/person/${personId}?${params.toString()}`;
+  };
   const totalEpisodes = tvShow.number_of_episodes;
   const totalSeasons = tvShow.number_of_seasons;
   const lastAirDate = tvShow.last_air_date;
@@ -484,8 +494,9 @@ export default async function TVShowDetail({
                           name={actor.name}
                           character={actor.character}
                         >
-                          <div
-                            className="w-28 sm:w-32 flex-shrink-0 snap-start text-center"
+                          <Link
+                            href={buildPersonLink(actor.id)}
+                            className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
                             title={actor.name}
                           >
                             <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
@@ -497,13 +508,13 @@ export default async function TVShowDetail({
                                 }
                                 alt={actor.name}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform group-hover:scale-105"
                                 sizes="128px"
                               />
                             </div>
                             <div className="mt-2">
                               <p
-                                className="font-medium text-sm line-clamp-1"
+                                className="font-medium text-sm line-clamp-1 group-hover:text-primary"
                                 data-name
                               >
                                 {actor.name}
@@ -515,7 +526,7 @@ export default async function TVShowDetail({
                                 {actor.character}
                               </p>
                             </div>
-                          </div>
+                          </Link>
                         </ConditionalTooltip>
                       ))}
                     </div>
@@ -543,7 +554,10 @@ export default async function TVShowDetail({
                           name={entry.person.name}
                           character={entry.roles.join(", ")}
                         >
-                          <div className="w-28 sm:w-32 flex-shrink-0 snap-start text-center">
+                          <Link
+                            href={buildPersonLink(entry.person.id)}
+                            className="block w-28 sm:w-32 flex-shrink-0 snap-start text-center group"
+                          >
                             <div className="relative aspect-[2/3] rounded-lg overflow-hidden border bg-muted/20">
                               <Image
                                 src={
@@ -555,13 +569,13 @@ export default async function TVShowDetail({
                                 }
                                 alt={entry.person.name}
                                 fill
-                                className="object-cover"
+                                className="object-cover transition-transform group-hover:scale-105"
                                 sizes="128px"
                               />
                             </div>
                             <div className="mt-2">
                               <p
-                                className="font-medium text-sm line-clamp-1"
+                                className="font-medium text-sm line-clamp-1 group-hover:text-primary"
                                 data-name
                               >
                                 {entry.person.name}
@@ -573,7 +587,7 @@ export default async function TVShowDetail({
                                 {entry.roles.join(", ")}
                               </p>
                             </div>
-                          </div>
+                          </Link>
                         </ConditionalTooltip>
                       ))}
                     </div>
