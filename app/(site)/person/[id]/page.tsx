@@ -77,17 +77,31 @@ export default async function PersonDetailPage({
 
   // Build referrer info if coming from a movie or TV page
   // Note: Next.js automatically decodes search params, so no decodeURIComponent needed
+  // Parse and validate numeric params to avoid NaN in URLs
+  const parsedSeasonNumber = seasonNumber
+    ? parseInt(seasonNumber, 10)
+    : undefined;
+  const parsedEpisodeNumber = episodeNumber
+    ? parseInt(episodeNumber, 10)
+    : undefined;
+  const validSeasonNumber =
+    parsedSeasonNumber !== undefined && !Number.isNaN(parsedSeasonNumber)
+      ? parsedSeasonNumber
+      : undefined;
+  const validEpisodeNumber =
+    parsedEpisodeNumber !== undefined && !Number.isNaN(parsedEpisodeNumber)
+      ? parsedEpisodeNumber
+      : undefined;
+
   const referrer =
     from && mediaId && mediaTitle
       ? {
           type: from,
           id: mediaId,
           title: mediaTitle,
-          seasonNumber: seasonNumber ? parseInt(seasonNumber, 10) : undefined,
+          seasonNumber: validSeasonNumber,
           seasonName: seasonName || undefined,
-          episodeNumber: episodeNumber
-            ? parseInt(episodeNumber, 10)
-            : undefined,
+          episodeNumber: validEpisodeNumber,
           episodeName: episodeName || undefined,
         }
       : null;

@@ -302,11 +302,11 @@ export default function SeasonDetail({
             </div>
             <ScrollArea className="overflow-x-auto">
               <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                {season.credits.cast.map((person) => {
+                {season.credits.cast.map((person, index) => {
                   const personLink = `/person/${person.id}?from=tv&mediaId=${tvShowId}&mediaTitle=${encodeURIComponent(tvShow.name)}&seasonNumber=${season.season_number}&seasonName=${encodeURIComponent(season.name)}`;
                   return (
                     <ConditionalTooltip
-                      key={person.id}
+                      key={person.credit_id || `${person.id}-${index}`}
                       name={person.name}
                       character={person.character || ""}
                     >
