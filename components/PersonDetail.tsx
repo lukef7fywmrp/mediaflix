@@ -233,7 +233,8 @@ export default function PersonDetail({
                     </BreadcrumbItem>
                   </>
                 )}
-                {referrer.episodeNumber !== undefined &&
+                {referrer.seasonNumber !== undefined &&
+                  referrer.episodeNumber !== undefined &&
                   referrer.episodeName && (
                     <>
                       <BreadcrumbSeparator />
