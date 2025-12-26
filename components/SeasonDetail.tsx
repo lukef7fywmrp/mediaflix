@@ -383,110 +383,99 @@ export default function SeasonDetail({
           ) : (
             <div className="grid gap-4">
               {season.episodes.map((episode) => (
-                <Card
+                <Link
                   key={episode.episode_number}
-                  className="overflow-hidden hover:shadow-md transition-all duration-300 group border border-border/50 bg-card py-0 shadow-sm rounded-lg "
+                  href={`/tv/${tvShowId}/season/${episode.season_number}/episode/${episode.episode_number}`}
+                  className="block"
                 >
-                  <div className="flex flex-col sm:flex-row">
-                    {/* Episode Image - Touches card corners */}
-                    <div className="relative w-full aspect-video sm:w-56 lg:w-72 xl:w-96 sm:aspect-auto flex-shrink-0">
-                      <Image
-                        src={getBackdropUrl(episode.still_path)}
-                        alt={episode.name}
-                        fill
-                        className="object-cover transition-transform duration-300 rounded-t-lg sm:rounded-none"
-                      />
-                      <div className="absolute inset-0 bg-black/20" />
-                      {/* Only show play icon on hover if there's a backdrop */}
-                      {episode.still_path && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <Play className="h-8 w-8 text-white" />
-                        </div>
-                      )}
-                      {/* Rating overlay - only show if rating > 0 */}
-                      {episode.vote_average > 0 && (
-                        <div className="absolute top-2 right-2">
-                          <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            {episode.vote_average.toFixed(1)}
+                  <Card className="overflow-hidden hover:shadow-md transition-all duration-300 group border border-border/50 bg-card py-0 shadow-sm rounded-lg ">
+                    <div className="flex flex-col sm:flex-row">
+                      {/* Episode Image - Touches card corners */}
+                      <div className="relative w-full aspect-video sm:w-56 lg:w-72 xl:w-96 sm:aspect-auto flex-shrink-0">
+                        <Image
+                          src={getBackdropUrl(episode.still_path)}
+                          alt={episode.name}
+                          fill
+                          className="object-cover transition-transform duration-300 rounded-t-lg sm:rounded-none"
+                        />
+                        <div className="absolute inset-0 bg-black/20" />
+                        {/* Rating overlay - only show if rating > 0 */}
+                        {episode.vote_average > 0 && (
+                          <div className="absolute top-2 right-2">
+                            <div className="bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              {episode.vote_average.toFixed(1)}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
 
-                    {/* Episode Content - Better Layout */}
-                    <div className="flex-1 min-w-0 px-3.5 py-4 sm:p-6 flex flex-col justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg sm:text-xl font-bold mb-2 group-hover:text-primary transition-colors truncate">
-                          {episode.name}
-                        </h3>
+                      {/* Episode Content - Better Layout */}
+                      <div className="flex-1 min-w-0 px-3.5 py-4 sm:p-6 flex flex-col justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-lg sm:text-xl font-bold mb-2 group-hover:text-primary transition-colors truncate">
+                            {episode.name}
+                          </h3>
 
-                        {/* Compact metadata */}
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground mb-3">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                            {episode.air_date
-                              ? formatDateShort(episode.air_date)
-                              : "TBA"}
-                          </span>
-                          {episode.runtime && (
+                          {/* Compact metadata */}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground mb-3">
                             <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                              {formatRuntime(episode.runtime)}
+                              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                              {episode.air_date
+                                ? formatDateShort(episode.air_date)
+                                : "TBA"}
                             </span>
+                            {episode.runtime && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                                {formatRuntime(episode.runtime)}
+                              </span>
+                            )}
+                            <span className="flex items-center gap-1 text-muted-foreground font-medium">
+                              <ThumbsUp className="h-3 w-3" />
+                              {episode.vote_count.toLocaleString()} votes
+                            </span>
+                          </div>
+
+                          {/* Director info - Clearer */}
+                          {episode.crew.find(
+                            (person) => person.job === "Director",
+                          ) && (
+                            <div className="text-xs sm:text-sm text-muted-foreground mb-3">
+                              <span className="font-medium">Director:</span>{" "}
+                              {
+                                episode.crew.find(
+                                  (person) => person.job === "Director",
+                                )?.name
+                              }
+                            </div>
                           )}
-                          <span className="flex items-center gap-1 text-muted-foreground font-medium">
-                            <ThumbsUp className="h-3 w-3" />
-                            {episode.vote_count.toLocaleString()} votes
-                          </span>
+
+                          {/* Overview */}
+                          <p className="text-[13px] sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+                            {episode.overview || "No overview available."}
+                          </p>
+
+                          {/* Guest stars count */}
+                          {episode.guest_stars.length > 0 && (
+                            <div className="text-xs sm:text-sm text-muted-foreground">
+                              {episode.guest_stars.length} guest star
+                              {episode.guest_stars.length !== 1 ? "s" : ""}
+                            </div>
+                          )}
                         </div>
 
-                        {/* Director info - Clearer */}
-                        {episode.crew.find(
-                          (person) => person.job === "Director",
-                        ) && (
-                          <div className="text-xs sm:text-sm text-muted-foreground mb-3">
-                            <span className="font-medium">Director:</span>{" "}
-                            {
-                              episode.crew.find(
-                                (person) => person.job === "Director",
-                              )?.name
-                            }
-                          </div>
-                        )}
-
-                        {/* Overview */}
-                        <p className="text-[13px] sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
-                          {episode.overview || "No overview available."}
-                        </p>
-
-                        {/* Guest stars count */}
-                        {episode.guest_stars.length > 0 && (
-                          <div className="text-xs sm:text-sm text-muted-foreground">
-                            {episode.guest_stars.length} guest star
-                            {episode.guest_stars.length !== 1 ? "s" : ""}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Action Button - Moved to left */}
-                      <div className="flex justify-start mt-3">
-                        <Link
-                          href={`/tv/${tvShowId}/season/${episode.season_number}/episode/${episode.episode_number}`}
-                        >
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 sm:h-9 text-xs sm:text-sm group-hover:bg-primary group-hover:text-primary-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-200"
-                          >
+                        {/* Action Button - Visual indicator */}
+                        <div className="flex justify-start mt-3">
+                          <span className="inline-flex items-center h-8 sm:h-9 px-3 text-xs sm:text-sm border rounded-md group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200">
                             View Details
-                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                          </Button>
-                        </Link>
+                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}
