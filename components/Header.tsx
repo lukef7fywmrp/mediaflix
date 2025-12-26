@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import React from "react";
 import logo from "@/images/logo.svg";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,15 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 function Header() {
   const [sheetOpen, setSheetOpen] = React.useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Determine active states for navigation
+  const type = searchParams.get("type");
+  const isMoviesActive = pathname === "/" && type !== "tv";
+  const isTvShowsActive = pathname === "/" && type === "tv";
+  const isWatchlistActive = pathname === "/watchlist";
+  const isAboutActive = pathname === "/about";
   const headerRef = React.useRef<HTMLElement>(null);
   const lastInteractionRef = React.useRef<HTMLElement | null>(null);
   const isClosingRef = React.useRef(false);
@@ -141,18 +151,28 @@ function Header() {
               }}
             >
               <SheetTitle className="sr-only">Menu</SheetTitle>
-              <nav className="flex flex-col p-3">
+              <nav className="flex flex-col p-3 space-y-1">
                 <Link
                   href="/"
                   onClick={() => setSheetOpen(false)}
-                  className="text-lg text-foreground/90 font-semibold py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                  className={cn(
+                    "text-lg font-semibold py-1 px-2.5 rounded-md transition-colors",
+                    isMoviesActive
+                      ? "text-foreground bg-accent"
+                      : "text-foreground/90 hover:bg-accent",
+                  )}
                 >
                   Movies
                 </Link>
                 <Link
                   href="/?type=tv"
                   onClick={() => setSheetOpen(false)}
-                  className="text-lg text-foreground/90 font-semibold py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                  className={cn(
+                    "text-lg font-semibold py-1 px-2.5 rounded-md transition-colors",
+                    isTvShowsActive
+                      ? "text-foreground bg-accent"
+                      : "text-foreground/90 hover:bg-accent",
+                  )}
                 >
                   TV Shows
                 </Link>
@@ -160,7 +180,12 @@ function Header() {
                   <Link
                     href="/watchlist"
                     onClick={() => setSheetOpen(false)}
-                    className="text-lg text-foreground/90 font-semibold py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                    className={cn(
+                      "text-lg font-semibold py-1 px-2.5 rounded-md transition-colors",
+                      isWatchlistActive
+                        ? "text-foreground bg-accent"
+                        : "text-foreground/90 hover:bg-accent",
+                    )}
                   >
                     My Watchlist
                   </Link>
@@ -168,7 +193,12 @@ function Header() {
                 <Link
                   href="/about"
                   onClick={() => setSheetOpen(false)}
-                  className="text-lg text-foreground/90 font-semibold py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                  className={cn(
+                    "text-lg font-semibold py-1 px-2.5 rounded-md transition-colors",
+                    isAboutActive
+                      ? "text-foreground bg-accent"
+                      : "text-foreground/90 hover:bg-accent",
+                  )}
                 >
                   About
                 </Link>
@@ -176,7 +206,7 @@ function Header() {
                   <SignInButton>
                     <button
                       onClick={() => setSheetOpen(false)}
-                      className="w-full text-left text-lg font-semibold text-foreground/90 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                      className="w-full text-left text-lg font-semibold text-foreground/90 py-1 px-2.5 rounded-md hover:bg-accent transition-colors"
                     >
                       Sign In
                     </button>
@@ -220,30 +250,50 @@ function Header() {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 md:absolute md:left-1/2 md:-translate-x-1/2">
+        <nav className="hidden md:flex items-center space-x-3 md:absolute md:left-1/2 md:-translate-x-1/2">
           <Link
             href="/"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className={cn(
+              "text-sm font-medium transition-colors px-3 py-1.5 rounded-md",
+              isMoviesActive
+                ? "text-foreground bg-accent"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+            )}
           >
             Movies
           </Link>
           <Link
             href="/?type=tv"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className={cn(
+              "text-sm font-medium transition-colors px-3 py-1.5 rounded-md",
+              isTvShowsActive
+                ? "text-foreground bg-accent"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+            )}
           >
             TV Shows
           </Link>
           <SignedIn>
             <Link
               href="/watchlist"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className={cn(
+                "text-sm font-medium transition-colors px-3 py-1.5 rounded-md",
+                isWatchlistActive
+                  ? "text-foreground bg-accent"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+              )}
             >
               My Watchlist
             </Link>
           </SignedIn>
           <Link
             href="/about"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className={cn(
+              "text-sm font-medium transition-colors px-3 py-1.5 rounded-md",
+              isAboutActive
+                ? "text-foreground bg-accent"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+            )}
           >
             About
           </Link>
