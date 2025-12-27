@@ -84,8 +84,13 @@ const feedbackFormSchema = z.object({
 type FeedbackFormValues = z.infer<typeof feedbackFormSchema>;
 
 export function FeedbackButton() {
-  const { isOpen, setIsOpen, setFeedbackSubmitted, openedFromBanner } =
-    useFeedbackDialog();
+  const {
+    isOpen,
+    setIsOpen,
+    setFeedbackSubmitted,
+    openedFromBanner,
+    setOpenedFromBanner,
+  } = useFeedbackDialog();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachment, setAttachment] = useState<File | null>(null);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>(
@@ -196,6 +201,11 @@ export function FeedbackButton() {
   };
 
   const handleOpenChange = (open: boolean) => {
+    if (open) {
+      // Reset the banner flag when opening via DialogTrigger
+      // to prevent stale state from a previous banner open
+      setOpenedFromBanner(false);
+    }
     setIsOpen(open);
     if (!open) {
       form.reset();

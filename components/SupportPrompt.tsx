@@ -62,6 +62,7 @@ export function SupportPrompt() {
 
   return (
     <div
+      data-support-prompt
       className={`fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 transition-all duration-300 ${
         isExiting
           ? "animate-out slide-out-to-bottom-5 fade-out"

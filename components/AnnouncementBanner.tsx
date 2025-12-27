@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { X, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -21,6 +21,8 @@ export function AnnouncementBanner({
 }: AnnouncementBannerProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isInView, setIsInView] = useState(true);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   const storageKey = `mediaflix-announcement-${id}`;
 
@@ -31,6 +33,47 @@ export function AnnouncementBanner({
       setIsVisible(true);
     }
   }, [storageKey]);
+
+  // Track if banner is in viewport using IntersectionObserver
+  useEffect(() => {
+    if (!isVisible || !bannerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+
+    observer.observe(bannerRef.current);
+    return () => observer.disconnect();
+  }, [isVisible]);
+
+  // Set CSS custom property for banner height so other components can adjust
+  useEffect(() => {
+    if (isVisible && !isExiting && isInView) {
+      // Mobile banner heights differ based on whether action button is shown:
+      // - With action button (Share Feedback): 101px
+      // - Without action button (Thank you message): 63px
+      const bannerHeight = actionLabel && onAction ? "101px" : "63px";
+      document.documentElement.style.setProperty(
+        "--announcement-banner-height",
+        bannerHeight,
+      );
+    } else {
+      document.documentElement.style.setProperty(
+        "--announcement-banner-height",
+        "0px",
+      );
+    }
+
+    return () => {
+      document.documentElement.style.setProperty(
+        "--announcement-banner-height",
+        "0px",
+      );
+    };
+  }, [isVisible, isExiting, isInView, actionLabel, onAction]);
 
   const handleDismiss = () => {
     setIsExiting(true);
@@ -48,6 +91,8 @@ export function AnnouncementBanner({
 
   return (
     <div
+      ref={bannerRef}
+      data-announcement-banner
       className={`w-full bg-background border-b transition-all duration-300 ${
         isExiting
           ? "animate-out slide-out-to-top fade-out"
