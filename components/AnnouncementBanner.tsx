@@ -51,23 +51,39 @@ export function AnnouncementBanner({
 
   // Set CSS custom property for banner height so other components can adjust
   useEffect(() => {
-    if (isVisible && !isExiting && isInView) {
-      // Mobile banner heights differ based on whether action button is shown:
-      // - With action button (Share Feedback): 101px
-      // - Without action button (Thank you message): 63px
-      const bannerHeight = actionLabel && onAction ? "101px" : "63px";
-      document.documentElement.style.setProperty(
-        "--announcement-banner-height",
-        bannerHeight,
-      );
-    } else {
-      document.documentElement.style.setProperty(
-        "--announcement-banner-height",
-        "0px",
-      );
-    }
+    const updateBannerHeight = () => {
+      if (isVisible && !isExiting && isInView) {
+        // Desktop banner (sm breakpoint, ≥640px) has fixed height of 49px
+        // Mobile banner heights differ based on whether action button is shown:
+        // - With action button (Share Feedback): 101px
+        // - Without action button (Thank you message): 63px
+        const isDesktop = window.matchMedia("(min-width: 640px)").matches;
+        const bannerHeight = isDesktop
+          ? "49px"
+          : actionLabel && onAction
+            ? "101px"
+            : "63px";
+        document.documentElement.style.setProperty(
+          "--announcement-banner-height",
+          bannerHeight,
+        );
+      } else {
+        document.documentElement.style.setProperty(
+          "--announcement-banner-height",
+          "0px",
+        );
+      }
+    };
+
+    // Initial update
+    updateBannerHeight();
+
+    // Listen for screen size changes
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
+    mediaQuery.addEventListener("change", updateBannerHeight);
 
     return () => {
+      mediaQuery.removeEventListener("change", updateBannerHeight);
       document.documentElement.style.setProperty(
         "--announcement-banner-height",
         "0px",
