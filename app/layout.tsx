@@ -5,6 +5,10 @@ import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { PostHogProvider } from "@/components/PostHogProvider";
 import QueryClientProvider from "@/components/QueryClientProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { SupportPrompt } from "@/components/SupportPrompt";
+import { DonateDialogProvider } from "@/components/DonateDialogContext";
+import { FeedbackDialogProvider } from "@/components/FeedbackDialogContext";
+import { FeedbackAnnouncement } from "@/components/FeedbackAnnouncement";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import PostHogPageView from "@/components/PostHogPageView";
@@ -67,7 +71,13 @@ export default function RootLayout({
             <PostHogPageView />
             <ConvexClientProvider>
               <QueryClientProvider>
-                {children}
+                <DonateDialogProvider>
+                  <FeedbackDialogProvider>
+                    <FeedbackAnnouncement />
+                    {children}
+                    <SupportPrompt />
+                  </FeedbackDialogProvider>
+                </DonateDialogProvider>
                 <Toaster />
                 <Analytics />
               </QueryClientProvider>

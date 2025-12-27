@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as feedback from "../feedback.js";
 import type * as userProfiles from "../userProfiles.js";
 import type * as watchlist from "../watchlist.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  feedback: typeof feedback;
   userProfiles: typeof userProfiles;
   watchlist: typeof watchlist;
 }>;

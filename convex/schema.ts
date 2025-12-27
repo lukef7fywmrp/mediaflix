@@ -50,4 +50,19 @@ export default defineSchema({
   })
     .index("by_user_id", ["userId"])
     .index("by_user_and_media", ["userId", "mediaType", "mediaId"]),
+
+  // Feedback table for user suggestions and bug reports
+  feedback: defineTable({
+    userId: v.optional(v.string()), // Clerk user ID (optional for anonymous feedback)
+    email: v.optional(v.string()), // Contact email
+    type: v.union(v.literal("bug"), v.literal("feature"), v.literal("general")),
+    message: v.optional(v.string()), // Feedback content (optional)
+    rating: v.optional(v.number()), // Star rating 1-5 (optional - feature disabled for now)
+    page: v.optional(v.string()), // URL where feedback was submitted
+    attachmentId: v.optional(v.id("_storage")), // Optional screenshot/attachment
+    createdAt: v.number(),
+  })
+    .index("by_type", ["type"])
+    .index("by_created_at", ["createdAt"])
+    .index("by_rating", ["rating"]),
 });
