@@ -69,8 +69,18 @@ function Header() {
     const handleClick = (e: MouseEvent) => {
       if (isClosingRef.current) {
         const target = e.target as HTMLElement;
-        // Don't block header clicks
-        if (!headerRef.current?.contains(target)) {
+        // Don't block header clicks, announcement banner clicks, dialog clicks, or support prompt clicks
+        const isAnnouncementBanner = target.closest(
+          "[data-announcement-banner]",
+        );
+        const isDialog = target.closest("[role='dialog']");
+        const isSupportPrompt = target.closest("[data-support-prompt]");
+        if (
+          !headerRef.current?.contains(target) &&
+          !isAnnouncementBanner &&
+          !isDialog &&
+          !isSupportPrompt
+        ) {
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
@@ -109,7 +119,7 @@ function Header() {
               side="left"
               showOverlay={false}
               showCloseButton={false}
-              className="top-20 h-[calc(100vh-5rem)]! w-3/4! sm:max-w-sm border-r p-0 bg-background border-0"
+              className="top-[calc(5rem+var(--announcement-banner-height,0px))] h-[calc(100vh-5rem-var(--announcement-banner-height,0px))]! w-3/4! sm:max-w-sm border-r p-0 bg-background border-0"
               onInteractOutside={(e) => {
                 const target = e.target as HTMLElement;
                 lastInteractionRef.current = target;
